@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\GiceAuthController;
 use Illuminate\Support\Facades\Route;
-use Laravel\Socialite\Facades\Socialite;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,13 +14,14 @@ use Laravel\Socialite\Facades\Socialite;
 |
 */
 
-Route::prefix('auth')->group(function() {
+Route::middleware('guest')->group(function() {
+    Route::get('/login', [GiceAuthController::class, 'login'])
+        ->name('login');
 
-    // Login and callback routes
-    Route::middleware('guest')->group(function() {
-        Route::get('/login', [GiceAuthController::class, 'login'])
-            ->name('auth.login');
-        Route::get('/callback', [GiceAuthController::class, 'callback'])
-            ->name('auth.callback');
-    });
+    Route::get('/login/callback', [GiceAuthController::class, 'callback']);
+});
+
+Route::middleware('auth')->group(function () {
+    Route::post('logout', [GiceAuthController::class, 'logout'])
+                ->name('logout');
 });

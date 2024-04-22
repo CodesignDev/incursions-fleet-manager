@@ -8,8 +8,10 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Inertia\Inertia;
 use Laravel\Socialite\Contracts\User as OidcUser;
 use Laravel\Socialite\Facades\Socialite;
+use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 
 class GiceAuthController extends Controller
@@ -17,9 +19,11 @@ class GiceAuthController extends Controller
     /**
      * Start the GICE login flow
      */
-    public function login(): RedirectResponse
+    public function login(): Response
     {
-        return Socialite::driver('gice')->redirect();
+        $redirect = Socialite::driver('gice')->redirect();
+
+        return Inertia::location($redirect);
     }
 
     /**
@@ -32,10 +36,10 @@ class GiceAuthController extends Controller
 
         // Attempt to find the user in the database
         $user = User::updateOrCreate([
-            'id' => $giceUser->id
+            'id' => $giceUser->id,
         ], [
             'name' => $giceUser->name,
-            'username' => $giceUser->username
+            'username' => $giceUser->username,
         ]);
 
         $this->assignGiceGroups($user, $giceUser);
@@ -47,6 +51,25 @@ class GiceAuthController extends Controller
         return redirect()->intended(route('dashboard', absolute: false));
     }
 
+    /**
+     * Log the user out.
+     */
+    public function logout(Request $request): Response
+    {
+        Auth::logout();
+
+        if ($request->hasSession()) {
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+        }
+
+        return Inertia::Location('https://goonfleet.com/');
+    }
+
+    /**
+     * Assign user groups to the authenticating user based on their
+     * groups that they are a member of on GICE.
+     */
     protected function assignGiceGroups(User $user, OidcUser $oidcUser): void
     {
         // Get the list of groups from the user
