@@ -2,6 +2,8 @@
 
 namespace App\Auth;
 
+use App\Auth\Concerns\HasOidcIdToken;
+use Firebase\JWT\JWT;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\RequestOptions;
 use Illuminate\Support\Arr;
@@ -12,6 +14,8 @@ use Laravel\Socialite\Two\User;
 
 class GiceSocialiteProvider extends AbstractProvider implements ProviderInterface
 {
+    use HasOidcIdToken;
+
     /**
      * The scopes being requested.
      *
@@ -64,7 +68,8 @@ class GiceSocialiteProvider extends AbstractProvider implements ProviderInterfac
      */
     protected function mapUserToObject(array $user): User
     {
-        $groups = Arr::wrap(data_get($user, 'grp', []));
+        // Get the user's groups
+        $groups = $this->getUserGroups();
 
         return (new User)->setRaw($user)->map([
             'id'            => $user['sub'],
@@ -89,5 +94,24 @@ class GiceSocialiteProvider extends AbstractProvider implements ProviderInterfac
                 'Authorization' => 'Bearer '.$token,
             ],
         ];
+    }
+
+    /**
+     * Get the list of user groups for this user.
+     */
+    protected function getUserGroups(): array
+    {
+        // Get the body of the id_token
+        $token = $this->credentialsResponseBody['id_token'];
+        $tokenBody = str($token)->explode('.')->get(1);
+
+        // Decode the contents of the token
+        $decodedToken = JWT::urlsafeB64Decode($tokenBody);
+        $decodedTokenBody = JWT::jsonDecode($decodedToken);
+
+        // Extract the list of groups
+        $groups = data_get($decodedTokenBody, 'grp', []);
+
+        return Arr::wrap($groups);
     }
 }

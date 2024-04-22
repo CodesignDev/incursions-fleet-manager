@@ -3,14 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
 
-class User extends Authenticatable
+class GiceGroup extends Model
 {
-    use HasFactory, Notifiable, SoftDeletes;
+    use HasFactory, SoftDeletes;
 
     /**
      * Indicates if the IDs are auto-incrementing.
@@ -27,7 +26,6 @@ class User extends Authenticatable
     protected $fillable = [
         'id',
         'name',
-        'username',
     ];
 
     /**
@@ -40,11 +38,11 @@ class User extends Authenticatable
     ];
 
     /**
-     * The gice groups the user is a member of.
+     * The users who are members of this group.
      */
-    public function giceGroups(): BelongsToMany
+    public function users(): BelongsToMany
     {
-        return $this->belongsToMany(GiceGroup::class, GiceGroupMember::class)
+        return $this->belongsToMany(User::class, GiceGroupMember::class)
             ->withPivot('is_primary_group')
             ->as('affiliation')
             ->withTimestamps();
