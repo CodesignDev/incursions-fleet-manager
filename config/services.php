@@ -31,4 +31,10 @@ return [
         ],
     ],
 
+    'gice' => [
+        'client_id' => env('GICE_CLIENT_ID', ''),
+        'client_secret' => env('GICE_CLIENT_SECRET', ''),
+        'redirect' => env('GICE_REDIRECT_URI', ''),
+    ],
+
 ];
