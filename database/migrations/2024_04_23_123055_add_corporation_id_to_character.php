@@ -11,11 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('characters', function (Blueprint $table) {
-            $table->unsignedBigInteger('id')->primary();
-            $table->foreignId('user_id')->nullable();
-            $table->string('name');
-            $table->timestamps();
+        Schema::table('characters', function (Blueprint $table) {
+            $table->foreignId('corporation_id')->nullable()->after('user_id');
         });
     }
 
@@ -24,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('characters');
+        Schema::table('characters', function (Blueprint $table) {
+            $table->dropColumn('corporation_id');
+        });
     }
 };

@@ -2,15 +2,16 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Znck\Eloquent\Relations\BelongsToThrough as BelongsToThroughRelation;
-use Znck\Eloquent\Traits\BelongsToThrough;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Number;
 
-class Character extends Model
+class Corporation extends Model
 {
-    use BelongsToThrough, HasFactory;
+    use HasFactory;
 
     /**
      * Indicates if the IDs are auto-incrementing.
@@ -27,6 +28,8 @@ class Character extends Model
     protected $fillable = [
         'id',
         'name',
+        'ticker',
+        'tax_rate',
     ];
 
     /**
@@ -39,26 +42,28 @@ class Character extends Model
     ];
 
     /**
-     * The user that owns this character.
+     * Is the corporation an NPC corp?
      */
-    public function user(): BelongsTo
+    public function is_npc(): Attribute
     {
-        return $this->belongsTo(User::class);
+        return Attribute::get(
+            fn () => $this->id >= 1_000_000 && $this->id <= 2_000_000
+        );
     }
 
     /**
-     * The corporation that this character is a member of.
+     * The alliance that this corporation is a member of.
      */
-    public function corporation(): BelongsTo
+    public function alliance(): BelongsTo
     {
-        return $this->belongsTo(Corporation::class);
+        return $this->belongsTo(Alliance::class);
     }
 
     /**
-     * The alliance that this character is a member of.
+     * The characters that are members of this corporation.
      */
-    public function alliance(): BelongsToThroughRelation
+    public function members(): HasMany
     {
-        return $this->belongsToThrough(Alliance::class, Corporation::class);
+        return $this->hasMany(Character::class);
     }
 }

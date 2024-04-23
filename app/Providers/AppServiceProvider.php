@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use App\Auth\GiceSocialiteProvider;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Schema\ColumnDefinition;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\ServiceProvider;
@@ -29,8 +31,19 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Register any macros
+        $this->bootMacros();
+
         // Register GICE HTTP api client
         $this->registerGiceApiClient();
+    }
+
+    private function bootMacros(): void
+    {
+        // Register a helper for creating unsigned non-incrementing ids
+        Blueprint::macro('staticId', function ($column = 'id'): ColumnDefinition {
+            return $this->unsignedBigInteger($column)->primary();
+        });
     }
 
     /**

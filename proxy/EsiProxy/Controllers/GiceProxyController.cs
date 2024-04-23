@@ -6,6 +6,7 @@ using System.Net.Http.Headers;
 namespace EsiProxy.Controllers
 {
     [ApiController]
+    [Route("Api")]
     public class GiceProxyController : Controller
     {
         private readonly EsiTokenStorageService _tokenStorageService;
@@ -15,7 +16,7 @@ namespace EsiProxy.Controllers
             _tokenStorageService = tokenStorageService;
         }
 
-        [Route("/Api/Account/{id:int}/Pilots")]
+        [Route("Account/{id:int}/Pilots")]
         [HttpGet]
         public IActionResult GetCharactersList(int id)
         {
@@ -23,7 +24,7 @@ namespace EsiProxy.Controllers
             return Json(characters);
         }
 
-        [Route("/Api/{**giceRoute}")]
+        [Route("{**giceRoute}")]
         [AcceptVerbs(new[] { "GET", "POST", "PUT", "PATCH", "DELETE" })]
         public IActionResult GiceProxy(string giceRoute)
         {

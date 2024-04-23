@@ -2,6 +2,7 @@ using EsiProxy.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using System.Net.Http.Headers;
+using EsiProxy.Exceptions;
 
 namespace EsiProxy.Controllers
 {
@@ -68,6 +69,11 @@ namespace EsiProxy.Controllers
                 }
 
                 await esiResponse.Content.CopyToAsync(Response.Body);
+            }
+            catch (NoEsiTokenFoundException)
+            {
+                _logger.LogError("No token found for requested entity while proxing ESI request {RequestMethod} {EsiRoute}", requestMethod, esiRoute);
+                Response.StatusCode = 401;
             }
             catch (Exception ex)
             {

@@ -5,12 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Znck\Eloquent\Relations\BelongsToThrough as BelongsToThroughRelation;
-use Znck\Eloquent\Traits\BelongsToThrough;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
-class Character extends Model
+class Alliance extends Model
 {
-    use BelongsToThrough, HasFactory;
+    use HasFactory;
 
     /**
      * Indicates if the IDs are auto-incrementing.
@@ -27,6 +27,7 @@ class Character extends Model
     protected $fillable = [
         'id',
         'name',
+        'ticker',
     ];
 
     /**
@@ -39,26 +40,19 @@ class Character extends Model
     ];
 
     /**
-     * The user that owns this character.
+     * The corporations that are members of this alliance.
      */
-    public function user(): BelongsTo
+    public function corporations(): HasMany
     {
-        return $this->belongsTo(User::class);
+        return $this->hasMany(Corporation::class);
     }
 
     /**
-     * The corporation that this character is a member of.
+     * The characters that are members of this alliance.
      */
-    public function corporation(): BelongsTo
+    public function members(): HasManyThrough
     {
-        return $this->belongsTo(Corporation::class);
-    }
-
-    /**
-     * The alliance that this character is a member of.
-     */
-    public function alliance(): BelongsToThroughRelation
-    {
-        return $this->belongsToThrough(Alliance::class, Corporation::class);
+        return $this->through($this->corporations())
+            ->has(fn ($corp) => $corp->members());
     }
 }

@@ -59,6 +59,7 @@ class FetchUserCharactersFromGice implements ShouldQueue
         $unknownCharacters = $giceCharacters->whereNotIn('id', $knownCharacters->pluck('id'));
 
         // Map unknown characters into a character model
+        /** @var \Illuminate\Database\Eloquent\Collection $newCharacters */
         $newCharacters = $unknownCharacters->mapInto(Character::class);
 
         // Characters that are known that need assigning to the user
@@ -75,6 +76,12 @@ class FetchUserCharactersFromGice implements ShouldQueue
         // Sync any existing character changes
         $updatedCharacters->each(fn ($character) => $character->user()->associate($this->user)->save());
         $removedCharacters->each(fn ($character) => $character->user()->disassociate()->save());
+
+        // Fetch affiliation data for all new characters
+        FetchCharacterAffiliation::dispatchIf(
+            $newCharacters->isNotEmpty(),
+            $newCharacters->pluck('id')->all()
+        );
     }
 
     /**

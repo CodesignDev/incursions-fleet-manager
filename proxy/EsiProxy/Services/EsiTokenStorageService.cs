@@ -1,4 +1,5 @@
-﻿using EsiProxy.Models;
+﻿using EsiProxy.Exceptions;
+using EsiProxy.Models;
 using JsonFlatFileDataStore;
 
 namespace EsiProxy.Services
@@ -29,7 +30,10 @@ namespace EsiProxy.Services
         public EsiToken GetToken(int characterId)
         {
             var collection = _dataStore.GetCollection<Character>();
-            var token = collection.AsQueryable().First(x => x.Id == characterId);
+            var token = collection.AsQueryable().FirstOrDefault(x => x.Id == characterId);
+
+            if (token is null)
+                throw new NoEsiTokenFoundException();
 
             var esiToken = new EsiToken
             {
