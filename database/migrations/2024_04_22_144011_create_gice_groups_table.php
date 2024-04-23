@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('gice_groups', function (Blueprint $table) {
-            $table->unsignedBigInteger('id')->primary();
+            $table->staticId();
             $table->string('name')->nullable();
             $table->timestamps();
             $table->softDeletes();

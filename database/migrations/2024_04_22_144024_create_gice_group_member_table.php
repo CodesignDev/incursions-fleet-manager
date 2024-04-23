@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('gice_group_member', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+            $table->uuidId();
             $table->foreignId('user_id');
             $table->foreignId('gice_group_id');
             $table->boolean('is_primary_group')->default(false);

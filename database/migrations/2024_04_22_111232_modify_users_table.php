@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::dropIfExists('users');
 
         Schema::create('users', function (Blueprint $table) {
-            $table->unsignedBigInteger('id')->primary();
+            $table->staticId();
             $table->string('name');
             $table->string('username');
             $table->timestamps();

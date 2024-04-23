@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('alliances', function (Blueprint $table) {
-            $table->unsignedBigInteger('id')->primary();
+            $table->staticId();
             $table->string('name');
             $table->string('ticker', 5);
             $table->timestamps();

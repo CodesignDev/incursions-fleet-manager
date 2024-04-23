@@ -44,6 +44,9 @@ class AppServiceProvider extends ServiceProvider
         Blueprint::macro('staticId', function ($column = 'id'): ColumnDefinition {
             return $this->unsignedBigInteger($column)->primary();
         });
+        Blueprint::macro('uuidId', function ($column = 'id'): ColumnDefinition {
+            return $this->uuid($column)->primary();
+        });
     }
 
     /**
