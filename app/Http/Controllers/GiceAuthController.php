@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\FetchUserCharactersFromGice;
 use App\Models\GiceGroup;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
@@ -43,6 +44,7 @@ class GiceAuthController extends Controller
         ]);
 
         $this->assignGiceGroups($user, $giceUser);
+        $this->fetchCharacters($user);
 
         // Login the user and regenerate the session
         Auth::login($user);
@@ -101,5 +103,11 @@ class GiceAuthController extends Controller
 
         // Flag the primary group
         $user->giceGroups()->updateExistingPivot($primaryGroup, ['is_primary_group' => true]);
+    }
+
+    protected function fetchCharacters(User $user): void
+    {
+        // Dispatch the job that gets characters from GICE
+        FetchUserCharactersFromGice::dispatchSync($user);
     }
 }

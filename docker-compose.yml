@@ -63,6 +63,26 @@ services:
                 - ping
             retries: 3
             timeout: 5s
+    esi_proxy:
+        build:
+            context: ./proxy
+            dockerfile: EsiProxy/Dockerfile
+        image: esi-proxy
+        ports:
+            - '${ESI_PROXY_PORT:-7087}:7087'
+        environment:
+            TokenStorageFilePath: '/storage/esi_tokens.json'
+            Esi__ClientId: '${ESI_PROXY_CLIENT_ID}'
+            Esi__ClientSecret: '${ESI_PROXY_CLIENT_SECRET}'
+            Esi__RedirectUri: '${ESI_PROXY_REDIRECT_URI}'
+        volumes:
+            - 'sail-esi-proxy:/storage'
+        networks:
+            - sail
+        depends_on:
+            - mariadb
+            - redis
+
 networks:
     sail:
         driver: bridge
@@ -70,4 +90,6 @@ volumes:
     sail-mariadb:
         driver: local
     sail-redis:
+        driver: local
+    sail-esi-proxy:
         driver: local

@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use App\Auth\GiceSocialiteProvider;
+use Illuminate\Http\Client\PendingRequest;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Socialite\Contracts\Factory as SocialiteFactory;
 
@@ -27,6 +29,34 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Register GICE HTTP api client
+        $this->registerGiceApiClient();
+    }
+
+    /**
+     * Register the GICE client
+     */
+    private function registerGiceApiClient(): void
+    {
+        // Create a macro to pre-configure the HTTP client for GICE api requests
+        Http::macro('gice', function (): PendingRequest {
+
+            // Create request
+            $request = Http::asJson();
+
+            // Configure the base url
+            $giceHost = config('gice.host', 'gice.goonfleet.com');
+            $gicePort = config('gice.port', 443);
+            $giceScheme = config('gice.scheme', 'https');
+            $giceBaseUrl = rtrim(sprintf('%s://%s:%s', $giceScheme, $giceHost, $gicePort), '/');
+            $request->baseUrl($giceBaseUrl);
+
+            // Add the required authentication
+            $clientId = config('gice.client_id');
+            $clientSecret = config('gice.client_secret');
+            $request->withBasicAuth($clientId, $clientSecret);
+
+            return $request;
+        });
     }
 }
