@@ -56,19 +56,15 @@ class FetchMissingCharacterInformation implements ShouldQueue
 
         // Merge the data together
         $characters = collect()
-            ->merge($characterNames->where('category', 'character')->select(['id', 'name']))
+            ->merge($characterNames->where('category', 'character'))
             ->keyBy('id')
-            ->map(fn ($data, $key) => array_merge(
-                $data,
-                Arr::only(
-                    $characterAffiliation->firstWhere('character_id', $key),
-                    'corporation_id'
-                )
-            ));
+            ->map(fn ($data, $key) => array_merge($data, $characterAffiliation->firstWhere('character_id', $key)));
 
         // Update characters
         $characters
-            ->map(fn ($data) => tap(new Character)->forceFill($data))
+            ->map(fn ($data) => tap(new Character)->forceFill(
+                Arr::only($data, ['id', 'name', 'corporation_id'])
+            ))
             ->each->save();
     }
 }
