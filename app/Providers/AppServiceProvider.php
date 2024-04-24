@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use App\Auth\GiceSocialiteProvider;
+use App\Macros\EventEveDowntimeMixin;
+use Illuminate\Console\Scheduling\Event;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Schema\ColumnDefinition;
 use Illuminate\Http\Client\PendingRequest;
@@ -47,6 +49,9 @@ class AppServiceProvider extends ServiceProvider
         Blueprint::macro('uuidId', function ($column = 'id'): ColumnDefinition {
             return $this->uuid($column)->primary();
         });
+
+        // Event macro that defines a daily schedule at EVE downtime
+        Event::mixin(new EventEveDowntimeMixin());
     }
 
     /**
