@@ -1,10 +1,12 @@
 <?php
+/** @noinspection SqlNoDataSourceInspection */
 
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 
-function generate_color_console() {
+function generate_color_console(): ConsoleOutput
+{
     /** Reference: https://symfony.com/doc/current/console/coloring.html */
     $output       = new ConsoleOutput();
 
@@ -33,10 +35,10 @@ function generate_color_console() {
  * @param string $sql Example:
  *   `INSERT INTO users(id, `name`, created_at) VALUES(?, ?, ?)`
  *
- * @return string[] Example: `['id', 'name', 'date']`
- *
+ * @return string[]|false Example: `['id', 'name', 'date']`
  */
-function get_binding_names_from_insert($sql) {
+function get_binding_names_from_insert(string $sql): array|false
+{
     // Get column names. Ex.: "'id, `name`, created_at'".
     $matches = [];
     $success = preg_match('/INSERT *INTO *[^(]*\(([^)]+)\)/i', $sql, $matches);
@@ -61,10 +63,11 @@ function get_binding_names_from_insert($sql) {
  * @return string[] Example: `['id', 'created_at', 'LIMIT']`
  *
  */
-function get_binding_names_from_expressions($sql) {
+function get_binding_names_from_expressions(string $sql): array
+{
     // For each `?`, get the two previous words.
     $matches = [];
-    preg_match_all('/([\S]*) *([\S]*) *\?/', $sql, $matches);
+    preg_match_all('/(\S*) *(\S*) *\?/', $sql, $matches);
 
     // Sample: ["`users`.`id` = ?", "`users`.`deleted_at` >= ?", " LIMIT ?"]
     $expressions = array_shift($matches);
@@ -76,15 +79,13 @@ function get_binding_names_from_expressions($sql) {
     }, $expressions);
 
     // Extract "column" from "`table`.`column`".
-    $names = array_map(function ($str) {
+    return array_map(function ($str) {
         $matches = [];
         preg_match_all('/`(.*?)`/', $str, $matches);
         $match = array_pop($matches);
         $name = array_pop($match);
-        return $name ? $name : $str;
+        return $name ?: $str;
     }, $first_words);
-
-    return $names;
 }
 
 $output = generate_color_console();
@@ -112,7 +113,7 @@ DB::listen(function ($query) use ($output) {
     $tag = strtolower($tag);
 
     // Margin + "SQL" label + Timing + SQL.
-    $str = "  <label>SQL ({$query->time}ms)<label>  <$tag>{$sql}</$tag>";
+    $str = "  <label>SQL ({$query->time}ms)<label>  <$tag>$sql</$tag>";
 
     // Add Bindings.
     if ($query->bindings) {
@@ -130,7 +131,7 @@ DB::listen(function ($query) use ($output) {
             $params[] = "['$name', '$value']";
         }
 
-        $params_str = join(', ', $params);
+        $params_str = implode(', ', $params);
         $str = "$str  <params>[$params_str]</params>";
     }
 
