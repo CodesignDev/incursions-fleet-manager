@@ -17,6 +17,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Number;
 use Illuminate\Support\Str;
 
 class FetchAllianceStandings implements ShouldQueue
@@ -48,6 +49,19 @@ class FetchAllianceStandings implements ShouldQueue
         // Change the keys in the data to be snake_case
         $standings = $standings->map(fn ($entry) => Arr::mapWithKeys($entry, fn ($value, $key) => [Str::snake($key) => $value]));
 
+        // Add GSF to the list of standings
+        $gsfAllianceId = config('waitlist.alliance_id', 1354830081);
+        $standings = $standings
+            ->unless(fn ($collection) => $collection->has($gsfAllianceId))
+            ->merge([$gsfAllianceId => ['contact_id' => $gsfAllianceId, 'contact_type' => 'A', 'standing' => 10]]);
+
+        // Clamp the standing value to the values that EVE allows
+        $standings = $standings->map(fn ($item) => Arr::update(
+            $item,
+            'standing',
+            fn ($standing) => Number::clamp((float) $standing, -10, 10)
+        ));
+
         // Mappings of the contact types to the actual entity model
         $mappings = [
             'A' => $this->getMorphAlias(Alliance::class),
@@ -75,7 +89,7 @@ class FetchAllianceStandings implements ShouldQueue
                 }
 
                 return data_get($entry, 'contact_id') === $currentEntry->contact_id
-                    && (float) data_get($entry, 'standing') !== $currentEntry->standing;
+                    && data_get($entry, 'standing') !== $currentEntry->standing;
             })
             ->pluck('standing', 'contact_id');
 
@@ -98,11 +112,7 @@ class FetchAllianceStandings implements ShouldQueue
             ->reject(fn ($entry) => $standings->containsStrict('contact_id', $entry->contact_id))
             ->when(
                 fn ($collection) => $collection->isNotEmpty(),
-                function ($collection) {
-                    $collection
-                        ->toQuery()
-                        ->delete();
-                }
+                fn ($collection) => $collection->toQuery()->withModelScopes()->delete()
             );
 
         // For the new entries, fetch the relevant information

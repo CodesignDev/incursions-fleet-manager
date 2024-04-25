@@ -4,11 +4,13 @@ namespace App\Providers;
 
 use App\Auth\GiceSocialiteProvider;
 use App\Macros\EventEveDowntimeMixin;
+use ArrayAccess;
 use Illuminate\Console\Scheduling\Event;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Schema\ColumnDefinition;
 use Illuminate\Http\Client\PendingRequest;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Socialite\Contracts\Factory as SocialiteFactory;
@@ -43,6 +45,14 @@ class AppServiceProvider extends ServiceProvider
 
     private function bootMacros(): void
     {
+        // Register an Arr helper to update a value
+        Arr::macro('update', function (array|ArrayAccess &$array, int|null|string $key, callable $update, $default = null): array {
+            $existingValue = Arr::get($array, $key, $default);
+            $updatedValue = value($update, $existingValue);
+
+            return Arr::set($array, $key, $updatedValue);
+        });
+
         // Register a helper for creating unsigned non-incrementing ids
         Blueprint::macro('staticId', function ($column = 'id'): ColumnDefinition {
             return $this->unsignedBigInteger($column)->primary();
