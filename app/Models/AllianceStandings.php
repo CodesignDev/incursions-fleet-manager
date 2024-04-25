@@ -23,15 +23,6 @@ class AllianceStandings extends Model
     ];
 
     /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
-    protected $hidden = [
-
-    ];
-
-    /**
      * Get the attributes that should be cast.
      */
     public function casts(): array

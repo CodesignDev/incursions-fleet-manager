@@ -29,15 +29,6 @@ class GiceGroup extends Model
     ];
 
     /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
-    protected $hidden = [
-        //
-    ];
-
-    /**
      * The users who are members of this group.
      */
     public function users(): BelongsToMany

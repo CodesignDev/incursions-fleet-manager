@@ -32,15 +32,6 @@ class User extends Authenticatable
     ];
 
     /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
-    protected $hidden = [
-        //
-    ];
-
-    /**
      * The gice groups the user is a member of.
      */
     public function giceGroups(): BelongsToMany

@@ -31,15 +31,6 @@ class Character extends Model
     ];
 
     /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
-    protected $hidden = [
-
-    ];
-
-    /**
      * The user that owns this character.
      */
     public function user(): BelongsTo

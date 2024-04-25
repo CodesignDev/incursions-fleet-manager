@@ -27,18 +27,10 @@ class Corporation extends Model
      */
     protected $fillable = [
         'id',
+        'alliance_id',
         'name',
         'ticker',
         'tax_rate',
-    ];
-
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
-    protected $hidden = [
-
     ];
 
     /**

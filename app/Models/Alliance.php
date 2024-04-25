@@ -31,15 +31,6 @@ class Alliance extends Model
     ];
 
     /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
-    protected $hidden = [
-
-    ];
-
-    /**
      * The corporations that are members of this alliance.
      */
     public function corporations(): HasMany
