@@ -11,6 +11,7 @@
         "laravel/sanctum": "^4.0",
         "laravel/socialite": "^5.13",
         "laravel/tinker": "^2.9",
+        "spatie/laravel-permission": "^6.7",
         "staudenmeir/belongs-to-through": "^2.16",
         "tightenco/ziggy": "^2.0"
     },
