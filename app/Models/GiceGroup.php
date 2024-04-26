@@ -38,4 +38,15 @@ class GiceGroup extends Model
             ->as('affiliation')
             ->withTimestamps();
     }
+
+    /**
+     * The roles that are linked to this group.
+     */
+    public function roles(): BelongsToMany
+    {
+        return $this->belongsToMany(Role::class, ManagedGroupRole::class, 'group_id')
+            ->withPivot('auto_remove_role')
+            ->as('managed_role')
+            ->withTimestamps();
+    }
 }
