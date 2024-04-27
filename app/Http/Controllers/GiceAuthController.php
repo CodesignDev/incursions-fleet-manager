@@ -7,6 +7,7 @@ use App\Models\GiceGroup;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
@@ -17,6 +18,11 @@ use Throwable;
 
 class GiceAuthController extends Controller
 {
+    /**
+     * List of groups that were removed from the user during the authentication flow.
+     */
+    protected array $removedGroups;
+
     /**
      * Start the GICE login flow
      */
@@ -44,6 +50,7 @@ class GiceAuthController extends Controller
         ]);
 
         $this->assignGiceGroups($user, $giceUser);
+        $this->assignRoles($user, $giceUser);
         $this->fetchCharacters($user);
 
         // Login the user and regenerate the session
@@ -99,12 +106,65 @@ class GiceAuthController extends Controller
         }
 
         // Attach the groups to the user
-        $user->giceGroups()->sync($groups);
+        $groupUpdates = $user->giceGroups()->sync($groups);
 
         // Flag the primary group
         $user->giceGroups()->updateExistingPivot($primaryGroup, ['is_primary_group' => true]);
+
+        // Save the list of updated groups
+        $this->removedGroups = Arr::get($groupUpdates, 'detached', []);
     }
 
+    /**
+     * Assign the relevant roles to the user based on their group membership.
+     */
+    protected function assignRoles(User $user, OidcUser $oidcUser): void
+    {
+        // Extract the list of groups from the OIDC user
+        $groupIds = $oidcUser->groups ?? [];
+
+        // If there are no groups, exit
+        if (blank($groupIds)) {
+            return;
+        }
+
+        // Get the groups from the database that have roles attached to them
+        $groups = GiceGroup::query()->withWhereHas('roles')->whereIn('gice_groups.id', $groupIds)->get();
+
+        // Get the list of the managed roles the user currently has assigned to them, in case we need to
+        // remove any roles where the user is no longer a member of the linked group(s)
+        $currentRoles = $user->roles()->withWhereHas('managedRoles')->get();
+
+        // Get each role and assign them to the user
+        $rolesToAdd = $groups->flatMap(fn ($group) => $group->roles)->unique('id');
+        $user->assignRole($rolesToAdd);
+
+        // If no groups were removed, skip processing
+        if (blank($this->removedGroups)) {
+            return;
+        }
+
+        // Loop through the list of current roles to see if they need to be removed or not
+        foreach ($currentRoles as $role) {
+
+            // Is the user still a member of a group linked to this role?
+            if ($role->managedRoles->whereIn('group_id', $groupIds)->isNotEmpty()) {
+                continue;
+            }
+
+            // List of managed role entities that are from a removed group
+            $entities = $role->managedRoles->whereIn('group_id', $this->removedGroups);
+
+            // If the role should be removed then remove it
+            if ($entities->every('auto_remove_role', true)) {
+                $user->removeRole($role);
+            }
+        }
+    }
+
+    /**
+     * Trigger the job that fetches the user's characters from GICE.
+     */
     protected function fetchCharacters(User $user): void
     {
         // Dispatch the job that gets characters from GICE
