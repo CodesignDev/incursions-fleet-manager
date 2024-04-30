@@ -2,6 +2,8 @@
 
 namespace App\Services\Esi;
 
+use App\Models\Character;
+use App\Models\Corporation;
 use Exception;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Response;
@@ -36,6 +38,16 @@ class PendingEsiRequest extends PendingRequest
     protected bool $useProxy = false;
 
     /**
+     * The character to authenticate the request with.
+     */
+    protected ?int $character = null;
+
+    /**
+     * The corporation to authenticate the request with.
+     */
+    protected ?int $corporation = null;
+
+    /**
      * The default ESI version to use when none is specified.
      */
     protected string $defaultEsiVersion = 'latest';
@@ -45,15 +57,13 @@ class PendingEsiRequest extends PendingRequest
      */
     public function __construct(?EsiHttpClientFactory $factory)
     {
-//        $this->factory = $factory;
-
         parent::__construct($factory);
     }
 
     /**
      * Set the proxy base URL for the pending request.
      */
-    public function proxyBaseUrl(string $url): PendingEsiRequest
+    public function proxyBaseUrl(string $url): static
     {
         $this->proxyBaseUrl = $url;
 
@@ -63,38 +73,55 @@ class PendingEsiRequest extends PendingRequest
     /**
      * Set the proxy auth token for the pending request.
      */
-    public function withProxyAuth(string $token, string $header = 'X-Proxy-Auth'): PendingEsiRequest
+    public function withProxyAuth(string $token, string $header = 'X-Proxy-Auth'): static
     {
-        $this->proxyAuthHeader = [$header => $token];
-
-        return $this;
+        return tap($this, function () use ($token, $header) {
+            $this->proxyAuthHeader = [$header => $token];
+        });
     }
 
     /**
      * Whether to use the ESI proxy for this request.
      */
-    public function useProxy(bool $useProxy = true): PendingEsiRequest
+    public function useProxy(bool $useProxy = true): static
     {
-        $this->useProxy = $useProxy;
-        return $this;
+        return tap($this, function () use ($useProxy) {
+            $this->useProxy = $useProxy;
+        });
     }
 
     /**
      * Send a public esi request instead of using the proxy.
      */
-    public function public(): PendingEsiRequest
+    public function public(): static
     {
         return $this->useProxy(false);
     }
 
     /**
+     * Set a character to authenticate the proxied esi request with.
+     */
+    public function withCharacter(Character|int $character): static
+    {
+        return $this->withEntity('character', $character);
+    }
+
+    /**
+     * Set a corporation to authenticate the proxied esi request with.
+     */
+    public function withCorporation(Corporation|int $corporation): static
+    {
+        return $this->withEntity('corporation', $corporation);
+    }
+
+    /**
      * Set the default ESI version to use when none is specified.
      */
-    public function defaultEsiVersion(string $version): PendingEsiRequest
+    public function defaultEsiVersion(string $version): static
     {
-        $this->defaultEsiVersion = $version;
-
-        return $this;
+        return tap($this, function () use ($version) {
+            $this->defaultEsiVersion = $version;
+        });
     }
 
     /**
@@ -114,6 +141,21 @@ class PendingEsiRequest extends PendingRequest
         $url = $this->parseEsiVersion($url);
 
         return parent::send($method, $url, $options);
+    }
+
+    /**
+     * Use a character or corporation entity to authenticate the request with.
+     */
+    protected function withEntity(string $type, $entity): static
+    {
+        return tap($this, function () use ($type, $entity) {
+            $entityId = match (true) {
+                is_a($entity, Character::class), is_a($entity, Corporation::class) => $entity->getAttribute('id'),
+                default => $entity,
+            };
+
+            $this->{$type} = $entityId;
+        });
     }
 
     /**
@@ -162,24 +204,29 @@ class PendingEsiRequest extends PendingRequest
             return;
         }
 
+        // Add the proxy auth if it has been specified
         if (! empty($this->proxyAuthHeader)) {
             $this->withHeaders($this->proxyAuthHeader);
         }
 
+        // Apply the entity to the headers
         $urlParameters = $this->urlParameters;
 
-        if (Arr::exists($urlParameters, 'character_id')) {
-            $this->withHeaders([
-                'X-Entity-ID'  => $urlParameters['character_id'],
-                'X-Token-Type' => 'P',
-            ]);
-        }
+        $characterId = Arr::get($urlParameters, 'character_id', $this->character);
+        $corporationId = Arr::get($urlParameters, 'corporation_id', $this->corporation);
 
-        if (Arr::exists($urlParameters, 'corporation_id')) {
-            $this->withHeaders([
-                'X-Entity-ID'  => $urlParameters['corporation_id'],
-                'X-Token-Type' => 'C',
-            ]);
+        if (! is_null($characterId)) {
+            $this->applyProxyEntityHeaders($characterId);
+        } else if (! is_null($corporationId)) {
+            $this->applyProxyEntityHeaders($corporationId);
         }
+    }
+
+    protected function applyProxyEntityHeaders(int $entityId, $type = 'P'): void
+    {
+        $this->withHeaders([
+            'X-Entity-ID'  => $entityId,
+            'X-Token-Type' => $type,
+        ]);
     }
 }
