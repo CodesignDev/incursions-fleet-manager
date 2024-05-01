@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Fleet extends Model
@@ -38,5 +39,22 @@ class Fleet extends Model
     public function allFleetMembers(): HasMany
     {
         return $this->members()->withTrashed();
+    }
+
+    /**
+     * The current fleet boss.
+     */
+    public function boss(): HasOneThrough
+    {
+        // Use a custom HasOne relation here to effectively create a reversed BelongsTo relation that
+        // can work with the through() helper
+        $relation = $this
+            ->through($this->members())
+            ->has(fn ($member) => $member->hasOne(Character::class, 'id', 'character_id'));
+
+        // Apply a custom filter to the relation
+        $relation->where('fleet_members.fleet_boss', true);
+
+        return $relation;
     }
 }
