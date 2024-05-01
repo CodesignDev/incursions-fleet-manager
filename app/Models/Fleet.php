@@ -16,6 +16,15 @@ class Fleet extends Model
     use FleetCanBeClosed, FleetCanBeUnlisted, HasFactory, HasUuids, SoftDeletes;
 
     /**
+     * The model's attributes.
+     *
+     * @var array
+     */
+    protected $attributes = [
+        'untracked' => false,
+    ];
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
@@ -23,6 +32,7 @@ class Fleet extends Model
     protected $fillable = [
         'esi_fleet_id',
         'name',
+        'untracked',
     ];
 
     /**

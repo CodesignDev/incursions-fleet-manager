@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use App\Auth\GiceSocialiteProvider;
 use App\Macros\EventEveDowntimeMixin;
+use App\Models\Fleet;
+use App\Observers\FleetObserver;
 use ArrayAccess;
 use Illuminate\Console\Scheduling\Event;
 use Illuminate\Database\Eloquent\Builder;
@@ -36,13 +38,17 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Register any macros
+        // Boot any services required
         $this->bootMacros();
+        $this->bootObservers();
 
         // Register GICE HTTP api client
         $this->registerGiceApiClient();
     }
 
+    /**
+     * Register any class macros.
+     */
     private function bootMacros(): void
     {
         // Register an Arr helper to update a value
@@ -72,6 +78,15 @@ class AppServiceProvider extends ServiceProvider
 
         // Event macro that defines a daily schedule at EVE downtime
         Event::mixin(new EventEveDowntimeMixin());
+    }
+
+    /**
+     * Register any model observers.
+     */
+    private function bootObservers(): void
+    {
+        // Register the relevant observers
+        Fleet::observe(FleetObserver::class);
     }
 
     /**
