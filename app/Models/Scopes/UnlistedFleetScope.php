@@ -36,7 +36,7 @@ class UnlistedFleetScope implements Scope
     /**
      * Add the with-trashed extension to the builder.
      */
-    protected function WithUnlisted(Builder $builder): void
+    protected function addWithUnlisted(Builder $builder): void
     {
         $builder->macro('withUnlisted', function (Builder $builder, $withUnlisted = true) {
             if (! $withUnlisted) {

@@ -13,7 +13,7 @@ class ClosedFleetScope implements Scope
      *
      * @var string[]
      */
-    protected array $extensions = ['WithUnlisted', 'WithoutUnlisted', 'OnlyUnlisted'];
+    protected array $extensions = ['WithClosedFleets', 'WithoutClosedFleets', 'OnlyClosedFleets'];
 
     /**
      * Apply the scope to a given Eloquent query builder.
