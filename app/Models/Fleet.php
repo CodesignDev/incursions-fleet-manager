@@ -7,6 +7,7 @@ use App\Models\Concerns\FleetCanBeUnlisted;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Fleet extends Model
@@ -22,4 +23,20 @@ class Fleet extends Model
         'esi_fleet_id',
         'name',
     ];
+
+    /**
+     * The list of members in this fleet.
+     */
+    public function members(): HasMany
+    {
+        return $this->hasMany(FleetMember::class);
+    }
+
+    /**
+     * The list of members who have been in this fleet.
+     */
+    public function allFleetMembers(): HasMany
+    {
+        return $this->members()->withTrashed();
+    }
 }
