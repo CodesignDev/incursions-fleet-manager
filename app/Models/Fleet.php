@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Concerns\FleetCanBeClosed;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -33,6 +34,11 @@ class Fleet extends Model
         'name',
         'untracked',
     ];
+
+    public function scopeWhereTracked(Builder $query): void
+    {
+        $query->whereNull('untracked')->orWhere('untracked', false);
+    }
 
     /**
      * The list of members in this fleet.
