@@ -3,7 +3,6 @@
 namespace App\Jobs;
 
 use App\Enums\FleetInviteState;
-use App\Facades\Esi;
 use App\Models\Fleet;
 use App\Models\FleetInvite;
 use Illuminate\Bus\Queueable;
@@ -55,43 +54,8 @@ class SendPendingFleetInvites implements ShouldQueue
             // Loop through the list of invites
             $invitesToSend->each(function (FleetInvite $invite) use ($fleet) {
 
-                // Send the invite to the character
-                $response = Esi::withCharacter($fleet->boss)
-                    ->withUrlParameters(['fleet_id' => $fleet->esi_fleet_id])
-                    ->post('/fleets/{fleet_id}/members', [
-                        'character_id' => $invite->character_id,
-                        'role' => 'squad_member',
-                    ])
-                    ->throwIfStatus(420)
-                    ->throwIfServerError();
-
-                // Perform an action based on the response status of the invite
-                switch ($response->status()) {
-
-                    // Invite sent
-                    case 204:
-                        $invite->update([
-                            'state' => FleetInviteState::SENT,
-                            'invite_sent_at' => now(),
-                        ]);
-                        break;
-
-                    // Invite failed
-                    case 422:
-                        $invite->update(['state' => FleetInviteState::FAILED]);
-                        break;
-
-                    // Unable to send due to no access to fleet. Attempt to find the new
-                    // fleet boss, and then stop further processing of other invites for
-                    // this fleet
-                    case 404:
-                        LocateFleetBoss::dispatch($fleet);
-                        return false;
-
-                    // Any other status code, just stop processing for this fleet
-                    default:
-                        return false;
-                }
+                // Send the invite, this is done via another job so that it can be handled correctly
+                SendFleetInvite::dispatch($invite, $fleet);
             });
         });
     }
