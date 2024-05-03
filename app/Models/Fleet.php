@@ -57,6 +57,14 @@ class Fleet extends Model
     }
 
     /**
+     * The list of invites for the fleet.
+     */
+    public function invites(): HasMany
+    {
+        return $this->hasMany(FleetInvite::class);
+    }
+
+    /**
      * The current fleet boss.
      */
     public function boss(): HasOneThrough
