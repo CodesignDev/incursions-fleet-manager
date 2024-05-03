@@ -15,6 +15,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
+use InvalidArgumentException;
 
 class LocateFleetBoss implements ShouldQueue
 {
@@ -49,65 +50,75 @@ class LocateFleetBoss implements ShouldQueue
      */
     public function handle(): void
     {
+        // If there is no fleet, there is nothing to process
+        if (is_null($this->fleet)) {
+            return;
+        }
+
+        $fleet = $this->fleet;
+        $fleetId = $fleet->esi_fleet_id;
+
+        $foundFleetBoss = false;
+
+        // Load the list of fleet members to attempt to find the fleet boss with
+        $fleet->load('members');
+
+        $recentlyTriedCharacters = collect(
+            cache()->get('fleet_boss:recently_searched_characters', [])
+        );
+
+        // Get the character that is currently the boss of the fleet
+        $currentFleetBoss = optional($fleet->members->firstWhere('fleet_boss', true))
+            ->character_id;
+
+        // Attempt to query the fleet with the current fleet boss, if it works, then there is
+        // nothing to do
+        try {
+            Esi::withCharacter($currentFleetBoss)
+                ->withUrlParameters(['fleet_id' => $fleetId])
+                ->get('/fleets/{fleet_id}')
+                ->throw();
+
+            // If we got to this point, this means that the fleet is still under the correct
+            // fleet boss
+            return;
+        }
+
+        // Handle the relevant exceptions
+        catch (Exception $e) {
+            // We only care about failures that were because of hitting the esi error limit or
+            // because of a server error
+            if ($e instanceof RequestException && ($e->response->status() === 420 || $e->response->serverError())) {
+                throw;
+            }
+
+            // Continue if it was another issue
+        }
+
+        // Get the list of fleet members
+        $membersList = $fleet->members
+            ->whereNot('character_id', $currentFleetBoss)
+            ->pluck('character_id');
+
         // Wrap in a try/finally, so we can do some post-processing if an exception occurs
         try {
-
-            // If there is no fleet, there is nothing to process
-            if (is_null($this->fleet)) {
-                return;
-            }
-
-            $fleet = $this->fleet;
-            $fleetId = $fleet->esi_fleet_id;
-
-            // Load the list of fleet members to attempt to find the fleet boss with
-            $fleet->load('members');
-
-            $recentlyTriedCharacters = collect(
-                cache()->get('fleet_boss:recently_searched_characters', [])
-            );
-
-            // Get the character that is currently the boss of the fleet
-            $currentFleetBoss = optional($fleet->members->firstWhere('fleet_boss', true))
-                ->character_id;
-
-            // Attempt to query the fleet with the current fleet boss, if it works, then there is
-            // nothing to do
-            try {
-                Esi::withCharacter($currentFleetBoss)
-                    ->withUrlParameters(['fleet_id' => $fleetId])
-                    ->get('/fleets/{fleet_id}')
-                    ->throw();
-
-                // If we got to this point, this means that the fleet is still under the correct
-                // fleet boss
-                return;
-            } // Handle the relevant exceptions
-            catch (Exception $e) {
-                // We only care about failures that were because of hitting the esi error limit or
-                // because of a server error
-                if ($e instanceof RequestException && ($e->response->status() === 420 || $e->response->serverError())) {
-                    throw;
-                }
-
-                // Continue if it was another issue
-            }
-
             // Run in a loop until we find what we need
             while (true) {
 
                 // Pick a random fleet member from the list
-                $member = $fleet->members
-                    ->whereNotIn('character_id', $recentlyTriedCharacters)
-                    ->pluck('character_id')
-                    ->random();
-
-                // If this character is the current fleet boss, skip it
-                if ($member === $currentFleetBoss) {
-                    continue;
+                $members = $membersList->diff($recentlyTriedCharacters);
+                try {
+                    $member = $members->random();
+                } catch (InvalidArgumentException) {
+                    $member = null;
                 }
 
                 $recentlyTriedCharacters->push($member);
+
+                // Stop processing after checking a certain number of characters
+                if ($recentlyTriedCharacters->count() > 10) {
+                    break;
+                }
 
                 // Check if this character is in a fleet and if it is the same as the fleet we are
                 // querying
@@ -131,15 +142,21 @@ class LocateFleetBoss implements ShouldQueue
                     $fleetBoss = $fleet->members->whereIn('character_id', $fleetBossId)->first();
                     if (!is_null($fleetBoss)) {
                         $fleetBoss->update(['fleet_boss' => true]);
-                        break;
                     }
 
                     // Otherwise add the boss as a member of the fleet
-                    $fleet->members()->create([
-                        'character_id' => $fleetBossId,
-                        'fleet_boss' => true,
-                    ]);
-                } // Catch and handle request exceptions
+                    else {
+                        $fleet->members()->create([
+                            'character_id' => $fleetBossId,
+                            'fleet_boss' => true,
+                        ]);
+                    }
+
+                    $foundFleetBoss = true;
+                    break;
+                }
+
+                // Catch and handle request exceptions
                 catch (RequestException $e) {
                     // Throw server errors and esi error limits up
                     if ($e->response->serverError() && $e->response->status() === 420) {
@@ -155,19 +172,22 @@ class LocateFleetBoss implements ShouldQueue
 
         // Run some post-processing actions
         finally {
+            // If we didn't find a new fleet boss, mark the fleet as closed
+            if ($foundFleetBoss === false) {
+                $fleet->closeFleet();
+            }
+
             // Update the old fleet boss to show as no longer being the boss
-            if (isset($currentFleetBoss) && filled($currentFleetBoss)) {
+            if ($foundFleetBoss === true && filled($currentFleetBoss)) {
                 FleetMember::where('character_id', $currentFleetBoss)->update(['fleet_boss' => false]);
             }
 
             // Save the list of characters that were queried in case we need to run this again
-            if (isset($recentlyTriedCharacters)) {
-                cache()->put(
-                    'fleet_boss:recently_searched_characters',
-                    Collection::wrap($recentlyTriedCharacters)->all(),
-                    now()->addMinutes(5)
-                );
-            }
+            cache()->put(
+                'fleet_boss:recently_searched_characters',
+                Collection::wrap($recentlyTriedCharacters)->all(),
+                now()->addMinutes(5)
+            );
         }
     }
 }
