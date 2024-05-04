@@ -4,7 +4,9 @@ namespace App\Providers;
 
 use App\Auth\GiceSocialiteProvider;
 use App\Macros\EventEveDowntimeMixin;
+use App\Models\FleetInvite;
 use App\Models\FleetMember;
+use App\Observers\FleetInviteStateObserver;
 use App\Observers\FleetMemberInviteObserver;
 use ArrayAccess;
 use Illuminate\Console\Scheduling\Event;
@@ -86,6 +88,7 @@ class AppServiceProvider extends ServiceProvider
     private function bootObservers(): void
     {
         // Register the relevant observers
+        FleetInvite::observe(FleetInviteStateObserver::class);
         FleetMember::observe(FleetMemberInviteObserver::class);
     }
 
