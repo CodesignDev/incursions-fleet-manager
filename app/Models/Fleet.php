@@ -33,6 +33,8 @@ class Fleet extends Model
         'esi_fleet_id',
         'name',
         'untracked',
+        'has_fleet_advert',
+        'free_move_enabled',
     ];
 
     /**
@@ -42,6 +44,8 @@ class Fleet extends Model
     {
         return [
             'untracked' => 'boolean',
+            'has_fleet_advert' => 'boolean',
+            'free_move_enabled' => 'boolean',
         ];
     }
 

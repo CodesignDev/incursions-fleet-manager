@@ -12,7 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('fleets', function (Blueprint $table) {
-            $table->boolean('untracked')->nullable()->after('name');
+            $table->after('untracked', function (Blueprint $table) {
+                $table->boolean('has_fleet_advert')->nullable();
+                $table->boolean('free_move_enabled')->nullable();
+            });
         });
     }
 
@@ -22,7 +25,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('fleets', function (Blueprint $table) {
-            $table->dropColumn('untracked');
+            $table->dropColumn('has_fleet_advert');
+            $table->dropColumn('free_move_enabled');
         });
     }
 };
