@@ -34,6 +34,16 @@ class Corporation extends Model
     ];
 
     /**
+     * Get the attributes that should be cast.
+     */
+    public function casts(): array
+    {
+        return [
+            'tax_rate' => 'float',
+        ];
+    }
+
+    /**
      * Is the corporation an NPC corp?
      */
     public function is_npc(): Attribute

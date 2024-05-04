@@ -35,6 +35,16 @@ class Fleet extends Model
         'untracked',
     ];
 
+    /**
+     * Get the attributes that should be cast.
+     */
+    public function casts(): array
+    {
+        return [
+            'untracked' => 'boolean',
+        ];
+    }
+
     public function scopeWhereTracked(Builder $query): void
     {
         $query->whereNull('untracked')->orWhere('untracked', false);

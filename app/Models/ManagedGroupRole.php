@@ -31,12 +31,16 @@ class ManagedGroupRole extends Model
         'auto_remove_role',
     ];
 
-//    /**
-//     * The attributes that aren't mass assignable.
-//     *
-//     * @var array<string>|bool
-//     */
-//    protected $guarded = [];
+    /**
+     * Get the attributes that should be cast.
+     */
+    public function casts(): array
+    {
+        return [
+            'prevent_manual_assignment' => 'boolean',
+            'auto_remove_role' => 'boolean',
+        ];
+    }
 
     /**
      * The role this is attached to.

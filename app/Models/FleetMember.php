@@ -34,6 +34,8 @@ class FleetMember extends Model
     public function casts(): array
     {
         return [
+            'fleet_boss' => 'boolean',
+            'exempt_from_fleet_warp' => 'boolean',
             'joined_via' => FleetMemberJoinedVia::class,
             'joined_at' => 'datetime',
         ];
