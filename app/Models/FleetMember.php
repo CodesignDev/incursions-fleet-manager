@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\FleetMemberJoinedVia;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -22,8 +23,21 @@ class FleetMember extends Model
         'character_id',
         'fleet_boss',
         'exempt_from_fleet_warp',
+        'joined_via',
+        'invite_id',
         'joined_at',
     ];
+
+    /**
+     * Get the attributes that should be cast.
+     */
+    public function casts(): array
+    {
+        return [
+            'joined_via' => FleetMemberJoinedVia::class,
+            'joined_at' => 'datetime',
+        ];
+    }
 
     /**
      * The fleet this member is a part of.
