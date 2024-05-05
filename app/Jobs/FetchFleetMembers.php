@@ -12,6 +12,7 @@ use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Arr;
 
 class FetchFleetMembers implements ShouldQueue
 {
@@ -53,9 +54,11 @@ class FetchFleetMembers implements ShouldQueue
                 // Add the new characters to the database
                 $fleet->members()->saveMany(
                     $charactersWhoJoined->map(fn ($character) => new FleetMember([
-                        'character_id' => $character['character_id'],
-                        'joined_at' => $character['join_time'],
-                        'exempt_from_fleet_warp' => $character['takes_fleet_warp'],
+                        'character_id' => Arr::get($character, 'character_id'),
+                        'location_id' => Arr::get($character, 'solar_system_id'),
+                        'ship_id' => Arr::get($character, 'ship_type_id'),
+                        'joined_at' => Arr::get($character, 'join_time'),
+                        'exempt_from_fleet_warp' => Arr::get($character, 'takes_fleet_warp'),
                     ]))
                 );
 
@@ -66,6 +69,17 @@ class FetchFleetMembers implements ShouldQueue
                         fn ($collection) => $collection->isNotEmpty(),
                         fn ($collection) => $collection->toQuery()->withModelScopes()->delete()
                     );
+
+                // Update all other records with updated locations and ships if required
+                $fleet->members
+                    ->whereIn('character_id', $response->pluck('character_id'))
+                    ->each(function ($entry) use ($response) {
+                        $data = $response->firstWhere('character_id', $entry->character_id);
+                        $entry->update([
+                            'location_id' => Arr::get($data, 'solar_system_id'),
+                            'ship_id' => Arr::get($data, 'ship_type_id'),
+                        ]);
+                    });
             }
             // Catch request errors
             catch (RequestException $e) {

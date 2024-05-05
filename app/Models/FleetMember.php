@@ -21,6 +21,8 @@ class FleetMember extends Model
      */
     protected $fillable = [
         'character_id',
+        'location_id',
+        'ship_id',
         'fleet_boss',
         'exempt_from_fleet_warp',
         'joined_via',
