@@ -113,12 +113,14 @@ class LocateFleetBoss implements ShouldQueue
                     $member = null;
                 }
 
-                $recentlyTriedCharacters->push($member);
-
-                // Stop processing after checking a certain number of characters
-                if ($recentlyTriedCharacters->count() > 10) {
+                // Stop processing if there isn't a character to check or after checking a
+                // certain number of characters
+                if (is_null($member) || $recentlyTriedCharacters->count() > 10) {
                     break;
                 }
+
+                // Add the fleet member to the list of checked characters for this fleet
+                $recentlyTriedCharacters->push($member);
 
                 // Check if this character is in a fleet and if it is the same as the fleet we are
                 // querying
