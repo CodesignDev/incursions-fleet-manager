@@ -16,6 +16,7 @@ use Illuminate\Http\Client\RequestException;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Number;
 use Illuminate\Support\Str;
@@ -125,8 +126,11 @@ class FetchAllianceStandings implements ShouldQueue
         FetchAllianceInformation::dispatchIf($newAlliances->isNotEmpty(), $newAlliances->all());
         FetchCorporationInformation::dispatchIf($newCorporations->isNotEmpty(), $newCorporations->all());
 
-        // Fetch the details for missing characters
-        FetchMissingCharacterInformation::dispatchIf($newCharacters->isNotEmpty(), $newCharacters->all());
+        // Fetch the details for missing characters and then their affiliation
+        Bus::chain([
+            new FetchMissingCharacterInformation($newCharacters->all()),
+            new FetchCharacterAffiliation($newCharacters->all()),
+        ])->dispatchIf($newCharacters->isNotEmpty());
     }
 
     private function getContactMapping(array $entry, array $mappings = []): string|false
