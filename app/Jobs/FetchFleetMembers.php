@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Facades\Esi;
+use App\Models\Character;
 use App\Models\Fleet;
 use App\Models\FleetMember;
 use Illuminate\Bus\Queueable;
@@ -13,6 +14,7 @@ use Illuminate\Http\Client\RequestException;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Bus;
 
 class FetchFleetMembers implements ShouldQueue
 {
@@ -49,7 +51,7 @@ class FetchFleetMembers implements ShouldQueue
 
                 // Find the characters that have joined and those that have left the fleet
                 $charactersWhoJoined = $response->whereNotIn('character_id', $currentCharacters);
-                $charactersWhoLeft = $currentCharacters->doesntContain($response->pluck('character_id'));
+                $charactersWhoLeft = $currentCharacters->diff($response->pluck('character_id'));
 
                 // Add the new characters to the database
                 $fleet->members()->saveMany(
@@ -80,6 +82,22 @@ class FetchFleetMembers implements ShouldQueue
                             'ship_id' => Arr::get($data, 'ship_type_id'),
                         ]);
                     });
+
+                // If there is any characters that the system does not know about, try to fetch
+                // the information about those characters from ESI
+                if ($charactersWhoJoined->isNotEmpty()) {
+
+                    // Find the list of possible unknown characters
+                    $unknownCharacters = $charactersWhoJoined
+                        ->where(fn($character) => Character::query()->where('id', $character)->doesntExist());
+
+                    // Dispatch the relevant jobs for these unknown character(s)
+                    Bus::chain([
+                        new FetchMissingCharacterInformation($unknownCharacters->all()),
+                        new FetchCharacterAffiliation($unknownCharacters->all()),
+                        new FetchCharacterOwnerInformation($unknownCharacters->all()),
+                    ])->dispatchIf($unknownCharacters->isNotEmpty());
+                }
             }
             // Catch request errors
             catch (RequestException $e) {

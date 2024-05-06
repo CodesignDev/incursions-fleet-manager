@@ -25,7 +25,40 @@ namespace EsiProxy.Controllers
             return Json(characters);
         }
 
-        [Route("universe/standings")]
+        [Route("Pilot/Accounts")]
+        [HttpPost]
+        public IActionResult GetAccountForPilots([FromBody] IEnumerable<int> pilots, [FromServices] IOptions<AccountConfiguration> config)
+        {
+            var accountConfiguration = config.Value;
+
+            var storedCharacters = _tokenStorageService.GetList();
+            var characterIds = storedCharacters.Select(x => x.Id).ToArray();
+
+            var knownCharacters = pilots.Intersect(characterIds);
+            var unknownCharacters = pilots.Except(characterIds);
+
+            var accounts = new[]
+            {
+                new
+                {
+                    id = accountConfiguration.AccountId,
+                    name = accountConfiguration.AccountName,
+                    primaryGroupId = accountConfiguration.PrimaryGroupId,
+                    characterIds = knownCharacters,
+                },
+                new
+                {
+                    id = 100,
+                    name = "Unknown Account (#100)",
+                    primaryGroupId = 3,
+                    characterIds = unknownCharacters,
+                },
+            };
+
+            return Json(accounts.Where(x => x.characterIds.Any()));
+        }
+
+        [Route("Universe/Standings")]
         [HttpGet]
         public IActionResult GetAllianceStandings()
         {

@@ -75,6 +75,9 @@ services:
             Esi__ClientId: '${ESI_PROXY_CLIENT_ID}'
             Esi__ClientSecret: '${ESI_PROXY_CLIENT_SECRET}'
             Esi__RedirectUri: '${ESI_PROXY_REDIRECT_URI}'
+            Account__AccountId: '${GICE_PROXY_ACCOUNT_ID:-1}'
+            Account__AccountName: '${GICE_PROXY_ACCOUNT_NAME:-"Default User"}'
+            Account__PrimaryGroupId: '${GICE_PROXY_ACCOUNT_GROUP_ID:-3}'
         volumes:
             - 'sail-esi-proxy:/storage'
         networks:

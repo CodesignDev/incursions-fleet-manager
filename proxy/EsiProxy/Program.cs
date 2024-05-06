@@ -39,8 +39,11 @@ builder.Services.AddHttpLogging(logging =>
     logging.ResponseBodyLogLimit = 4096;
 });
 
-// Setup esi configuration
+// Setup configuration objects
+var accountConfiguration = builder.Configuration.GetSection("Account");
 var esiConfiguration = builder.Configuration.GetSection("Esi");
+
+builder.Services.Configure<AccountConfiguration>(accountConfiguration);
 builder.Services.Configure<EsiConfiguration>(esiConfiguration);
 
 // Add required esi services
