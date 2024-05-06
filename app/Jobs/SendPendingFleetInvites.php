@@ -51,12 +51,8 @@ class SendPendingFleetInvites implements ShouldQueue
             // Otherwise, filter any fleet members who are already in fleet
             $invitesToSend = $invitesToSend->whereNotIn('character_id', $fleet->members->pluck('character_id'));
 
-            // Loop through the list of invites
-            $invitesToSend->each(function (FleetInvite $invite) use ($fleet) {
-
-                // Send the invite, this is done via another job so that it can be handled correctly
-                SendFleetInvite::dispatch($invite, $fleet);
-            });
+            // Loop through the list of invites and send them out using another background job
+            $invitesToSend->each(fn(FleetInvite $invite) => SendFleetInvite::dispatch($invite, $fleet));
         });
     }
 }

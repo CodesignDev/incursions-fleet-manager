@@ -26,14 +26,6 @@ class FetchAllianceStandings implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
-     * Create a new job instance.
-     */
-    public function __construct()
-    {
-        //
-    }
-
-    /**
      * Execute the job.
      *
      * @throws ConnectionException
@@ -104,9 +96,9 @@ class FetchAllianceStandings implements ShouldQueue
         // Update the standing value for any existing values
         AllianceStandings::whereIn('contact_id', $updatedEntries->keys())
             ->get()
-            ->each(function (AllianceStandings $entry) use ($updatedEntries) {
-                $entry->update(['standing' => $updatedEntries->get($entry->contact_id, 0)]);
-            });
+            ->each(fn(AllianceStandings $entry) => $entry->update(
+                ['standing' => $updatedEntries->get($entry->contact_id, 0)]
+            ));
 
         // Delete any old standings that are no longer in the standings list
         AllianceStandings::all()
