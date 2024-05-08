@@ -55,9 +55,10 @@ class SendFleetInvite implements ShouldQueue
         $character = $this->invite->character_id;
 
         // Get the fleet and its fleet boss
-        $fleetBoss = $this->fleet->relationLoaded('boss')
-            ? $this->fleet->getRelation('boss')
-            : $this->fleet->load('boss')->getRelation('boss');
+        if (! $this->fleet->relationLoaded('boss')) {
+            $this->fleet->load('boss');
+        }
+        $fleetBoss = $this->fleet->getRelation('boss');
 
         // Check if the member is in fleet (only if the relation is loaded)
         if ($this->fleet->relationLoaded('members') &&

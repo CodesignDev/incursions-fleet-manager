@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -52,6 +53,15 @@ class Fleet extends Model
     public function scopeWhereTracked(Builder $query): void
     {
         $query->whereNull('untracked')->orWhere('untracked', false);
+    }
+
+    /**
+     * The category that this fleet belongs to.
+     */
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(Category::class)
+            ->withDefault(['name' => 'Unknown']);
     }
 
     /**
