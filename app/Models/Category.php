@@ -6,11 +6,13 @@ use App\Models\Scopes\SortedCategoryScope;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Staudenmeir\EloquentHasManyDeep\HasRelationships;
 
 class Category extends Model
 {
-    use HasUuids, SoftDeletes;
+    use HasRelationships, HasUuids, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -46,5 +48,18 @@ class Category extends Model
     public function fleets(): HasMany
     {
         return $this->hasMany(Fleet::class);
+    }
+
+    /**
+     * The waitlists that effectively fall under this category.
+     */
+    public function waitlists(): HasManyThrough
+    {
+        return $this->hasManyDeep(
+            Waitlist::class,
+            [Fleet::class, WaitlistFleetLink::class],
+            [null, ['fleet_type', 'fleet_id'], 'id'],
+            [null, null, 'waitlist_id']
+        );
     }
 }

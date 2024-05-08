@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOneThrough;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Fleet extends Model
@@ -103,5 +104,14 @@ class Fleet extends Model
         $relation->where('fleet_members.fleet_boss', true);
 
         return $relation;
+    }
+
+    /**
+     * The waitlists that are currently linked to this fleet.
+     */
+    public function waitlists(): MorphToMany
+    {
+        return $this->morphedByMany(Waitlist::class, 'fleet', WaitlistFleetLink::class)
+            ->using(WaitlistFleetLink::class);
     }
 }
