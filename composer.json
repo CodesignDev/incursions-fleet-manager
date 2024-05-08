@@ -63,6 +63,7 @@
         ],
         "generate-ide-helpers": [
             "@php artisan ide-helper:generate",
+            "@php artisan ide-helper:models --nowrite",
             "@php artisan ide-helper:meta"
         ]
     },

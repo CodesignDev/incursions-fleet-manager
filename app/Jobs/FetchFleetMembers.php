@@ -123,7 +123,7 @@ class FetchFleetMembers implements ShouldQueue
                 // If the status code received was a server error (5xx) or 420 then throw the
                 // exception. The job middleware will handle the relevant status codes.
                 if ($e->response->status() === 420 || $e->response->serverError()) {
-                    throw;
+                    throw $e;
                 }
             }
 

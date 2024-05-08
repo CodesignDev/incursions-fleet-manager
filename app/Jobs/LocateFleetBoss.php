@@ -89,7 +89,7 @@ class LocateFleetBoss implements ShouldQueue
             // We only care about failures that were because of hitting the esi error limit or
             // because of a server error
             if ($e instanceof RequestException && ($e->response->status() === 420 || $e->response->serverError())) {
-                throw;
+                throw $e;
             }
 
             // Continue if it was another issue
@@ -162,7 +162,7 @@ class LocateFleetBoss implements ShouldQueue
                 catch (RequestException $e) {
                     // Throw server errors and esi error limits up
                     if ($e->response->serverError() && $e->response->status() === 420) {
-                        throw;
+                        throw $e;
                     }
 
                     // This should just be a 404 error so just move to the next character. 401 and

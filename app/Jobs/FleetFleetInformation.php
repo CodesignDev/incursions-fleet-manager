@@ -65,7 +65,7 @@ class FleetFleetInformation implements ShouldQueue
 
                 // Throw any 420 and server errors
                 if ($e->response->status() === 420 || $e->response->serverError()) {
-                    throw;
+                    throw $e;
                 }
             } // Catch any connection errors and just skip this fleet
             catch (ConnectionException) {
