@@ -30,7 +30,7 @@ class Waitlist extends Model
      */
     public function fleets(): BelongsToMany
     {
-        return $this->morphToMany(Fleet::class, 'fleet', WaitlistFleetLink::class)
+        return $this->morphedByMany(Fleet::class, 'fleet', WaitlistFleetLink::class)
             ->using(WaitlistFleetLink::class);
     }
 

@@ -111,7 +111,7 @@ class Fleet extends Model
      */
     public function waitlists(): MorphToMany
     {
-        return $this->morphedByMany(Waitlist::class, 'fleet', WaitlistFleetLink::class)
+        return $this->morphToMany(Waitlist::class, 'fleet', WaitlistFleetLink::class)
             ->using(WaitlistFleetLink::class);
     }
 }
