@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Schema\ColumnDefinition;
 use Illuminate\Http\Client\PendingRequest;
+use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\ServiceProvider;
@@ -48,6 +49,9 @@ class AppServiceProvider extends ServiceProvider
 
         // Register GICE HTTP api client
         $this->registerGiceApiClient();
+
+        // Disable wrapping of API resources
+        JsonResource::withoutWrapping();
     }
 
     /**
