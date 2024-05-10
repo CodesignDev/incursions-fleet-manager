@@ -6,8 +6,10 @@ use App\Auth\GiceSocialiteProvider;
 use App\Macros\EventEveDowntimeMixin;
 use App\Models\FleetInvite;
 use App\Models\FleetMember;
+use App\Models\WaitlistEntry;
 use App\Observers\FleetInviteStateObserver;
 use App\Observers\FleetMemberInviteObserver;
+use App\Observers\WaitlistEntryObserver;
 use ArrayAccess;
 use Illuminate\Console\Scheduling\Event;
 use Illuminate\Database\Eloquent\Builder;
@@ -90,6 +92,7 @@ class AppServiceProvider extends ServiceProvider
         // Register the relevant observers
         FleetInvite::observe(FleetInviteStateObserver::class);
         FleetMember::observe(FleetMemberInviteObserver::class);
+        WaitlistEntry::observe(WaitlistEntryObserver::class);
     }
 
     /**
