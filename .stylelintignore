@@ -1,0 +1,4 @@
+# Node modules and build directories
+**/node_modules
+**/public
+**/build

@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+line() {
+    if [ -t 1 ]; then
+        printf "\033[1;34m==>\033[1;39m %s\033[0m\n" "$*"
+    else
+        printf "==> %s\n" "$*"
+    fi
+}
+
+# Update npm dependencies
+line Updating npm dependencies
+npx --no install-deps-postmerge
+
+# Update composer dependencies
+line Updating composer dependencies
+git_root="$(git rev-parse --show-toplevel)"
+(
+    cd "$git_root" || return
+    changed_files="$(git diff-tree -r --name-only --no-commit-id ORIG_HEAD HEAD)"
+    echo "$changed_files" | grep -q "composer.lock" && eval "composer install" || echo "No new composer dependencies"
+)

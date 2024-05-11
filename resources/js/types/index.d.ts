@@ -1,15 +1,15 @@
-import { Config } from 'ziggy-js';
+import type { Errors, ErrorBag } from '@inertiajs/core'
+import type { Config as ZiggyConfig } from 'ziggy-js'
+import { User } from '@/types/user'
 
-export interface User {
-    id: number;
-    name: string;
-    email: string;
-    email_verified_at: string;
-}
+// Index list: START - Automatically generated - DO NOT REMOVE
+export * from './user'
+// Index list: END - Automatically generated - DO NOT REMOVE
 
 export type PageProps<T extends Record<string, unknown> = Record<string, unknown>> = T & {
     auth: {
-        user: User;
-    };
-    ziggy: Config & { location: string };
-};
+        user: User
+    }
+    errors: Errors & ErrorBag
+    ziggy?: ZiggyConfig
+}

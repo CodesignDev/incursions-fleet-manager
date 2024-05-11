@@ -1,11 +1,19 @@
-import ReactDOMServer from 'react-dom/server';
-import { createInertiaApp } from '@inertiajs/react';
-import createServer from '@inertiajs/react/server';
-import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
-import { route } from '../../vendor/tightenco/ziggy';
-import { RouteName } from 'ziggy-js';
+import ReactDOMServer from 'react-dom/server'
 
-const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
+import { createInertiaApp } from '@inertiajs/react'
+import createServer from '@inertiajs/react/server'
+import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers'
+
+import type { PageProps as AppPageProps } from '@/types'
+import type { PageProps as InertiaPageProps } from '@inertiajs/core'
+
+declare module '@inertiajs/core' {
+    // @ts-expect-error -- This deliberately creates a recursive type error
+    interface PageProps extends InertiaPageProps, AppPageProps {}
+}
+
+// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+const appName = import.meta.env.VITE_APP_NAME || 'Laravel'
 
 createServer((page) =>
     createInertiaApp({
@@ -14,15 +22,8 @@ createServer((page) =>
         title: (title) => `${title} - ${appName}`,
         resolve: (name) => resolvePageComponent(`./Pages/${name}.tsx`, import.meta.glob('./Pages/**/*.tsx')),
         setup: ({ App, props }) => {
-            global.route<RouteName> = (name, params, absolute) =>
-                route(name, params, absolute, {
-                    // @ts-expect-error
-                    ...page.props.ziggy,
-                    // @ts-expect-error
-                    location: new URL(page.props.ziggy.location),
-                });
-
-            return <App {...props} />;
+            global.Ziggy = props.initialPage.props.ziggy
+            return <App {...props} />
         },
     })
-);
+)

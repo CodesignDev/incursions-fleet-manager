@@ -1,0 +1,9 @@
+# Node modules and build directories
+**/node_modules
+**/public
+**/build
+
+# Configuration and scripts
+config/
+scripts/
+!scripts/*.ts
