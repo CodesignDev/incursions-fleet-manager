@@ -4,20 +4,9 @@ use App\Http\Controllers\FleetController;
 use App\Http\Controllers\RegisterFleetController;
 use App\Http\Controllers\WaitlistController;
 use App\Http\Controllers\WaitlistDashboardController;
-use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
-Route::inertia('/', 'Welcome', [
-    'canLogin' => Route::has('login'),
-    'canRegister' => Route::has('register'),
-    'laravelVersion' => Application::VERSION,
-    'phpVersion' => PHP_VERSION,
-]);
-
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::inertia('/', 'Dashboard')->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
 
