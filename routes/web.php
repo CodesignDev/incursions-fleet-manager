@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\FleetController;
+use App\Http\Controllers\RegisterFleetController;
 use App\Http\Controllers\WaitlistController;
 use App\Http\Controllers\WaitlistDashboardController;
 use Illuminate\Foundation\Application;
@@ -19,20 +21,25 @@ Route::get('/dashboard', function () {
 
 Route::middleware('auth')->group(function () {
 
-    Route::prefix('/waitlist')
-        ->as('waitlist.')
-        ->group(function () {
+    Route::prefix('/waitlist')->as('waitlist.')->group(function () {
+        Route::get('/', [WaitlistDashboardController::class, '__invoke'])->name('view');
 
-            Route::get('/', [WaitlistDashboardController::class, '__invoke'])->name('view');
+        Route::prefix('/{waitlist}')->controller(WaitlistController::class)->group(function () {
+            Route::post('/', 'joinWaitlist')->name('join');
+            Route::delete('/', 'leaveWaitlist')->name('leave');
+        });
+    });
 
-            Route::prefix('/{waitlist}')
-                    ->controller(WaitlistController::class)
-                    ->group(function () {
-                        Route::post('/', 'joinWaitlist')->name('join');
-                        Route::delete('/', 'leaveWaitlist')->name('leave');
-                    });
+    Route::prefix('/fleets')->as('fleets.')->group(function () {
+        Route::get('/', [FleetController::class, 'list'])->name('list');
+
+        Route::get('/register', [FleetController::class, 'register'])->name('register-fleet');
+        Route::post('/register', [RegisterFleetController::class, '__invoke']);
+
+        Route::prefix('/{fleet_id}')->group(function () {
 
         });
+    });
 
 });
 

@@ -103,6 +103,9 @@ class Fleet extends Model
         // Apply a custom filter to the relation
         $relation->where('fleet_members.fleet_boss', true);
 
+        // Force load the user relation
+        $relation->with('user');
+
         return $relation;
     }
 
