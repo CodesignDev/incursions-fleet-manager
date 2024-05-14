@@ -1,11 +1,21 @@
-type Character = {
+import { DropdownEntry } from '@/types/dropdown'
+
+export type Character = {
     id: number
     name: string
 }
 
-type CharacterWithAffiliation = Character & {
+export type CharacterWithAffiliation = Character & {
     corporation: string
     alliance?: string
 }
 
-type CharacterGroup = Record<string, Character[]>
+export type GroupedCharacters = Record<string, Character[]>
+
+export type CharacterGroup = {
+    label?: string
+    characters: Character[]
+}
+
+export type CharacterOrId = Character | number
+export type CharacterDropdownEntry = DropdownEntry<string, number>

@@ -1,4 +1,4 @@
-import { ComponentPropsWithoutRef, ElementType } from 'react'
+import { ComponentPropsWithoutRef, ElementType, ReactNode } from 'react'
 
 export type PropsOf<TTag extends ElementType> = ComponentPropsWithoutRef<TTag>
 export type PropsWithAs<TTag extends ElementType, T, TAsIsMandatory extends boolean = false> = IsRequired<
@@ -22,3 +22,7 @@ export type PropsWithout<TTag extends ElementType, T, TAsIsMandatory extends boo
 
 type As<TTag> = { as: TTag }
 type IsRequired<TBool extends boolean, T> = TBool extends true ? T : Partial<T>
+
+export type PropsWithChildrenPlusRenderProps<TRenderProps, T = unknown> = Omit<T, 'children'> & {
+    children?: ReactNode | ((renderProps: TRenderProps) => ReactNode)
+}
