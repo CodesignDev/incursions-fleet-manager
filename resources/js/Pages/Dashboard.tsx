@@ -1,12 +1,10 @@
 import { Head } from '@inertiajs/react'
 
 import ApplicationLayout from '@/Layouts/ApplicationLayout'
-import { PageProps } from '@/types'
 
-export default function Dashboard({ auth }: PageProps) {
+export default function Dashboard() {
     return (
         <ApplicationLayout
-            user={auth.user}
             header={<h2 className="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">Dashboard</h2>}
         >
             <Head title="Dashboard" />
