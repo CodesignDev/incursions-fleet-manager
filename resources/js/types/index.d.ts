@@ -3,6 +3,9 @@ import type { Config as ZiggyConfig } from 'ziggy-js'
 import { User } from '@/types/user'
 
 // Index list: START - Automatically generated - DO NOT REMOVE
+export * from './characters'
+export * from './links'
+export * from './props'
 export * from './user'
 // Index list: END - Automatically generated - DO NOT REMOVE
 

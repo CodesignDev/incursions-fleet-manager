@@ -1,8 +1,8 @@
 import { usePage } from '@inertiajs/react'
 
-import Authenticated from '@/Layouts/AuthenticatedLayout'
+import ApplicationLayout from '@/Layouts/ApplicationLayout'
 
 export default function ViewWaitlist() {
     const { props } = usePage()
-    return <Authenticated user={props.auth.user} />
+    return <ApplicationLayout user={props.auth.user} />
 }

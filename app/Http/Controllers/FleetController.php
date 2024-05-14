@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\CharacterResource;
 use App\Http\Resources\FleetResource;
 use App\Models\Fleet;
 use Illuminate\Contracts\Support\Responsable;
@@ -22,10 +23,16 @@ class FleetController extends Controller
         ]);
     }
 
-    public function register(): Responsable
+    public function register(Request $request): Responsable
     {
+        // Get the current user
+        $user = $request->user();
+
+        // Pull various data from the user
+        $characters = $user->characters()->whereWhitelisted()->get();
+
         return inertia('Fleets/RegisterFleet', [
-            'characters' => [],
+            'characters' => CharacterResource::collection($characters),
         ]);
     }
 }

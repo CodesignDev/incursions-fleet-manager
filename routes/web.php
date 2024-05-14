@@ -11,7 +11,7 @@ Route::inertia('/', 'Dashboard')->middleware(['auth', 'verified'])->name('dashbo
 Route::middleware('auth')->group(function () {
 
     Route::prefix('/waitlist')->as('waitlist.')->group(function () {
-        Route::get('/', [WaitlistDashboardController::class, '__invoke'])->name('view');
+        Route::get('/', [WaitlistDashboardController::class, '__invoke'])->name('dashboard');
 
         Route::prefix('/{waitlist}')->controller(WaitlistController::class)->group(function () {
             Route::post('/', 'joinWaitlist')->name('join');
