@@ -1,7 +1,14 @@
-import { ReactElement } from 'react'
+import { ReactElement, useCallback } from 'react'
 
 import { ChevronDownIcon, XMarkIcon } from '@heroicons/react/20/solid'
-import SelectDropdown, { components, GroupBase, Props } from 'react-select'
+import SelectDropdown, {
+    ClearIndicatorProps,
+    components,
+    DropdownIndicatorProps,
+    GroupBase,
+    MultiValueRemoveProps,
+    Props,
+} from 'react-select'
 import AsyncSelectDropdown, { AsyncProps } from 'react-select/async'
 
 import { tw } from '@/utils'
@@ -11,7 +18,11 @@ type SelectProps<IsMulti extends boolean = false, IsAsync extends boolean = fals
     multiple?: IsMulti
 }
 
-const { DropdownIndicator, ClearIndicator, MultiValueRemove } = components
+const {
+    DropdownIndicator: BaseDropdownIndicator,
+    ClearIndicator: BaseClearIndicator,
+    MultiValueRemove: BaseMultiValueRemove,
+} = components
 
 function MultiSelect<Option, IsMulti extends boolean = false, Group extends GroupBase<Option> = GroupBase<Option>>(
     props: Props<Option, IsMulti, Group> & SelectProps<IsMulti>
@@ -27,6 +38,33 @@ function MultiSelect<
     Group extends GroupBase<Option> = GroupBase<Option>,
 >({ async, multiple, ...props }: Props<Option, IsMulti, Group> & SelectProps<IsMulti, IsAsync>) {
     const Dropdown = async ? AsyncSelectDropdown : SelectDropdown
+
+    const DropdownIndicator = useCallback(
+        (componentProps: DropdownIndicatorProps<Option, IsMulti, Group>) => (
+            <BaseDropdownIndicator {...componentProps}>
+                <ChevronDownIcon className="size-5" />
+            </BaseDropdownIndicator>
+        ),
+        []
+    )
+
+    const ClearIndicator = useCallback(
+        (componentProps: ClearIndicatorProps<Option, IsMulti, Group>) => (
+            <BaseClearIndicator {...componentProps}>
+                <XMarkIcon className="size-5" />
+            </BaseClearIndicator>
+        ),
+        []
+    )
+
+    const MultiValueRemove = useCallback(
+        (componentProps: MultiValueRemoveProps<Option, IsMulti, Group>) => (
+            <BaseMultiValueRemove {...componentProps}>
+                <XMarkIcon className="size-5" />
+            </BaseMultiValueRemove>
+        ),
+        []
+    )
 
     return (
         <Dropdown
@@ -53,23 +91,7 @@ function MultiSelect<
                     transition: 'none',
                 }),
             }}
-            components={{
-                DropdownIndicator: (props) => (
-                    <DropdownIndicator {...props}>
-                        <ChevronDownIcon className="size-5" />
-                    </DropdownIndicator>
-                ),
-                ClearIndicator: (props) => (
-                    <ClearIndicator {...props}>
-                        <XMarkIcon className="size-5" />
-                    </ClearIndicator>
-                ),
-                MultiValueRemove: (props) => (
-                    <MultiValueRemove {...props}>
-                        <XMarkIcon className="size-5" />
-                    </MultiValueRemove>
-                ),
-            }}
+            components={{ DropdownIndicator, ClearIndicator, MultiValueRemove }}
             classNames={{
                 control: ({ isFocused }) =>
                     tw(

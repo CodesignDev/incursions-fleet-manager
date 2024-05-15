@@ -2,9 +2,11 @@ import { createElement, forwardRef } from 'react'
 
 import { InertiaLinkProps, Link as InertiaLink } from '@inertiajs/react'
 
-import { tw } from '@/utils'
+import { ButtonBaseStyle, ButtonStyleVariants, ButtonVariants } from '@/Styles/Button'
+import { applyStyleVariants, tw } from '@/utils'
 
 type LinkProps = {
+    styledAsButton?: boolean | Omit<ButtonVariants, 'link'>
     disableInertiaHandler?: boolean
 }
 
@@ -13,17 +15,31 @@ export default forwardRef(function Link(
         href,
         method = 'get',
         as = 'a',
+        styledAsButton = false,
         className = '',
+        disabled,
         disableInertiaHandler,
         children,
         ...props
     }: InertiaLinkProps & LinkProps,
     ref
 ) {
+    const applyButtonStyle = typeof styledAsButton === 'boolean' ? styledAsButton : true
+    const buttonStyle = typeof styledAsButton === 'boolean' ? 'default' : styledAsButton
+
     let linkAs = as
     if (method !== 'get') linkAs = 'button'
 
-    const cssClassName = tw(className)
+    let buttonStyles = ''
+    if (applyButtonStyle) {
+        buttonStyles = tw(
+            ButtonBaseStyle,
+            applyStyleVariants(ButtonStyleVariants, buttonStyle, {
+                disabled,
+            })
+        )
+    }
+    const cssClassName = tw(buttonStyles, className)
 
     if (linkAs !== 'a' && disableInertiaHandler) {
         // eslint-disable-next-line no-console

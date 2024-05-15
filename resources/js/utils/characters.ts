@@ -7,7 +7,7 @@ export function flattenCharacterList(characters: Character[] | GroupedCharacters
         return characters
     }
 
-    return Object.entries(characters).flatMap(([, characters]) => characters)
+    return Object.entries(characters).flatMap(([, items]) => items)
 }
 
 export function formatCharacterDropdownEntries(characters: Character[] | GroupedCharacters) {

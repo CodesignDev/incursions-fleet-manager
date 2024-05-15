@@ -5,6 +5,7 @@ import { User } from '@/types/user'
 // Index list: START - Automatically generated - DO NOT REMOVE
 export * from './characters'
 export * from './dropdown'
+export * from './fleets'
 export * from './links'
 export * from './props'
 export * from './user'

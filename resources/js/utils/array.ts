@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/prefer-default-export
 export function flattenGroupedArray<T, TGroup>(
     entries: readonly T[] | TGroup[],
     isGroupPredicate: (entry: T | TGroup) => boolean,

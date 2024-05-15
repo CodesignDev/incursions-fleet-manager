@@ -1,7 +1,12 @@
-import { ClassValue, clsx } from 'clsx'
+import { clsx, ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 
-// eslint-disable-next-line import/prefer-default-export
+import { tailwindRemPixelSize, tailwindUnitRatio } from '@/utils/tailwind-config'
+
 export function tw(...inputs: ClassValue[]): string {
     return twMerge(clsx(inputs))
+}
+
+export function convertTailwindUnitsToPixels(unitSize: number) {
+    return unitSize * tailwindUnitRatio * tailwindRemPixelSize
 }

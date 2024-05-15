@@ -2,7 +2,6 @@ import { FormEventHandler, useCallback, useId, useMemo, useState } from 'react'
 
 import { Head, useForm } from '@inertiajs/react'
 import { SingleValue } from 'react-select'
-import { useToggle } from 'usehooks-ts'
 
 import Button from '@/Components/Button'
 import Container from '@/Components/Container'
@@ -10,6 +9,7 @@ import InputError from '@/Components/InputError'
 import InputLabel from '@/Components/InputLabel'
 import Link from '@/Components/Link'
 import MultiSelect from '@/Components/MultiSelect'
+import Spinner from '@/Components/Spinner'
 import Tabs from '@/Components/Tabs'
 import TextInput from '@/Components/TextInput'
 import { useCurrentLoggedInUser } from '@/Hooks/use-current-user'
@@ -27,17 +27,14 @@ type RegisterFleetForm = {
     name: string
 }
 
-const FleetBossTab = 0
-const FleetUrlTab = 1
-
-export default function FleetList({ characters }: RegisterFleetProps) {
+export default function RegisterFleet({ characters }: RegisterFleetProps) {
     const { user } = useCurrentLoggedInUser()
     const [selectedTab, setSelectedTab] = useState(0)
     const formId = useId()
 
     const fleetNamePlaceholder = useMemo(() => `${user.name}'s Fleet`, [user])
 
-    const { data, setData, post, processing, errors, transform, reset } = useForm<RegisterFleetForm>({
+    const { data, setData, post, processing, errors, transform } = useForm<RegisterFleetForm>({
         url: '',
         fleet_boss: null,
         name: '',
@@ -48,26 +45,24 @@ export default function FleetList({ characters }: RegisterFleetProps) {
             e.preventDefault()
 
             transform(({ url, fleet_boss, name }) => ({
-                ...(selectedTab === FleetUrlTab ? { url } : { fleet_boss }),
+                ...(selectedTab === 1 ? { url } : { fleet_boss }),
                 name: name || fleetNamePlaceholder,
             }))
             post(route('fleets.register-fleet'))
         },
-        [selectedTab, fleetNamePlaceholder, post]
+        [transform, post, selectedTab, fleetNamePlaceholder]
     )
-
-    const characterList = useMemo(() => flattenCharacterList(characters), [characters])
 
     const fleetBossEntries = useMemo(() => formatCharacterDropdownEntries(characters), [characters])
 
     const currentFleetBoss = useMemo(() => {
         const { fleet_boss: fleetBoss } = data
-        if (!fleetBoss) return
+        if (!fleetBoss) return undefined
 
         const list = flattenCharacterList(characters)
-        const character = list.find((character) => isMatchingCharacter(character, fleetBoss))
+        const character = list.find((item) => isMatchingCharacter(item, fleetBoss))
         return character && { label: character.name, value: character.id }
-    }, [data, characterList])
+    }, [characters, data])
 
     const handleFleetBossChange = useCallback(
         (entry: SingleValue<CharacterDropdownEntry>) => {
@@ -160,7 +155,8 @@ export default function FleetList({ characters }: RegisterFleetProps) {
                                 <InputError message={errors.name} className="mt-2" />
                             </div>
                             <div>
-                                <Button submit variant="primary">
+                                <Button submit variant="primary" disabled={processing}>
+                                    {processing && <Spinner className="text-gray-200 dark:text-gray-800" />}
                                     Register Fleet
                                 </Button>
                             </div>
