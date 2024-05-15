@@ -97,7 +97,7 @@ class LocateFleetBoss implements ShouldQueue
 
         // Get the list of fleet members
         $membersList = $fleet->members
-            ->whereNot('character_id', $currentFleetBoss)
+            ->whereNotIn('character_id', $currentFleetBoss)
             ->pluck('character_id');
 
         // Wrap in a try/finally, so we can do some post-processing if an exception occurs

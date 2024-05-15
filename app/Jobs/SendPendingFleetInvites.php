@@ -26,7 +26,7 @@ class SendPendingFleetInvites implements ShouldQueue
             ->with([
                 'boss',
                 'members',
-                'invites' => fn (Builder $builder) => $builder->where('state', FleetInviteState::PENDING),
+                'invites' => fn ($builder) => $builder->where('state', FleetInviteState::PENDING),
             ])
             ->whereTracked()
             ->get();
