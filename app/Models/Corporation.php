@@ -2,16 +2,17 @@
 
 namespace App\Models;
 
+use App\Contracts\EveEntity;
+use App\Models\Concerns\IsEveEntity;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Number;
 
-class Corporation extends Model
+class Corporation extends Model implements EveEntity
 {
-    use HasFactory;
+    use HasFactory, IsEveEntity;
 
     /**
      * Indicates if the IDs are auto-incrementing.

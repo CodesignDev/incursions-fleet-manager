@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\Contracts\EveEntity;
 use App\Models\Concerns\CanBeBlacklisted;
+use App\Models\Concerns\IsEveEntity;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -11,9 +13,9 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Znck\Eloquent\Relations\BelongsToThrough as BelongsToThroughRelation;
 use Znck\Eloquent\Traits\BelongsToThrough;
 
-class Character extends Model
+class Character extends Model implements EveEntity
 {
-    use BelongsToThrough, CanBeBlacklisted, HasFactory;
+    use BelongsToThrough, CanBeBlacklisted, HasFactory, IsEveEntity;
 
     /**
      * Indicates if the IDs are auto-incrementing.

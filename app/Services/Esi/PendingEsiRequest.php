@@ -2,6 +2,7 @@
 
 namespace App\Services\Esi;
 
+use App\Contracts\EveEntity;
 use App\Models\Character;
 use App\Models\Corporation;
 use Exception;
@@ -101,7 +102,7 @@ class PendingEsiRequest extends PendingRequest
     /**
      * Set a character to authenticate the proxied esi request with.
      */
-    public function withCharacter(Character|int $character): static
+    public function withCharacter(Character|int|null $character): static
     {
         return $this->withEntity('character', $character);
     }
@@ -109,7 +110,7 @@ class PendingEsiRequest extends PendingRequest
     /**
      * Set a corporation to authenticate the proxied esi request with.
      */
-    public function withCorporation(Corporation|int $corporation): static
+    public function withCorporation(Corporation|int|null $corporation): static
     {
         return $this->withEntity('corporation', $corporation);
     }
@@ -150,7 +151,7 @@ class PendingEsiRequest extends PendingRequest
     {
         return tap($this, function () use ($type, $entity) {
             $entityId = match (true) {
-                is_a($entity, Character::class), is_a($entity, Corporation::class) => $entity->getAttribute('id'),
+                $entity instanceof EveEntity => $entity->getEveEntityId(),
                 default => $entity,
             };
 
