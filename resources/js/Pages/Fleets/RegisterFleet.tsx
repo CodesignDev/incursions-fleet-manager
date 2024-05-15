@@ -1,4 +1,4 @@
-import { useCallback, useId, useMemo } from 'react'
+import { FormEventHandler, useCallback, useId, useMemo, useState } from 'react'
 
 import { Head, useForm } from '@inertiajs/react'
 import { SingleValue } from 'react-select'
@@ -21,43 +21,53 @@ type RegisterFleetProps = {
     characters: Character[] | GroupedCharacters
 }
 
+type RegisterFleetForm = {
+    url?: string | null
+    fleet_boss?: number | null
+    name: string
+}
+
+const FleetBossTab = 0
+const FleetUrlTab = 1
+
 export default function FleetList({ characters }: RegisterFleetProps) {
     const { user } = useCurrentLoggedInUser()
-    const [useFleetLink, toggleUseFleetLink, setUseFleetLink] = useToggle(false)
+    const [selectedTab, setSelectedTab] = useState(0)
     const formId = useId()
 
-    const { data, setData, post, processing, errors, reset } = useForm({
+    const fleetNamePlaceholder = useMemo(() => `${user.name}'s Fleet`, [user])
+
+    const { data, setData, post, processing, errors, transform, reset } = useForm<RegisterFleetForm>({
         url: '',
-        fleet_boss: 0,
+        fleet_boss: null,
         name: '',
     })
 
-    const handleSubmit = useCallback(() => {
-        // transform(({ url, fleet_boss, ...fleetRegisterData }) => {
-        //     return {
-        //         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        //         // @ts-ignore TS2783
-        //
-        //         // Pass a blank string by default for both the url and fleet boss and only provide the relevant
-        //         url: '',
-        //         fleet_boss: '',
-        //         ...(useFleetLink ? { url } : { fleet_boss }),
-        //
-        //         ...fleetRegisterData,
-        //     }
-        // })
-        post(route('fleets.register'))
-    }, [useFleetLink, post])
+    const handleSubmit: FormEventHandler = useCallback(
+        (e) => {
+            e.preventDefault()
+
+            transform(({ url, fleet_boss, name }) => ({
+                ...(selectedTab === FleetUrlTab ? { url } : { fleet_boss }),
+                name: name || fleetNamePlaceholder,
+            }))
+            post(route('fleets.register-fleet'))
+        },
+        [selectedTab, fleetNamePlaceholder, post]
+    )
 
     const characterList = useMemo(() => flattenCharacterList(characters), [characters])
 
     const fleetBossEntries = useMemo(() => formatCharacterDropdownEntries(characters), [characters])
 
     const currentFleetBoss = useMemo(() => {
+        const { fleet_boss: fleetBoss } = data
+        if (!fleetBoss) return
+
         const list = flattenCharacterList(characters)
-        const character = list.find((character) => isMatchingCharacter(character, data.fleet_boss))
+        const character = list.find((character) => isMatchingCharacter(character, fleetBoss))
         return character && { label: character.name, value: character.id }
-    }, [characterList, data])
+    }, [data, characterList])
 
     const handleFleetBossChange = useCallback(
         (entry: SingleValue<CharacterDropdownEntry>) => {
@@ -87,7 +97,7 @@ export default function FleetList({ characters }: RegisterFleetProps) {
                         <h2 className="text-lg font-medium">Register Fleet</h2>
 
                         <div className="space-y-6">
-                            <Tabs.TabGroup>
+                            <Tabs.TabGroup selectedIndex={selectedTab} onChange={setSelectedTab}>
                                 <Tabs.TabList tabPosition="left">
                                     <Tabs.Tab>Select Fleet Boss</Tabs.Tab>
                                     <Tabs.Tab>Enter Fleet Link</Tabs.Tab>
@@ -125,7 +135,7 @@ export default function FleetList({ characters }: RegisterFleetProps) {
                                             id={`fleet-url-${formId}`}
                                             className="mt-1 w-full text-sm leading-6"
                                             placeholder="https://esi.evetech.net/v1/fleets/..."
-                                            value={data.url}
+                                            value={data.url || ''}
                                             onChange={(e) => setData('url', e.target.value)}
                                         />
 

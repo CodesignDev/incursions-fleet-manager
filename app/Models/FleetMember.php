@@ -15,6 +15,16 @@ class FleetMember extends Model
     public const DELETED_AT = 'left_at';
 
     /**
+     * The model's attributes.
+     *
+     * @var array
+     */
+    protected $attributes = [
+        'fleet_boss' => false,
+        'exempt_from_fleet_warp' => false,
+    ];
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>

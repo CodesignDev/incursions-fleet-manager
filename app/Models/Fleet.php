@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Arr;
 
 class Fleet extends Model
 {
@@ -51,9 +52,35 @@ class Fleet extends Model
         ];
     }
 
+    /**
+     * Filter the query to online include tracked fleets.
+     */
     public function scopeWhereTracked(Builder $query): void
     {
         $query->whereNull('untracked')->orWhere('untracked', false);
+    }
+
+    /**
+     * Filter the query to include fleets where the specified character(s) are the fleet boss.
+     */
+    public function scopeWhereFleetBoss(Builder $query, array|int $fleetBoss): void
+    {
+        $query->whereHas('members', function ($builder) use ($fleetBoss) {
+            $builder->where('fleet_boss', true)->whereIn('character_id', Arr::wrap($fleetBoss));
+        });
+    }
+
+    /**
+     * Assign the requested character as the boss of the fleet.
+     */
+    public function assignFleetBoss(Character|int $character): self
+    {
+        return tap($this, function() use ($character) {
+            $this->members()->updateOrCreate(
+                ['character_id' => $character instanceof Model ? $character->getKey() : $character],
+                ['fleet_boss' => true]
+            );
+        });
     }
 
     /**
