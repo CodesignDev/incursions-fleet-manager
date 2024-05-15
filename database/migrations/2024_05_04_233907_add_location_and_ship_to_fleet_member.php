@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::table('fleet_members', function (Blueprint $table) {
             $table->after('character_id', function (Blueprint $table) {
-                $table->foreignId('location_id');
-                $table->foreignId('ship_id');
+                $table->foreignId('location_id')->nullable();
+                $table->foreignId('ship_id')->nullable();
             });
         });
     }
