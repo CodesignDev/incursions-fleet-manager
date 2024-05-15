@@ -219,7 +219,7 @@ class PendingEsiRequest extends PendingRequest
         if (! is_null($characterId)) {
             $this->applyProxyEntityHeaders($characterId);
         } else if (! is_null($corporationId)) {
-            $this->applyProxyEntityHeaders($corporationId);
+            $this->applyProxyEntityHeaders($corporationId, 'C');
         }
     }
 

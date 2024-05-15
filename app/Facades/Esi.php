@@ -48,6 +48,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static \App\Services\Esi\PendingEsiRequest withCharacter(\App\Models\Character|int|null $character)
  * @method static \App\Services\Esi\PendingEsiRequest withCorporation(\App\Models\Corporation|int|null $corporation)
  * @method static \App\Services\Esi\PendingEsiRequest withCookies(array $cookies, string $domain)
+ * @method static \App\Services\Esi\PendingEsiRequest defaultEsiVersion(string $version)
  * @method static \App\Services\Esi\PendingEsiRequest maxRedirects(int $max)
  * @method static \App\Services\Esi\PendingEsiRequest withoutRedirecting()
  * @method static \App\Services\Esi\PendingEsiRequest withoutVerifying()
