@@ -42,7 +42,7 @@ class FetchFleetMembers implements ShouldQueue
                 // Query the fleet for fleet members
                 $response = Esi::withCharacter($fleet->boss)
                     ->withUrlParameters(['fleet_id' => $fleet->esi_fleet_id])
-                    ->get('/fleet/{fleet_id}/members')
+                    ->get('/fleets/{fleet_id}/members')
                     ->throw()
                     ->collect();
 
