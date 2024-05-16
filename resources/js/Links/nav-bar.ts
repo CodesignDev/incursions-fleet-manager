@@ -14,5 +14,9 @@ export const NavBarLinks: Record<string, LinkPropsWithLabel> = {
     fleets: {
         route: () => route('fleets.list'),
         label: 'Fleets',
+        active: () => {
+            const routeName = route().current()
+            return routeName?.startsWith('fleets.') || false
+        },
     },
 }

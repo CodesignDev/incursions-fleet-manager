@@ -48,7 +48,7 @@ export default function RegisterFleet({ characters }: RegisterFleetProps) {
                 ...(selectedTab === 1 ? { url } : { fleet_boss }),
                 name: name || fleetNamePlaceholder,
             }))
-            post(route('fleets.register-fleet'))
+            post(route('fleets.register'))
         },
         [transform, post, selectedTab, fleetNamePlaceholder]
     )
