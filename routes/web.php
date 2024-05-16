@@ -22,11 +22,11 @@ Route::middleware('auth')->group(function () {
     Route::prefix('/fleets')->as('fleets.')->group(function () {
         Route::get('/', [FleetController::class, 'list'])->name('list');
 
-        Route::get('/register', [FleetController::class, 'register'])->name('register-fleet');
+        Route::get('/register', [FleetController::class, 'register'])->name('register');
         Route::post('/register', [RegisterFleetController::class, '__invoke']);
 
-        Route::prefix('/{fleet_id}')->group(function () {
-
+        Route::prefix('/{fleet}')->group(function () {
+            Route::get('/', [FleetController::class, 'show'])->name('show');
         });
     });
 

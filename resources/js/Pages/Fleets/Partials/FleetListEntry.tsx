@@ -16,7 +16,11 @@ function FleetEntryWrapper({ fleetId = '', children }: PropsWithChildren<{ fleet
 
     if (isAboveMd) return children
 
-    return <Link href="#">{children}</Link>
+    return (
+        <Link href={route('fleets.show', fleetId)} className="first:rounded-t-lg last:rounded-b-lg hover:bg-gray-600">
+            {children}
+        </Link>
+    )
 }
 
 export default function FleetListEntry({ fleet }: FleetListEntryProps) {
@@ -35,7 +39,7 @@ export default function FleetListEntry({ fleet }: FleetListEntryProps) {
 
     return (
         <FleetEntryWrapper fleetId={fleet.id}>
-            <div className="flex grid-cols-[repeat(3,_minmax(0,_1fr))_40px_140px] flex-row items-center gap-x-4 px-4 py-2 hover:bg-gray-600 lg:grid lg:gap-x-8 lg:hover:bg-gray-900">
+            <div className="flex grid-cols-[repeat(3,_minmax(0,_1fr))_40px_140px] flex-row items-center gap-x-4 px-4 py-2 lg:grid lg:gap-x-8">
                 <div className="flex flex-1 flex-row items-center gap-x-8 lg:contents">
                     <div className="col-span-2 flex flex-col gap-x-4 gap-y-0.5 lg:grid lg:grid-cols-subgrid lg:gap-x-8">
                         <span className="font-bold">{fleet.name}</span>
@@ -56,7 +60,11 @@ export default function FleetListEntry({ fleet }: FleetListEntryProps) {
                 <div className="w-8 lg:w-full">
                     {isBelowMd && <ChevronRightIcon className="size-6" />}
                     {isAboveMd && (
-                        <Link href="#" styledAsButton className="flex items-center justify-center py-2">
+                        <Link
+                            href={route('fleets.show', fleet)}
+                            styledAsButton
+                            className="flex items-center justify-center py-2"
+                        >
                             <EyeIcon className="size-5" />
                             View Fleet
                         </Link>

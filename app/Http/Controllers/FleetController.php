@@ -35,4 +35,11 @@ class FleetController extends Controller
             'characters' => CharacterResource::collection($characters),
         ]);
     }
+
+    public function show(Request $request, Fleet $fleet): Responsable
+    {
+        return inertia('Fleets/FleetDetail', [
+            'fleet' => new FleetResource($fleet),
+        ]);
+    }
 }
