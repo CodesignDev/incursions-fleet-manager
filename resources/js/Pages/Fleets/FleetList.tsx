@@ -29,7 +29,7 @@ export default function FleetList({ fleets }: FleetListProps) {
 
                             {fleets.length > 0 && (
                                 <>
-                                    <div className="flex flex-col divide-y rounded-xl border dark:divide-gray-600 dark:border-gray-600 dark:bg-gray-900">
+                                    <div className="flex flex-col divide-y rounded-lg border bg-gray-50 dark:divide-gray-600 dark:border-gray-600 dark:bg-gray-900">
                                         {fleets.map((fleet) => (
                                             <FleetListEntry key={fleet.id} fleet={fleet} />
                                         ))}
@@ -38,10 +38,11 @@ export default function FleetList({ fleets }: FleetListProps) {
                                     <Separator label="or" />
                                 </>
                             )}
+
                             <div>
                                 <Link
                                     href={route('fleets.register')}
-                                    className="relative flex w-full flex-row items-center justify-center space-x-2 rounded-lg border-2 border-dashed border-gray-300 p-4 font-medium text-gray-500 hover:border-gray-400 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:hover:text-gray-700 active:text-gray-700 dark:border-gray-600 dark:text-gray-400 dark:hover:border-gray-500 dark:hover:text-gray-300 dark:focus:text-gray-300 dark:focus:ring-offset-gray-800 dark:active:text-gray-300"
+                                    className="relative flex w-full flex-row items-center justify-center space-x-2 rounded-lg border-2 border-dashed border-gray-300 p-4 font-medium text-gray-500 hover:border-gray-400 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:hover:text-gray-700 active:text-gray-700 dark:border-gray-600 dark:text-gray-400 dark:hover:border-gray-500 dark:hover:text-gray-300 dark:focus:text-gray-300 dark:focus:ring-offset-gray-800 dark:focus:hover:text-gray-300 dark:active:text-gray-300"
                                 >
                                     <DocumentPlusIcon className="size-8" />
                                     <span>Register New Fleet</span>

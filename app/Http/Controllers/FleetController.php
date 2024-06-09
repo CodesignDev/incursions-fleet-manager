@@ -14,7 +14,7 @@ class FleetController extends Controller
     {
         // Get the list of fleets
         $fleets = Fleet::query()
-            ->with('boss.user')
+            ->with(['members', 'boss.user'])
             ->withCount('members')
             ->get();
 

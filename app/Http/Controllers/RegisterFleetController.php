@@ -128,9 +128,8 @@ class RegisterFleetController extends Controller
             ]);
         }
 
-        return back(303)->with([
+        return to_route('fleets.show', $fleet)->with([
             'status' => 'Fleet Registered',
-            'fleet_id' => $fleet->id,
         ]);
     }
 

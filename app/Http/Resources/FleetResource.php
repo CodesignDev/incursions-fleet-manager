@@ -21,6 +21,21 @@ class FleetResource extends JsonResource
                 'character' => $fleetBoss->name,
                 'user' => $this->when($fleetBoss->relationLoaded('user'), $fleetBoss->user->name),
             ]),
+            'locations' => $this->whenLoaded('members', fn($members) => collect($members)
+                ->groupBy('location_id')
+                ->sortByDesc(fn ($members) => $members->map->count())
+                ->map(function ($members, $location) {
+                    if (blank($location)) {
+                        $location = 'unknown';
+                    }
+
+                    return [
+                        'solar_system_id' => $location ?? 'unknown',
+                        'solar_system_name' => 'TBC',
+                        'count' => $members->count(),
+                    ];
+                })
+                ->values()),
             'member_count' => $this->whenCounted('members'),
         ];
     }
