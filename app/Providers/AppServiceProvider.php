@@ -10,6 +10,7 @@ use App\Models\WaitlistEntry;
 use App\Observers\FleetInviteStateObserver;
 use App\Observers\FleetMemberInviteObserver;
 use App\Observers\WaitlistEntryObserver;
+use App\Services\Inertia\ZiggyHttpGateway;
 use ArrayAccess;
 use Illuminate\Console\Scheduling\Event;
 use Illuminate\Database\Eloquent\Builder;
@@ -20,6 +21,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\ServiceProvider;
+use Inertia\Ssr\Gateway;
 use Laravel\Socialite\Contracts\Factory as SocialiteFactory;
 
 class AppServiceProvider extends ServiceProvider
@@ -29,6 +31,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        // Use a custom http gateway for Inertia SSR requests
+        $this->app->bind(Gateway::class, ZiggyHttpGateway::class);
+
         // Register socialite providers
         $this->app->afterResolving(SocialiteFactory::class, function ($socialite) {
             $socialite->extend('gice', function ($app) use ($socialite) {

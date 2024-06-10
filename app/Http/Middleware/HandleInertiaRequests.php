@@ -36,10 +36,6 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => new UserResource($request->user()),
             ],
-            'ziggy' => fn () => [
-                ...(new Ziggy)->toArray(),
-                'location' => $request->url(),
-            ],
         ];
     }
 }
