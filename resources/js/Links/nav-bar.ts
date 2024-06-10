@@ -1,4 +1,5 @@
 import { LinkPropsWithLabel } from '@/types'
+import { routeIs } from '@/utils'
 
 // eslint-disable-next-line import/prefer-default-export
 export const NavBarLinks: Record<string, LinkPropsWithLabel> = {
@@ -10,13 +11,11 @@ export const NavBarLinks: Record<string, LinkPropsWithLabel> = {
     waitlist: {
         route: () => route('waitlist.dashboard'),
         label: 'Waitlist',
+        active: () => routeIs('waitlist.*'),
     },
     fleets: {
         route: () => route('fleets.list'),
         label: 'Fleets',
-        active: () => {
-            const routeName = route().current()
-            return routeName?.startsWith('fleets.') || false
-        },
+        active: () => routeIs('fleets.*'),
     },
 }
