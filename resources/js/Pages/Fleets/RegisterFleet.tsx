@@ -9,6 +9,8 @@ import InputError from '@/Components/InputError'
 import InputLabel from '@/Components/InputLabel'
 import Link from '@/Components/Link'
 import MultiSelect from '@/Components/MultiSelect'
+import PageHeader from '@/Components/PageHeader'
+import Section from '@/Components/Section'
 import Spinner from '@/Components/Spinner'
 import Tabs from '@/Components/Tabs'
 import TextInput from '@/Components/TextInput'
@@ -76,19 +78,19 @@ export default function RegisterFleet({ characters }: RegisterFleetProps) {
     return (
         <ApplicationLayout
             header={
-                <h2 className="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
+                <PageHeader>
                     <Link className="underline-offset-2 hover:underline" href={route('fleets.list')}>
                         Fleet Manager
                     </Link>{' '}
                     &raquo; Register Fleet
-                </h2>
+                </PageHeader>
             }
         >
             <Head title="Fleet Manager - Register Fleet" />
 
             <div className="py-6 md:py-12">
-                <Container as="form" className="mx-auto max-w-7xl items-start sm:px-6 lg:px-8" onSubmit={handleSubmit}>
-                    <div className="space-y-4 bg-white p-6 text-gray-800 shadow-sm sm:rounded-lg dark:bg-gray-800 dark:text-gray-200">
+                <Container as="form" onSubmit={handleSubmit}>
+                    <Section className="space-y-4 p-6">
                         <h2 className="text-lg font-medium">Register Fleet</h2>
 
                         <div className="space-y-6">
@@ -161,7 +163,7 @@ export default function RegisterFleet({ characters }: RegisterFleetProps) {
                                 </Button>
                             </div>
                         </div>
-                    </div>
+                    </Section>
                 </Container>
             </div>
         </ApplicationLayout>

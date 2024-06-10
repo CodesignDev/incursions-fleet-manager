@@ -1,13 +1,13 @@
 import { ComponentPropsWithoutRef, ElementType, ReactNode } from 'react'
 
 export type PropsOf<TTag extends ElementType> = ComponentPropsWithoutRef<TTag>
-export type PropsWithAs<TTag extends ElementType, T, TAsIsMandatory extends boolean = false> = IsRequired<
+export type PropsWithAs<TTag extends ElementType, T = unknown, TAsIsMandatory extends boolean = false> = IsRequired<
     TAsIsMandatory,
     As<TTag>
 > &
     Omit<T, 'as'>
 
-export type Props<TTag extends ElementType, T, TAsIsMandatory extends boolean = false> = PropsWithAs<
+export type Props<TTag extends ElementType, T = unknown, TAsIsMandatory extends boolean = false> = PropsWithAs<
     TTag,
     PropsOf<TTag> & T,
     TAsIsMandatory

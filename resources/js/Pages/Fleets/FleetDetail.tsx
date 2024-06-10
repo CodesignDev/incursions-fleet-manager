@@ -1,4 +1,5 @@
 import Link from '@/Components/Link'
+import PageHeader from '@/Components/PageHeader'
 import ApplicationLayout from '@/Layouts/ApplicationLayout'
 import { Fleet } from '@/types'
 
@@ -11,12 +12,12 @@ export default function FleetDetail({ fleet }: FleetDetailProps) {
     return (
         <ApplicationLayout
             header={
-                <h2 className="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
+                <PageHeader>
                     <Link className="underline-offset-2 hover:underline" href={route('fleets.list')}>
                         Fleet Manager
                     </Link>{' '}
                     &raquo; Fleet: {fleetName}
-                </h2>
+                </PageHeader>
             }
         >
             <div />
