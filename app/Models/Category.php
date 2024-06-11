@@ -55,11 +55,14 @@ class Category extends Model
      */
     public function waitlists(): HasManyThrough
     {
-        return $this->hasManyDeep(
-            Waitlist::class,
-            [Fleet::class, WaitlistFleetLink::class],
-            [null, ['fleet_type', 'fleet_id'], 'id'],
-            [null, null, 'waitlist_id']
-        );
+        return $this
+            ->hasManyDeepFromRelations(
+                $this->fleets(),
+                fn () => (new Fleet)->waitlists()
+            )
+            ->where(function ($query) {
+                $query->where('fleets.untracked', 0)
+                    ->whereNull('fleets.closed_at');
+            });
     }
 }
