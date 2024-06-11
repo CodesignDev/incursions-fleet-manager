@@ -37,8 +37,8 @@ const tabPositions = {
 }
 type TabPosition = keyof typeof tabPositions
 
-function Tabs({ as: _ = 'div', className, ...props }: TabGroupProps<'div'>) {
-    return <BaseTab.Group as="div" className={tw('space-y-2', className)} {...props} />
+function Tabs({ as: _ = 'div', ...props }: TabGroupProps<'div'>) {
+    return <BaseTab.Group as="div" {...props} />
 }
 
 function TabList({
@@ -56,7 +56,7 @@ function TabList({
             <BaseTab.List
                 as="div"
                 className={tw(
-                    'block border-b border-gray-300 dark:border-gray-600',
+                    'mb-2 block border-b border-gray-300 dark:border-gray-600',
                     {
                         'flex flex-row items-center': !fullWidthTabs,
                         [tabPositions[tabPosition]]: !fullWidthTabs,
