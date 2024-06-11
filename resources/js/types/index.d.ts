@@ -9,6 +9,7 @@ export * from './fleets'
 export * from './links'
 export * from './props'
 export * from './user'
+export * from './waitlist'
 // Index list: END - Automatically generated - DO NOT REMOVE
 
 export type PageProps<T extends Record<string, unknown> = Record<string, unknown>> = T & {
