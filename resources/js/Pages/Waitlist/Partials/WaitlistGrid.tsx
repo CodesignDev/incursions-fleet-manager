@@ -4,8 +4,9 @@
 
 import { createContext, useContext, useMemo } from 'react'
 
-import Checkbox from '@/Components/Checkbox'
 import useElementId from '@/Hooks/use-element-id'
+import CharacterSelectionCheckbox from '@/Pages/Waitlist/Partials/CharacterSelectionCheckbox'
+import { useWaitlistSelector } from '@/Providers/WaitlistSelectionProvider'
 import { Character } from '@/types'
 import { tw } from '@/utils'
 
@@ -100,8 +101,7 @@ function GridHeader({ borderClassName }: WaitlistGridHeaderProps) {
             >
                 {includeSelectionCheckbox && (
                     <div className="flex">
-                        <Checkbox />
-                        {/* <WaitlistSelectionCheckbox toggleAll /> */}
+                        <CharacterSelectionCheckbox.ToggleAll indeterminateToChecked />
                     </div>
                 )}
                 <div>
@@ -126,6 +126,7 @@ function GridHeader({ borderClassName }: WaitlistGridHeaderProps) {
 
 function GridRow({ character, borderClassName }: WaitlistGridRowProps) {
     const { includeSelectionCheckbox, includeRowActions } = useContext(WaitlistGridContext)
+    const { isSelected } = useWaitlistSelector(character)
 
     const checkboxId = useElementId(`checkbox-${character.id}`)
 
@@ -140,9 +141,9 @@ function GridRow({ character, borderClassName }: WaitlistGridRowProps) {
             >
                 {includeSelectionCheckbox && (
                     <>
-                        {true && <div className="absolute inset-y-0 left-0 w-1 bg-primary-600" />}
+                        {isSelected && <div className="absolute inset-y-0 left-0 w-1 bg-primary-600" />}
                         <div className="row-span-2 flex py-0.5">
-                            <Checkbox id={checkboxId} />
+                            <CharacterSelectionCheckbox character={character} id={checkboxId} />
                         </div>
                     </>
                 )}

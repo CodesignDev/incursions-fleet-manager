@@ -4,7 +4,8 @@ import WaitlistGrid from '@/Pages/Waitlist/Partials/WaitlistGrid'
 import WaitlistTable from '@/Pages/Waitlist/Partials/WaitlistTable'
 import { useWaitlistCharacters } from '@/Providers/WaitlistCharactersProvider'
 import { useWaitlist } from '@/Providers/WaitlistProvider'
-import { CharacterOrId, WaitlistInfo } from '@/types'
+import { WaitlistSelectionProvider } from '@/Providers/WaitlistSelectionProvider'
+import { WaitlistInfo } from '@/types'
 import { tw } from '@/utils'
 import { getWaitlistedCharacters } from '@/utils/waitlist'
 
@@ -36,7 +37,9 @@ export default function Waitlist({ waitlist, className = '' }: WaitlistProps) {
                         />
                     </>
                 ) : (
-                    <WaitlistGrid header="Join the Waitlist" characters={characters} showSelectionCheckbox />
+                    <WaitlistSelectionProvider options={characters} initialSelectedOptions={[]}>
+                        <WaitlistGrid header="Join the Waitlist" characters={characters} showSelectionCheckbox />
+                    </WaitlistSelectionProvider>
                 )}
             </div>
 
