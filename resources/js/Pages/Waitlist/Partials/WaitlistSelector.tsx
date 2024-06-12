@@ -37,7 +37,7 @@ export default function WaitlistSelector({
         <Tabs.TabGroup selectedIndex={selectedWaitlist} onChange={setSelectedWaitlist} className="">
             {waitlists.length > 1 && (
                 <>
-                    <div className="mb-2 sm:hidden">
+                    <div className="mb-6 sm:hidden">
                         <label htmlFor={`waitlist-selector-${elementId}`} className="sr-only">
                             Select waitlist
                         </label>
@@ -57,7 +57,7 @@ export default function WaitlistSelector({
 
                     <div className="hidden flex-col gap-y-2 sm:flex">
                         <h3 className="not-sr-only font-medium sm:hidden">Select Waitlist</h3>
-                        <Tabs.TabList>
+                        <Tabs.TabList className="mb-6">
                             {waitlists.map(({ id, name }) => (
                                 <Tabs.Tab key={id}>{name}</Tabs.Tab>
                             ))}

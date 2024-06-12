@@ -25,3 +25,9 @@ type WaitlistCharacterEntry = {
     character: number
     requested_ship: string
 }
+
+export type WaitlistJoinEntry = WaitlistCharacterEntry
+export type WaitlistUpdateEntry =
+    | ({ action: 'add' } & WaitlistCharacterEntry)
+    | ({ action: 'update' } & WaitlistCharacterEntry)
+    | ({ action: 'remove' } & Pick<WaitlistCharacterEntry, 'character'>)

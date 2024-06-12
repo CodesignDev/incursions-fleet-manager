@@ -10,3 +10,5 @@ export * from './styles'
 export * from './tailwind-config'
 export * from './tailwind'
 // Index list: END - Automatically generated - DO NOT REMOVE
+
+export function noop() {}
