@@ -2,10 +2,12 @@
  * Disable the no-use-before-define error for functions only, allows the relevant
  * components to be laid out in the order they are exported */
 
-import { createContext, PropsWithChildren, useContext, useMemo } from 'react'
+import { createContext, useContext, useMemo } from 'react'
 
+import Checkbox from '@/Components/Checkbox'
+import useElementId from '@/Hooks/use-element-id'
 import { Character } from '@/types'
-import { renderChildren, tw } from '@/utils'
+import { tw } from '@/utils'
 
 type TableContextProps = {
     includeSelectionCheckbox: boolean
@@ -19,6 +21,10 @@ type WaitlistTableProps = {
     showSelectionCheckbox?: boolean
     showRowActions?: boolean
     noItemsMessage?: string
+}
+
+type WaitlistTableRowProps = {
+    character: Character
 }
 
 const defaultTableContextProps: TableContextProps = {
@@ -37,8 +43,7 @@ function WaitlistTable({
     showSelectionCheckbox = false,
     showRowActions = false,
     noItemsMessage = '',
-    children,
-}: PropsWithChildren<WaitlistTableProps>) {
+}: WaitlistTableProps) {
     const tableContextValue = useMemo(
         () => ({
             includeSelectionCheckbox: showSelectionCheckbox,
@@ -60,7 +65,10 @@ function WaitlistTable({
                         <thead>
                             <tr>
                                 {showSelectionCheckbox && (
-                                    <th scope="col" className="relative w-12 px-6">
+                                    <th scope="col" className="w-16 min-w-0 px-6">
+                                        <div className="flex">
+                                            <Checkbox />
+                                        </div>
                                         {/* <WaitlistSelectionCheckbox toggleAll /> */}
                                     </th>
                                 )}
@@ -88,7 +96,7 @@ function WaitlistTable({
                         </thead>
                         <tbody>
                             {characters.length > 0 ? (
-                                characters.map((character) => renderChildren(children, { character }))
+                                characters.map((character) => <TableRow key={character.id} character={character} />)
                             ) : (
                                 <BlankRow label={noItemsMessage} />
                             )}
@@ -97,6 +105,53 @@ function WaitlistTable({
                 </TableContext.Provider>
             </div>
         </div>
+    )
+}
+
+function TableRow({ character }: WaitlistTableRowProps) {
+    const { includeSelectionCheckbox, includeRowActions } = useContext(TableContext)
+
+    const checkboxId = useElementId(`checkbox-${character.id}`)
+
+    return (
+        <tr className="border-b border-gray-200 dark:border-gray-700">
+            {includeSelectionCheckbox && (
+                <td className="relative h-1 p-4 px-6 sm:px-6">
+                    {true && <div className="absolute inset-y-0 left-0 w-1 bg-primary-600" />}
+                    <div className="my-2 flex h-full items-start sm:items-center">
+                        <Checkbox id={checkboxId} />
+                    </div>
+                </td>
+            )}
+
+            <td
+                className={tw('w-48 py-4 pr-3 text-sm/4 font-medium max-sm:hidden', {
+                    'pl-6': !includeSelectionCheckbox,
+                })}
+            >
+                <label className="block py-0.5" htmlFor={checkboxId}>
+                    {character.name}
+                </label>
+            </td>
+
+            <td
+                className={tw('py-4 pr-3 text-sm sm:pl-3', {
+                    'pl-6': !includeSelectionCheckbox,
+                    'pr-6': !includeRowActions,
+                })}
+            >
+                <div className="flex flex-col gap-y-2.5 sm:gap-y-0">
+                    <label className="font-bold leading-4 sm:hidden" htmlFor={checkboxId}>
+                        {character.name}
+                    </label>
+                    <div className="flex gap-x-4">
+                        <div className="flex-1">Ship Entry</div>
+                    </div>
+                </div>
+            </td>
+
+            {includeRowActions && <td className="w-0 max-w-sm whitespace-nowrap pr-3 sm:w-8 sm:pr-6">Actions</td>}
+        </tr>
     )
 }
 

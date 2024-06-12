@@ -21,8 +21,8 @@ export default function WaitlistCategorySection({ category }: WaitlistCategorySe
                     <Section>Fleet Info</Section>
                 </div>
 
-                <Section>
-                    <WaitlistSelector waitlists={[...waitlists, ...waitlists, ...waitlists]}>
+                <Section noPadding className="py-4">
+                    <WaitlistSelector waitlists={waitlists}>
                         {({ waitlist }) => (
                             <WaitlistProvider waitlist={waitlist}>
                                 <Waitlist waitlist={waitlist} />

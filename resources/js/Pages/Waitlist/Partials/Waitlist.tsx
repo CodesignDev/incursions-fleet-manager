@@ -1,5 +1,6 @@
 import { useState } from 'react'
 
+import WaitlistGrid from '@/Pages/Waitlist/Partials/WaitlistGrid'
 import WaitlistTable from '@/Pages/Waitlist/Partials/WaitlistTable'
 import { useWaitlistCharacters } from '@/Providers/WaitlistCharactersProvider'
 import { useWaitlist } from '@/Providers/WaitlistProvider'
@@ -20,7 +21,7 @@ export default function Waitlist({ waitlist, className = '' }: WaitlistProps) {
 
     return (
         <div className={tw('space-y-2', className)}>
-            <div className="-mx-6 space-y-6">
+            <div className="space-y-6">
                 {onWaitlist && waitlistedCharacters.length > 0 ? (
                     <>
                         <WaitlistTable
@@ -35,7 +36,7 @@ export default function Waitlist({ waitlist, className = '' }: WaitlistProps) {
                         />
                     </>
                 ) : (
-                    <WaitlistTable header="Join the Waitlist" characters={characters} showSelectionCheckbox />
+                    <WaitlistGrid header="Join the Waitlist" characters={characters} showSelectionCheckbox />
                 )}
             </div>
 

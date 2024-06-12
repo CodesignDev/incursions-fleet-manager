@@ -41,18 +41,21 @@ export default function WaitlistSelector({
                         <label htmlFor={`waitlist-selector-${elementId}`} className="sr-only">
                             Select waitlist
                         </label>
-                        <select
-                            id={`waitlist-selector-${elementId}`}
-                            className="-mb-px block w-full appearance-none border-0 border-b-2 border-gray-400 bg-transparent px-2 py-2.5 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700 focus:border-primary-500 focus:outline-none focus:ring-0 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-300 dark:focus:bg-gray-800 dark:focus:text-gray-300 dark:active:bg-gray-800 dark:active:text-gray-300"
-                            value={waitlistDropdownValue}
-                            onChange={handleWaitlistDropdownChange}
-                        >
-                            {waitlists.map(({ id, name }) => (
-                                <option key={id} value={id}>
-                                    {name}
-                                </option>
-                            ))}
-                        </select>
+
+                        <div className="border-b border-gray-300 px-4 dark:border-gray-600">
+                            <select
+                                id={`waitlist-selector-${elementId}`}
+                                className="-mb-px block w-full appearance-none border-0 border-b-2 border-transparent bg-transparent px-2 py-2.5 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700 focus:border-primary-500 focus:outline-none focus:ring-0 dark:border-transparent dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-300 dark:focus:bg-gray-800 dark:focus:text-gray-300 dark:active:bg-gray-800 dark:active:text-gray-300"
+                                value={waitlistDropdownValue}
+                                onChange={handleWaitlistDropdownChange}
+                            >
+                                {waitlists.map(({ id, name }) => (
+                                    <option key={id} value={id}>
+                                        {name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
                     </div>
 
                     <div className="hidden flex-col gap-y-2 sm:flex">
