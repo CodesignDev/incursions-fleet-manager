@@ -8,6 +8,7 @@ use App\Models\Waitlist;
 use App\Models\WaitlistEntry;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 
 class WaitlistController extends Controller
@@ -22,7 +23,14 @@ class WaitlistController extends Controller
         $characters = $this->formatCharacterInputArray($request->safe()->characters);
 
         // Create the character entries
-        $entry->characterEntries()->createMany($characters->toArray());
+        $entry->characterEntries()->createMany(
+            $characters
+                ->map(fn ($entry) => [
+                    'character_id' => $entry['character'],
+                    'requested_ship' => $entry['ship'],
+                ])
+                ->toArray()
+        );
 
         return back()->with('status', 'Joined waitlist.');
     }
@@ -46,23 +54,13 @@ class WaitlistController extends Controller
     {
         return collect($data)
             ->map(fn ($entry) => $this->formatCharacterInput($entry))
-            ->filter(fn ($entry) => $entry->get('ships', []) || $entry->get('ship', ''));
+            ->filter(fn ($entry) => data_get($entry, 'ships', []) || data_get($entry, 'ship', ''));
     }
 
-    private function formatCharacterInput(array $data): Collection
+    private function formatCharacterInput(array $data): array
     {
         $requiredKeys = ['character', 'ship', 'ships'];
 
-        $convertToRelation = function ($value, $key) {
-            if (strcasecmp($key, 'character') === 0) {
-                $key .= '_id';
-            }
-
-            return [$key => $value];
-        };
-
-        return collect($data)
-            ->only($requiredKeys)
-            ->mapWithKeys($convertToRelation);
+        return Arr::only($data, $requiredKeys);
     }
 }
