@@ -35,7 +35,7 @@ class WaitlistResource extends JsonResource
                 'on_waitlist' => filled($entry),
                 'characters' => transform(
                     $entry,
-                    fn ($entry) => $entry->characters->mapWithKeys(fn ($character) => [
+                    fn ($entry) => $entry->characterEntries->mapWithKeys(fn ($character) => [
                         $character->character_id => $character->requested_ship
                     ]),
                     new MissingValue),
