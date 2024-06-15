@@ -61,7 +61,7 @@ trait EntryIsRemovable
 
         // Update the extra columns
         $columns = array_merge($columns, [
-            'removed_by' => $removedBy,
+            'removed_by' => optional($removedBy)->id,
             'removal_reason' => $removalReason,
         ]);
 

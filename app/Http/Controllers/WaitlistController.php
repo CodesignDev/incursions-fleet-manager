@@ -37,6 +37,7 @@ class WaitlistController extends Controller
 
         // Remove the relevant entries
         $entry->remove($request->user(), WaitlistRemovalReason::SELF_REMOVED);
+        $entry->characterEntries->each->remove($request->user(), WaitlistRemovalReason::SELF_REMOVED);
 
         return back()->with('status', 'Removed from waitlist');
     }

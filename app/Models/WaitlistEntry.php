@@ -16,6 +16,15 @@ class WaitlistEntry extends Model
     use EntryIsRemovable, HasFactory, HasRelationships, HasUuids;
 
     /**
+     * The relations to eager load on every query.
+     *
+     * @var array
+     */
+    protected $with = [
+        'characterEntries',
+    ];
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
