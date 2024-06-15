@@ -23,8 +23,10 @@ type WaitlistActiveCharacters = {
 
 type WaitlistCharacterEntry = {
     character: number
-    requested_ship: string
+    ship: WaitlistCharacterEntryData
 }
+
+export type WaitlistCharacterEntryData = string
 
 export type WaitlistJoinEntry = WaitlistCharacterEntry
 export type WaitlistUpdateEntry =

@@ -1,7 +1,7 @@
 import { ChangeEventHandler, InputHTMLAttributes, useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react'
 
 import Checkbox from '@/Components/Checkbox'
-import { useWaitlistSelector } from '@/Providers/WaitlistSelectionProvider'
+import { useWaitlistCharacterSelector } from '@/Providers/WaitlistCharacterSelectionProvider'
 import { CharacterOrId } from '@/types'
 
 type CheckboxProps = Omit<InputHTMLAttributes<HTMLInputElement>, 'checked' | 'onChange'>
@@ -15,7 +15,7 @@ type ToggleAllCheckboxProps = CheckboxProps & {
 }
 
 function CharacterSelectionCheckbox({ character, ...props }: CharacterSelectionCheckboxProps) {
-    const { isSelected, selectOption } = useWaitlistSelector(character)
+    const { isSelected, selectOption } = useWaitlistCharacterSelector(character)
 
     const handleSelectionChange: ChangeEventHandler<HTMLInputElement> = useCallback(
         (e) => {
@@ -31,7 +31,7 @@ function ToggleAllCheckbox({ indeterminateToChecked = false, ...props }: ToggleA
     const [indeterminate, setIndeterminate] = useState(false)
     const [checked, setChecked] = useState(false)
 
-    const { optionCount, selectedOptionCount, selectAllOptions } = useWaitlistSelector()
+    const { optionCount, selectedOptionCount, selectAllOptions } = useWaitlistCharacterSelector()
 
     const ref = useRef<HTMLInputElement>(null)
 

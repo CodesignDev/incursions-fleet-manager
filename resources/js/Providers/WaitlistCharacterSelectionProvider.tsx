@@ -14,13 +14,13 @@ type ContextProps = {
     selectAllOptions: (selected: boolean) => void
 }
 
-type UseWaitlistSelectorOutput = Omit<ContextProps, 'selectedValues'>
-type CharacterScopedUseWaitlistSelectorOutput = Pick<
+type WaitlistSelectorOutput = ContextProps
+type CharacterScopedWaitlistSelectorOutput = Pick<
     ContextProps,
     'options' | 'selectedOptions' | 'optionCount' | 'selectedOptionCount'
 > & {
     isSelected: boolean
-    selectOption: (selected: boolean) => void
+    selectOption: (selected?: boolean) => void
 }
 
 type ProviderProps = {
@@ -39,9 +39,9 @@ const defaultContextProps: ContextProps = {
     selectAllOptions: noop,
 }
 
-const WaitlistSelectionContext = createContext(defaultContextProps)
+const CharacterSelectionProvider = createContext(defaultContextProps)
 
-function WaitlistSelectionProvider({
+function WaitlistCharacterSelectionProvider({
     options,
     initialSelectedOptions = [],
     onSelectionChange,
@@ -99,27 +99,26 @@ function WaitlistSelectionProvider({
         onSelectionChange?.(selected)
     }, [selected, onSelectionChange])
 
-    return <WaitlistSelectionContext.Provider value={contextValue}>{children}</WaitlistSelectionContext.Provider>
+    return <CharacterSelectionProvider.Provider value={contextValue}>{children}</CharacterSelectionProvider.Provider>
 }
 
-function useWaitlistSelector(): UseWaitlistSelectorOutput
-function useWaitlistSelector(character: CharacterOrId): CharacterScopedUseWaitlistSelectorOutput
+function useWaitlistCharacterSelector(): WaitlistSelectorOutput
+function useWaitlistCharacterSelector(character: CharacterOrId): CharacterScopedWaitlistSelectorOutput
 
-function useWaitlistSelector(character: CharacterOrId | null = null) {
-    const context = useContext(WaitlistSelectionContext)
+function useWaitlistCharacterSelector(character: CharacterOrId | null = null) {
+    const context = useContext(CharacterSelectionProvider)
 
     if (!character) {
         return context
     }
 
-    const { options, selectedOptions, isOptionSelected, selectOption } = context
+    const { isOptionSelected, selectOption, selectAllOptions: _, ...rest } = context
 
     return {
-        options,
-        selectedOptions,
+        ...rest,
         isSelected: isOptionSelected(character),
-        selectOption: (selected: boolean) => selectOption(character, selected),
+        selectOption: (selected = true) => selectOption(character, selected),
     }
 }
 
-export { WaitlistSelectionProvider, useWaitlistSelector }
+export { WaitlistCharacterSelectionProvider, useWaitlistCharacterSelector }

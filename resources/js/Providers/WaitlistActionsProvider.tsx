@@ -4,62 +4,62 @@ import { WaitlistInfo, WaitlistJoinEntry, WaitlistUpdateEntry } from '@/types'
 import { noop } from '@/utils'
 
 type ContextProps = {
-    characterJoinedHandler: (waitlist: WaitlistInfo, entries: WaitlistJoinEntry[]) => void
-    characterLeftHandler: (waitlist: WaitlistInfo) => void
-    characterUpdatedHandler: (waitlist: WaitlistInfo, entry: WaitlistUpdateEntry) => void
+    joinWaitlistHandler: (waitlist: WaitlistInfo, entries: WaitlistJoinEntry[]) => void
+    leaveWaitlistHandler: (waitlist: WaitlistInfo) => void
+    updateCharacterEntryHandler: (waitlist: WaitlistInfo, entry: WaitlistUpdateEntry) => void
 }
 
-type WaitlistActions = ContextProps
-type WaitlistScopedActions = {
-    characterJoinedHandler: (entries: WaitlistJoinEntry[]) => void
-    characterLeftHandler: () => void
-    characterUpdatedHandler: (entry: WaitlistUpdateEntry) => void
+type WaitlistActionsOutput = ContextProps
+type WaitlistScopedActionsOutput = {
+    joinWaitlistHandler: (entries: WaitlistJoinEntry[]) => void
+    leaveWaitlistHandler: () => void
+    updateCharacterEntryHandler: (entry: WaitlistUpdateEntry) => void
 }
 
 type ProviderProps = {
-    onCharacterJoined: (waitlist: WaitlistInfo, entries: WaitlistJoinEntry[]) => void
-    onCharacterLeft: (waitlist: WaitlistInfo) => void
+    onJoinWaitlist: (waitlist: WaitlistInfo, entries: WaitlistJoinEntry[]) => void
+    onLeaveWaitlist: (waitlist: WaitlistInfo) => void
     onCharacterUpdated: (waitlist: WaitlistInfo, entry: WaitlistUpdateEntry) => void
 }
 
 const defaultContextProps: ContextProps = {
-    characterJoinedHandler: noop,
-    characterLeftHandler: noop,
-    characterUpdatedHandler: noop,
+    joinWaitlistHandler: noop,
+    leaveWaitlistHandler: noop,
+    updateCharacterEntryHandler: noop,
 }
 
 const WaitlistActionsContext = createContext(defaultContextProps)
 
 function WaitlistActionsProvider({
-    onCharacterJoined,
-    onCharacterLeft,
+    onJoinWaitlist,
+    onLeaveWaitlist,
     onCharacterUpdated,
     children,
 }: PropsWithChildren<ProviderProps>) {
     const contextValue = useMemo(() => {
         return {
-            characterJoinedHandler: onCharacterJoined,
-            characterLeftHandler: onCharacterLeft,
-            characterUpdatedHandler: onCharacterUpdated,
+            joinWaitlistHandler: onJoinWaitlist,
+            leaveWaitlistHandler: onLeaveWaitlist,
+            updateCharacterEntryHandler: onCharacterUpdated,
         }
-    }, [onCharacterJoined, onCharacterLeft, onCharacterUpdated])
+    }, [onJoinWaitlist, onLeaveWaitlist, onCharacterUpdated])
 
     return <WaitlistActionsContext.Provider value={contextValue}>{children}</WaitlistActionsContext.Provider>
 }
 
-function useWaitlistActions(): WaitlistActions
-function useWaitlistActions(waitlist: WaitlistInfo): WaitlistScopedActions
+function useWaitlistActions(): WaitlistActionsOutput
+function useWaitlistActions(waitlist: WaitlistInfo): WaitlistScopedActionsOutput
 
 function useWaitlistActions(waitlist?: WaitlistInfo) {
     const actions = useContext(WaitlistActionsContext)
 
     if (!waitlist) return actions
 
-    const { characterJoinedHandler, characterLeftHandler, characterUpdatedHandler } = actions
+    const { joinWaitlistHandler, leaveWaitlistHandler, updateCharacterEntryHandler } = actions
     return {
-        characterJoinedHandler: (entries: WaitlistJoinEntry[]) => characterJoinedHandler(waitlist, entries),
-        characterLeftHandler: () => characterLeftHandler(waitlist),
-        characterUpdatedHandler: (entry: WaitlistUpdateEntry) => characterUpdatedHandler(waitlist, entry),
+        joinWaitlistHandler: (entries: WaitlistJoinEntry[]) => joinWaitlistHandler(waitlist, entries),
+        leaveWaitlistHandler: () => leaveWaitlistHandler(waitlist),
+        updateCharacterEntryHandler: (entry: WaitlistUpdateEntry) => updateCharacterEntryHandler(waitlist, entry),
     }
 }
 

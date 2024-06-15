@@ -9,6 +9,7 @@ export * from './fleets'
 export * from './links'
 export * from './props'
 export * from './user'
+export * from './utils'
 export * from './waitlist'
 // Index list: END - Automatically generated - DO NOT REMOVE
 

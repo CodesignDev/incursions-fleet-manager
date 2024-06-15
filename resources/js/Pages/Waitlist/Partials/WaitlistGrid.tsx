@@ -6,7 +6,8 @@ import { createContext, useContext, useMemo } from 'react'
 
 import useElementId from '@/Hooks/use-element-id'
 import CharacterSelectionCheckbox from '@/Pages/Waitlist/Partials/CharacterSelectionCheckbox'
-import { useWaitlistSelector } from '@/Providers/WaitlistSelectionProvider'
+import CharacterShipEntry from '@/Pages/Waitlist/Partials/CharacterShipEntry'
+import { useWaitlistCharacterSelector } from '@/Providers/WaitlistCharacterSelectionProvider'
 import { Character } from '@/types'
 import { tw } from '@/utils'
 
@@ -126,7 +127,7 @@ function GridHeader({ borderClassName }: WaitlistGridHeaderProps) {
 
 function GridRow({ character, borderClassName }: WaitlistGridRowProps) {
     const { includeSelectionCheckbox, includeRowActions } = useContext(WaitlistGridContext)
-    const { isSelected } = useWaitlistSelector(character)
+    const { isSelected } = useWaitlistCharacterSelector(character)
 
     const checkboxId = useElementId(`checkbox-${character.id}`)
 
@@ -134,7 +135,7 @@ function GridRow({ character, borderClassName }: WaitlistGridRowProps) {
         <>
             <div
                 className={tw(
-                    'relative grid grid-cols-[min-content_1fr] grid-rows-2 flex-row gap-x-6 gap-y-1.5 p-4 sm:flex sm:items-center',
+                    'relative grid grid-cols-[min-content_1fr] grid-rows-[min-content_1fr] flex-row gap-x-6 gap-y-1.5 p-4 sm:flex sm:items-center',
                     { 'grid-cols-1': !includeSelectionCheckbox },
                     borderClassName
                 )}
@@ -152,10 +153,14 @@ function GridRow({ character, borderClassName }: WaitlistGridRowProps) {
                     {character.name}
                 </label>
 
-                <span className="text-sm sm:hidden">Ship Entry</span>
+                <span className="text-sm sm:hidden">
+                    <CharacterShipEntry character={character} />
+                </span>
             </div>
 
-            <div className={tw('hidden items-center p-4 text-sm sm:flex', borderClassName)}>Ship Entry</div>
+            <div className={tw('hidden items-center p-4 text-sm sm:flex', borderClassName)}>
+                <CharacterShipEntry character={character} />
+            </div>
 
             {includeRowActions && <div className={tw('whitespace-nowrap px-4', borderClassName)}>Actions</div>}
         </>
@@ -163,7 +168,7 @@ function GridRow({ character, borderClassName }: WaitlistGridRowProps) {
 }
 
 function BlankGridRow({ label = '' }) {
-    return <div className="col-[1/-1] p-4 text-sm italic">{label || 'There are no characters to display'}</div>
+    return <div className="col-span-full p-4 text-sm italic">{label || 'There are no characters to display'}</div>
 }
 
 export default WaitlistGrid

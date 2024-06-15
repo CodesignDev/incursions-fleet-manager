@@ -22,6 +22,7 @@ const WaitlistContext = createContext(defaultContextProps)
 
 function WaitlistProvider({ waitlist, children }: PropsWithChildren<ProviderProps>) {
     const { on_waitlist: onWaitlist = false } = waitlist
+
     const contextValue = useMemo(() => {
         return {
             waitlist,

@@ -21,8 +21,8 @@ export default function WaitlistActionsHandler({ children }: PropsWithChildren) 
 
     return (
         <WaitlistActionsProvider
-            onCharacterJoined={handleJoin}
-            onCharacterLeft={handleLeave}
+            onJoinWaitlist={handleJoin}
+            onLeaveWaitlist={handleLeave}
             onCharacterUpdated={handleUpdate}
         >
             {children}
