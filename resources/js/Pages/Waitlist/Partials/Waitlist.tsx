@@ -7,6 +7,7 @@ import JoinButton from '@/Pages/Waitlist/Partials/JoinButton'
 import WaitlistGrid from '@/Pages/Waitlist/Partials/WaitlistGrid'
 import { useWaitlistActions } from '@/Providers/WaitlistActionsProvider'
 import { WaitlistCharacterDataProvider } from '@/Providers/WaitlistCharacterDataProvider'
+import { WaitlistCharacterEntryEditProvider } from '@/Providers/WaitlistCharacterEntryEditProvider'
 import { WaitlistCharacterSelectionProvider } from '@/Providers/WaitlistCharacterSelectionProvider'
 import { useWaitlistCharacters } from '@/Providers/WaitlistCharactersProvider'
 import { useWaitlist } from '@/Providers/WaitlistProvider'
@@ -61,12 +62,24 @@ export default function Waitlist({ waitlist, className = '' }: WaitlistProps) {
                                 header="Characters currently on Waitlist"
                                 characters={waitlistedCharacters}
                                 showRowActions
-                            />
+                            >
+                                {({ character }) => (
+                                    <WaitlistCharacterEntryEditProvider key={character.id}>
+                                        <WaitlistGrid.Row character={character} />
+                                    </WaitlistCharacterEntryEditProvider>
+                                )}
+                            </WaitlistGrid>
                             <WaitlistGrid
                                 header="Add additional characters"
                                 characters={remainingCharacters}
                                 showRowActions
-                            />
+                            >
+                                {({ character }) => (
+                                    <WaitlistCharacterEntryEditProvider key={character.id}>
+                                        <WaitlistGrid.Row character={character} />
+                                    </WaitlistCharacterEntryEditProvider>
+                                )}
+                            </WaitlistGrid>
                         </>
                     ) : (
                         <WaitlistCharacterSelectionProvider
