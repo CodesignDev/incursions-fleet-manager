@@ -5,7 +5,7 @@
 import { createContext, useContext, useMemo } from 'react'
 
 import Checkbox from '@/Components/Checkbox'
-import useElementId from '@/Hooks/use-element-id'
+import useElementId from '@/Hooks/useElementId'
 import { Character } from '@/types'
 import { tw } from '@/utils'
 

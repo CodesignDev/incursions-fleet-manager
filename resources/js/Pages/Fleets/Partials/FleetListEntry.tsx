@@ -4,7 +4,7 @@ import { ChevronRightIcon, EyeIcon, UsersIcon } from '@heroicons/react/24/solid'
 
 import Link from '@/Components/Link'
 import Tooltip from '@/Components/Tooltip'
-import useTailwindBreakpoint from '@/Hooks/use-tailwind-breakpoint'
+import useTailwindBreakpoint from '@/Hooks/useTailwindBreakpoint'
 import { Fleet } from '@/types'
 
 type FleetListEntryProps = {

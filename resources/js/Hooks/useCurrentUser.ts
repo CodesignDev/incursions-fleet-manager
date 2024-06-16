@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 
-import usePageProps from '@/Hooks/use-page-props'
+import usePageProps from '@/Hooks/usePageProps'
 import { User } from '@/types'
 
 type UserHookOutput = {

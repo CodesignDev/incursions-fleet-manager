@@ -1,7 +1,8 @@
 import { useCallback, useMemo, useState } from 'react'
 
 import Tooltip from '@/Components/Tooltip'
-import useStateWithTimeout from '@/Hooks/use-state-with-timeout'
+import useStateWithTimeout from '@/Hooks/useStateWithTimeout'
+import useWaitlistedCharacters from '@/Pages/Waitlist/Partials/Hooks/useWaitlistedCharacters'
 import JoinButton from '@/Pages/Waitlist/Partials/JoinButton'
 import WaitlistGrid from '@/Pages/Waitlist/Partials/WaitlistGrid'
 import WaitlistTable from '@/Pages/Waitlist/Partials/WaitlistTable'

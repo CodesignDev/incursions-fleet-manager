@@ -4,7 +4,7 @@
 
 import { createContext, useContext, useMemo } from 'react'
 
-import useElementId from '@/Hooks/use-element-id'
+import useElementId from '@/Hooks/useElementId'
 import CharacterSelectionCheckbox from '@/Pages/Waitlist/Partials/CharacterSelectionCheckbox'
 import CharacterShipEntry from '@/Pages/Waitlist/Partials/CharacterShipEntry'
 import { useWaitlistCharacterSelector } from '@/Providers/WaitlistCharacterSelectionProvider'
