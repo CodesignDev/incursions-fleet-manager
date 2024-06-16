@@ -36,7 +36,10 @@ class WaitlistResource extends JsonResource
                 'characters' => transform(
                     $entry,
                     fn ($entry) => $entry->characterEntries->mapWithKeys(fn ($character) => [
-                        $character->character_id => $character->requested_ship
+                        $character->character_id => [
+                            'character' => $character->character_id,
+                            'ship' => $character->requested_ship,
+                        ],
                     ]),
                     new MissingValue),
             ]);

@@ -66,7 +66,7 @@ function WaitlistGrid({
                 <WaitlistGridContext.Provider value={tableContextValue}>
                     <div
                         className={tw('grid min-w-full grid-cols-1 sm:grid-cols-[minmax(0,16rem)_1fr]', {
-                            'grid-cols-[1fr_2rem] sm:grid-cols-[minmax(0,16rem)_1fr_2rem]': showRowActions,
+                            'grid-cols-[1fr_6rem] sm:grid-cols-[minmax(0,16rem)_1fr_6rem]': showRowActions,
                         })}
                     >
                         <GridHeader borderClassName={headerBorderClassName} />

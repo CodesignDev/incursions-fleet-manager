@@ -1,11 +1,10 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useState } from 'react'
 
 import Tooltip from '@/Components/Tooltip'
 import useStateWithTimeout from '@/Hooks/useStateWithTimeout'
 import useWaitlistedCharacters from '@/Pages/Waitlist/Partials/Hooks/useWaitlistedCharacters'
 import JoinButton from '@/Pages/Waitlist/Partials/JoinButton'
 import WaitlistGrid from '@/Pages/Waitlist/Partials/WaitlistGrid'
-import WaitlistTable from '@/Pages/Waitlist/Partials/WaitlistTable'
 import { useWaitlistActions } from '@/Providers/WaitlistActionsProvider'
 import { WaitlistCharacterDataProvider } from '@/Providers/WaitlistCharacterDataProvider'
 import { WaitlistCharacterSelectionProvider } from '@/Providers/WaitlistCharacterSelectionProvider'
@@ -13,7 +12,6 @@ import { useWaitlistCharacters } from '@/Providers/WaitlistCharactersProvider'
 import { useWaitlist } from '@/Providers/WaitlistProvider'
 import { CharacterOrId, WaitlistCharacterEntry, WaitlistInfo } from '@/types'
 import { getCharacterId, tw } from '@/utils'
-import { getWaitlistedCharacters } from '@/utils/waitlist'
 
 type WaitlistProps = {
     waitlist: WaitlistInfo
@@ -21,20 +19,20 @@ type WaitlistProps = {
 }
 
 export default function Waitlist({ waitlist, className = '' }: WaitlistProps) {
-    const { onWaitlist, charactersOnWaitlist } = useWaitlist()
+    const { onWaitlist, charactersOnWaitlist, characterData } = useWaitlist()
     const { characters } = useWaitlistCharacters()
     const { joinWaitlistHandler, leaveWaitlistHandler } = useWaitlistActions(waitlist)
 
     const [selectedCharacters, setSelectedCharacters] = useState<CharacterOrId[]>([])
-    const [characterData, setCharacterData] = useState<WaitlistCharacterEntry[]>([])
+    const [currentCharacterData, setCurrentCharacterData] = useState<WaitlistCharacterEntry[]>([])
 
     const [showErrorTooltip, setShowErrorTooltip] = useStateWithTimeout(false)
 
-    const { waitlistedCharacters, remainingCharacters } = getWaitlistedCharacters(characters, charactersOnWaitlist)
+    const [waitlistedCharacters, remainingCharacters] = useWaitlistedCharacters(characters, charactersOnWaitlist)
 
     const handleJoinButtonClick = useCallback(() => {
         const selectedCharacterIds = selectedCharacters.map(getCharacterId)
-        const data = characterData.filter(
+        const data = currentCharacterData.filter(
             ({ character, ship }) => selectedCharacterIds.includes(character) && ship !== ''
         )
 
@@ -44,7 +42,7 @@ export default function Waitlist({ waitlist, className = '' }: WaitlistProps) {
         }
 
         setShowErrorTooltip(true, 5000)
-    }, [joinWaitlistHandler, selectedCharacters, characterData])
+    }, [joinWaitlistHandler, selectedCharacters, currentCharacterData, setShowErrorTooltip])
 
     const handleLeaveButtonClick = useCallback(() => {
         leaveWaitlistHandler()
@@ -53,15 +51,18 @@ export default function Waitlist({ waitlist, className = '' }: WaitlistProps) {
     return (
         <div className={tw('space-y-4', className)}>
             <div className="space-y-6">
-                <WaitlistCharacterDataProvider initialData={[]} onCharacterDataUpdate={setCharacterData}>
+                <WaitlistCharacterDataProvider
+                    initialData={characterData}
+                    onCharacterDataUpdate={setCurrentCharacterData}
+                >
                     {onWaitlist && waitlistedCharacters.length > 0 ? (
                         <>
-                            <WaitlistTable
+                            <WaitlistGrid
                                 header="Characters currently on Waitlist"
                                 characters={waitlistedCharacters}
                                 showRowActions
                             />
-                            <WaitlistTable
+                            <WaitlistGrid
                                 header="Add additional characters"
                                 characters={remainingCharacters}
                                 showRowActions

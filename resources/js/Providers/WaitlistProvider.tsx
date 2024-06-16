@@ -1,10 +1,11 @@
 import { createContext, PropsWithChildren, useContext, useMemo } from 'react'
 
-import { Waitlist, WaitlistInfo } from '@/types'
+import { Waitlist, WaitlistCharacterEntry, WaitlistInfo } from '@/types'
 
 type ContextProps = {
     waitlist: WaitlistInfo
     onWaitlist: boolean
+    characterData: WaitlistCharacterEntry[]
     charactersOnWaitlist: number[]
 }
 
@@ -15,21 +16,33 @@ type ProviderProps = {
 const defaultContextProps: ContextProps = {
     waitlist: { id: '', name: '' },
     onWaitlist: false,
+    characterData: [],
     charactersOnWaitlist: [],
 }
 
 const WaitlistContext = createContext(defaultContextProps)
 
 function WaitlistProvider({ waitlist, children }: PropsWithChildren<ProviderProps>) {
-    const { on_waitlist: onWaitlist = false } = waitlist
+    const { on_waitlist: onWaitlist = false, characters } = waitlist
+
+    const characterData = useMemo(() => {
+        if (!characters || !onWaitlist) return []
+
+        return Object.values(characters)
+    }, [characters, onWaitlist])
+
+    const charactersOnWaitlist = useMemo(() => {
+        return characterData.map(({ character }) => character)
+    }, [characterData])
 
     const contextValue = useMemo(() => {
         return {
             waitlist,
             onWaitlist,
-            charactersOnWaitlist: [],
+            characterData,
+            charactersOnWaitlist,
         }
-    }, [waitlist, onWaitlist])
+    }, [waitlist, onWaitlist, characterData, charactersOnWaitlist])
 
     return <WaitlistContext.Provider value={contextValue}>{children}</WaitlistContext.Provider>
 }
