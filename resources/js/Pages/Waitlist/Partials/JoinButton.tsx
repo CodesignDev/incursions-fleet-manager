@@ -19,7 +19,12 @@ export default forwardRef(function JoinButton(
 
     const handleButtonClick = useCallback(() => {
         onClick?.()
-        onWaitlist ? onLeaveClick?.() : onJoinClick?.()
+
+        if (onWaitlist) {
+            onLeaveClick?.()
+        } else {
+            onJoinClick?.()
+        }
     }, [onWaitlist, onClick, onJoinClick, onLeaveClick])
 
     return (

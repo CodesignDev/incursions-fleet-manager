@@ -52,7 +52,7 @@ export default function FleetListEntry({ fleet }: FleetListEntryProps) {
                                 content={
                                     <div className="flex flex-col gap-y-1">
                                         {locations.map((location) => (
-                                            <span>{location.solar_system_name}</span>
+                                            <span key={location.solar_system_id}>{location.solar_system_name}</span>
                                         ))}
                                     </div>
                                 }

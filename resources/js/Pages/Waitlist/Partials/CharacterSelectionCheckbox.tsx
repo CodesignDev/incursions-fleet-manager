@@ -1,4 +1,4 @@
-import { ChangeEventHandler, InputHTMLAttributes, useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { ChangeEventHandler, InputHTMLAttributes, useCallback, useLayoutEffect, useRef, useState } from 'react'
 
 import Checkbox from '@/Components/Checkbox'
 import { useWaitlistCharacterSelector } from '@/Providers/WaitlistCharacterSelectionProvider'
@@ -49,7 +49,7 @@ function ToggleAllCheckbox({ indeterminateToChecked = false, ...props }: ToggleA
         setIndeterminate(false)
         setChecked(newState)
         selectAllOptions(newState)
-    }, [checked, indeterminate, selectAllOptions])
+    }, [checked, indeterminate, indeterminateToChecked, selectAllOptions])
 
     return <Checkbox ref={ref} checked={checked} onChange={toggleAll} {...props} />
 }

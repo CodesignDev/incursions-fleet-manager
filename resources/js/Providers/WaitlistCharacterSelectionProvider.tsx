@@ -17,7 +17,7 @@ type ContextProps = {
 type WaitlistSelectorOutput = ContextProps
 type CharacterScopedWaitlistSelectorOutput = Pick<
     ContextProps,
-    'options' | 'selectedOptions' | 'optionCount' | 'selectedOptionCount'
+    'options' | 'selectedOptions' | 'optionCount' | 'selectedOptionCount' | 'selectAllOptions'
 > & {
     isSelected: boolean
     selectOption: (selected?: boolean) => void
@@ -79,7 +79,7 @@ function WaitlistCharacterSelectionProvider({
         (selectOptions: boolean) => {
             setSelected(selectOptions ? optionIds : [])
         },
-        [options]
+        [optionIds]
     )
 
     const contextValue: ContextProps = useMemo(
@@ -92,7 +92,7 @@ function WaitlistCharacterSelectionProvider({
             selectOption: handleSelectOption,
             selectAllOptions: handleSelectAllOptions,
         }),
-        [options, selected, isOptionSelected, handleSelectOption, handleSelectAllOptions]
+        [options, selectedOptions, isOptionSelected, handleSelectOption, handleSelectAllOptions]
     )
 
     useEffect(() => {
@@ -112,7 +112,7 @@ function useWaitlistCharacterSelector(character: CharacterOrId | null = null) {
         return context
     }
 
-    const { isOptionSelected, selectOption, selectAllOptions: _, ...rest } = context
+    const { isOptionSelected, selectOption, ...rest } = context
 
     return {
         ...rest,

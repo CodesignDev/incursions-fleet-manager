@@ -36,33 +36,30 @@ function WaitlistCharacterDataProvider({
 }: PropsWithChildren<ProviderProps>) {
     const [characterData, setCharacterData] = useState<WaitlistCharacterEntry[]>(() => initialData || [])
 
-    const handleDataUpdate = useCallback(
-        (character: CharacterOrId, ship: Nullable<WaitlistCharacterEntryData>) => {
-            const characterId = getCharacterId(character)
+    const handleDataUpdate = useCallback((character: CharacterOrId, ship: Nullable<WaitlistCharacterEntryData>) => {
+        const characterId = getCharacterId(character)
 
-            setCharacterData((previousCharacterData) => {
-                if (ship === null) {
-                    return previousCharacterData.filter((item) => item.character !== characterId)
-                }
+        setCharacterData((previousCharacterData) => {
+            if (ship === null) {
+                return previousCharacterData.filter((item) => item.character !== characterId)
+            }
 
-                if (previousCharacterData.some((item) => item.character === characterId)) {
-                    return previousCharacterData.map((item) => {
-                        if (item.character === characterId) {
-                            return { ...item, ship }
-                        }
-                        return item
-                    })
-                }
+            if (previousCharacterData.some((item) => item.character === characterId)) {
+                return previousCharacterData.map((item) => {
+                    if (item.character === characterId) {
+                        return { ...item, ship }
+                    }
+                    return item
+                })
+            }
 
-                return [...previousCharacterData, { character: characterId, ship }]
-            })
-        },
-        [characterData]
-    )
+            return [...previousCharacterData, { character: characterId, ship }]
+        })
+    }, [])
 
     useEffect(() => {
         onCharacterDataUpdate?.(characterData)
-    }, [characterData])
+    }, [characterData, onCharacterDataUpdate])
 
     const contextValue = useMemo(
         () => ({
