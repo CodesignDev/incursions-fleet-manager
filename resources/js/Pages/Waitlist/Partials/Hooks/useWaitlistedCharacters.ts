@@ -15,7 +15,7 @@ export default function useWaitlistedCharacters(
     }, [characters, charactersOnWaitlist, hasWaitlistedCharacters])
 
     const remainingCharacters = useMemo(() => {
-        if (hasWaitlistedCharacters) return characters
+        if (!hasWaitlistedCharacters) return characters
         return characters.filter((character) => !waitlistedCharacters.includes(character))
     }, [characters, hasWaitlistedCharacters, waitlistedCharacters])
 
