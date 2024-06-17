@@ -1,16 +1,6 @@
-import {
-    createContext,
-    MutableRefObject,
-    PropsWithChildren,
-    useCallback,
-    useContext,
-    useEffect,
-    useMemo,
-    useRef,
-    useState,
-} from 'react'
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 
-import { PropsWithChildrenPlusRenderProps } from '@/types'
+import { Nullable, PropsWithChildrenPlusRenderProps } from '@/types'
 import { noop, renderChildren } from '@/utils'
 
 type NoopFunction = () => void
@@ -20,19 +10,15 @@ type ContextProps = {
     startEditing: () => void
     finishEditing: () => void
     handleActionButtonClick: (action: WaitlistEditActionType) => void
-    startEditingCallback: MutableRefObject<NoopFunction | undefined>
-    finishEditingCallback: MutableRefObject<NoopFunction | undefined>
-    saveChangesHandler: MutableRefObject<NoopFunction | undefined>
-    discardChangesHandler: MutableRefObject<NoopFunction | undefined>
-    removeEntryHandler: MutableRefObject<NoopFunction | undefined>
+    registerEventListeners: (events: WaitlistCharacterEditEventHandlers) => void
 }
 
-type WaitlistCharacterEditHandlerOptions = {
-    onStartEditing?: () => void
-    onFinishEditing?: () => void
-    onSaveChanges?: () => void
-    onDiscardChanges?: () => void
-    onRemoveEntry?: () => void
+type WaitlistCharacterEditEventHandlers = {
+    onStartEditing?: Nullable<() => void>
+    onFinishEditing?: Nullable<() => void>
+    onSaveChanges?: Nullable<() => void>
+    onDiscardChanges?: Nullable<() => void>
+    onRemoveEntry?: Nullable<() => void>
 }
 
 type ProviderRenderProps = {
@@ -41,10 +27,7 @@ type ProviderRenderProps = {
     finishEditing: () => void
 }
 
-type WaitlistEntryEditHandlerOutput = Pick<
-    ContextProps,
-    'canEdit' | 'startEditing' | 'finishEditing' | 'handleActionButtonClick'
->
+type WaitlistEntryEditHandlerOutput = ContextProps
 
 type WaitlistEditActionType = 'edit' | 'save' | 'discard' | 'remove'
 
@@ -53,11 +36,7 @@ const defaultContextProps: ContextProps = {
     startEditing: noop,
     finishEditing: noop,
     handleActionButtonClick: noop,
-    startEditingCallback: { current: noop },
-    finishEditingCallback: { current: noop },
-    saveChangesHandler: { current: noop },
-    discardChangesHandler: { current: noop },
-    removeEntryHandler: { current: noop },
+    registerEventListeners: noop,
 }
 
 const CharacterEntryEditContext = createContext(defaultContextProps)
@@ -96,6 +75,17 @@ function WaitlistCharacterEntryEditProvider({ children }: PropsWithChildrenPlusR
         [startEditing]
     )
 
+    const registerEventListeners = useCallback((events: WaitlistCharacterEditEventHandlers) => {
+        const { onStartEditing, onFinishEditing, onSaveChanges, onDiscardChanges, onRemoveEntry } = events
+
+        if (onStartEditing) startEditingCallbackRef.current = onStartEditing
+        if (onFinishEditing) finishEditingCallbackRef.current = onFinishEditing
+
+        if (onSaveChanges) saveChangesHandlerRef.current = onSaveChanges
+        if (onDiscardChanges) discardChangesHandlerRef.current = onDiscardChanges
+        if (onRemoveEntry) removeEntryHandlerRef.current = onRemoveEntry
+    }, [])
+
     useEffect(() => {
         if (canEdit) {
             startEditingCallbackRef.current?.()
@@ -110,13 +100,9 @@ function WaitlistCharacterEntryEditProvider({ children }: PropsWithChildrenPlusR
             startEditing,
             finishEditing,
             handleActionButtonClick,
-            startEditingCallback: startEditingCallbackRef,
-            finishEditingCallback: finishEditingCallbackRef,
-            saveChangesHandler: saveChangesHandlerRef,
-            discardChangesHandler: discardChangesHandlerRef,
-            removeEntryHandler: removeEntryHandlerRef,
+            registerEventListeners,
         }),
-        [canEdit, startEditing, finishEditing, handleActionButtonClick]
+        [canEdit, startEditing, finishEditing, handleActionButtonClick, registerEventListeners]
     )
 
     return (
@@ -130,41 +116,8 @@ function WaitlistCharacterEntryEditProvider({ children }: PropsWithChildrenPlusR
     )
 }
 
-function useWaitlistCharacterEntryEditHandler(
-    options: WaitlistCharacterEditHandlerOptions = {}
-): WaitlistEntryEditHandlerOutput {
-    const { onStartEditing, onFinishEditing, onSaveChanges, onDiscardChanges, onRemoveEntry } = options
-
-    const {
-        startEditingCallback,
-        finishEditingCallback,
-        saveChangesHandler,
-        discardChangesHandler,
-        removeEntryHandler,
-        ...context
-    } = useContext(CharacterEntryEditContext)
-
-    useEffect(() => {
-        startEditingCallback.current = onStartEditing
-    }, [onStartEditing]) // eslint-disable-line react-hooks/exhaustive-deps
-
-    useEffect(() => {
-        finishEditingCallback.current = onFinishEditing
-    }, [onFinishEditing]) // eslint-disable-line react-hooks/exhaustive-deps
-
-    useEffect(() => {
-        saveChangesHandler.current = onSaveChanges
-    }, [onSaveChanges]) // eslint-disable-line react-hooks/exhaustive-deps
-
-    useEffect(() => {
-        discardChangesHandler.current = onDiscardChanges
-    }, [onDiscardChanges]) // eslint-disable-line react-hooks/exhaustive-deps
-
-    useEffect(() => {
-        removeEntryHandler.current = onRemoveEntry
-    }, [onRemoveEntry]) // eslint-disable-line react-hooks/exhaustive-deps
-
-    return context
+function useWaitlistCharacterEntryEditHandler(): WaitlistEntryEditHandlerOutput {
+    return useContext(CharacterEntryEditContext)
 }
 
 export { WaitlistCharacterEntryEditProvider, useWaitlistCharacterEntryEditHandler }

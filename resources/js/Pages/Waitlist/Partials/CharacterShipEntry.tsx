@@ -1,4 +1,4 @@
-import { ChangeEventHandler, useCallback, useEffect, useMemo, useState } from 'react'
+import { ChangeEventHandler, useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react'
 
 import { useDebounceCallback } from 'usehooks-ts'
 
@@ -18,15 +18,7 @@ export default function CharacterShipEntry({ character, placeholder }: Character
     const { onWaitlist = false, characterOnWaitlist = false } = useWaitlist(character)
     const { isSelected, selectOption } = useWaitlistCharacterSelector(character)
 
-    /* eslint-disable @typescript-eslint/no-use-before-define -- The eslint rule needs to be disabled
-     to allow the functions to be defined properly */
-    const { canEdit, finishEditing } = useWaitlistCharacterEntryEditHandler({
-        onStartEditing: () => handleStartEdit(),
-        onSaveChanges: () => handleSaveChanges(),
-        onDiscardChanges: () => handleDiscardChanges(),
-        onRemoveEntry: () => handleRemoveEntry(),
-    })
-    /* eslint-enable @typescript-eslint/no-use-before-define */
+    const { canEdit, finishEditing, registerEventListeners } = useWaitlistCharacterEntryEditHandler()
 
     const [value, setValue] = useWaitlistCharacterData(character, '')
 
@@ -77,6 +69,22 @@ export default function CharacterShipEntry({ character, placeholder }: Character
         if (!onWaitlist) return
         setInternalValue(value)
     }, [value, onWaitlist])
+
+    useLayoutEffect(() => {
+        registerEventListeners({ onStartEditing: handleStartEdit })
+    }, [handleStartEdit])
+
+    useLayoutEffect(() => {
+        registerEventListeners({ onSaveChanges: handleSaveChanges })
+    }, [handleSaveChanges])
+
+    useLayoutEffect(() => {
+        registerEventListeners({ onDiscardChanges: handleDiscardChanges })
+    }, [handleDiscardChanges])
+
+    useLayoutEffect(() => {
+        registerEventListeners({ onRemoveEntry: handleRemoveEntry })
+    }, [handleRemoveEntry])
 
     if (!allowEditing) {
         return (
