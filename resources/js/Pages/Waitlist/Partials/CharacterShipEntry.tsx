@@ -18,11 +18,14 @@ export default function CharacterShipEntry({ character, placeholder }: Character
     const { onWaitlist = false } = useWaitlist()
     const { isSelected, selectOption } = useWaitlistCharacterSelector(character)
 
+    /* eslint-disable @typescript-eslint/no-use-before-define -- The eslint rule needs to be disabled
+     to allow the functions to be defined properly */
     const { canEdit, finishEditing } = useWaitlistCharacterEntryEditHandler({
         onSaveChanges: () => handleSaveChanges(),
         onDiscardChanges: () => handleDiscardChanges(),
         onRemoveEntry: () => handleRemoveEntry(),
     })
+    /* eslint-enable @typescript-eslint/no-use-before-define */
 
     const [value, setValue] = useWaitlistCharacterData(character, '')
 
@@ -51,16 +54,16 @@ export default function CharacterShipEntry({ character, placeholder }: Character
     const handleSaveChanges = useCallback(() => {
         finishEditing()
         setValue(internalValue)
-    }, [])
+    }, [setValue, finishEditing])
 
     const handleDiscardChanges = useCallback(() => {
         finishEditing()
         setInternalValue(value)
-    }, [])
+    }, [value, finishEditing])
 
     const handleRemoveEntry = useCallback(() => {
         setValue(null)
-    }, [])
+    }, [setValue])
 
     useEffect(() => {
         if (!onWaitlist) return
