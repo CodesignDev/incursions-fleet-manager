@@ -33,3 +33,9 @@ export type WaitlistUpdateEntry =
     | ({ action: 'add' } & WaitlistCharacterEntry)
     | ({ action: 'update' } & WaitlistCharacterEntry)
     | ({ action: 'remove' } & Pick<WaitlistCharacterEntry, 'character'>)
+
+type WaitlistCharacterDataDiff = {
+    added: WaitlistCharacterEntry[]
+    updated: WaitlistCharacterEntry[]
+    removed: Pick<WaitlistCharacterEntry, 'character'>[]
+}

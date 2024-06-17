@@ -1,6 +1,9 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
+
+import { first, isEqual, sum } from 'lodash-es'
 
 import Tooltip from '@/Components/Tooltip'
+import usePrevious from '@/Hooks/usePrevious'
 import useStateWithTimeout from '@/Hooks/useStateWithTimeout'
 import useWaitlistedCharacters from '@/Pages/Waitlist/Partials/Hooks/useWaitlistedCharacters'
 import JoinButton from '@/Pages/Waitlist/Partials/JoinButton'
@@ -11,8 +14,9 @@ import { WaitlistCharacterEntryEditProvider } from '@/Providers/WaitlistCharacte
 import { WaitlistCharacterSelectionProvider } from '@/Providers/WaitlistCharacterSelectionProvider'
 import { useWaitlistCharacters } from '@/Providers/WaitlistCharactersProvider'
 import { useWaitlist } from '@/Providers/WaitlistProvider'
-import { CharacterOrId, WaitlistCharacterEntry, WaitlistInfo } from '@/types'
+import { CharacterOrId, WaitlistCharacterDataDiff, WaitlistCharacterEntry, WaitlistInfo } from '@/types'
 import { getCharacterId, tw } from '@/utils'
+import { getCharacterDataDifferences, getWaitlistEntryDiffAction } from '@/utils/waitlist'
 
 type WaitlistProps = {
     waitlist: WaitlistInfo
@@ -22,14 +26,35 @@ type WaitlistProps = {
 export default function Waitlist({ waitlist, className = '' }: WaitlistProps) {
     const { onWaitlist, charactersOnWaitlist, characterData } = useWaitlist()
     const { characters } = useWaitlistCharacters()
-    const { joinWaitlistHandler, leaveWaitlistHandler } = useWaitlistActions(waitlist)
+    const { joinWaitlistHandler, leaveWaitlistHandler, updateCharacterEntryHandler } = useWaitlistActions(waitlist)
 
     const [selectedCharacters, setSelectedCharacters] = useState<CharacterOrId[]>([])
-    const [currentCharacterData, setCurrentCharacterData] = useState<WaitlistCharacterEntry[]>([])
+    const [currentCharacterData, setCurrentCharacterData] = useState<WaitlistCharacterEntry[]>(characterData || [])
+
+    const previousCharacterData = usePrevious(currentCharacterData)
 
     const [showErrorTooltip, setShowErrorTooltip] = useStateWithTimeout(false)
 
     const [waitlistedCharacters, remainingCharacters] = useWaitlistedCharacters(characters, charactersOnWaitlist)
+
+    useEffect(() => {
+        if (!previousCharacterData || isEqual(currentCharacterData, previousCharacterData)) return
+
+        const diff = getCharacterDataDifferences(currentCharacterData, previousCharacterData)
+        const { added, updated, removed } = diff
+
+        // Count total changes
+        const totalChanges = sum([added.length, updated.length, removed.length])
+        if (totalChanges > 1) {
+            // Sync entire changes instead
+            return
+        }
+
+        // Send relevant changes
+        const item = first([...added, ...updated, ...removed]) as WaitlistCharacterEntry | undefined
+        const action = getWaitlistEntryDiffAction(diff, item)
+        if (item && action) updateCharacterEntryHandler({ action, ...item })
+    }, [currentCharacterData, previousCharacterData])
 
     const handleJoinButtonClick = useCallback(() => {
         const selectedCharacterIds = selectedCharacters.map(getCharacterId)
