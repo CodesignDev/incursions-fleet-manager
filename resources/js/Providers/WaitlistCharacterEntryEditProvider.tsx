@@ -10,7 +10,8 @@ import {
     useState,
 } from 'react'
 
-import { noop } from '@/utils'
+import { PropsWithChildrenPlusRenderProps } from '@/types'
+import { noop, renderChildren } from '@/utils'
 
 type NoopFunction = () => void
 
@@ -34,6 +35,12 @@ type WaitlistCharacterEditHandlerOptions = {
     onRemoveEntry?: () => void
 }
 
+type ProviderRenderProps = {
+    canEdit: boolean
+    startEditing: () => void
+    finishEditing: () => void
+}
+
 type WaitlistEntryEditHandlerOutput = Pick<
     ContextProps,
     'canEdit' | 'startEditing' | 'finishEditing' | 'handleActionButtonClick'
@@ -55,7 +62,7 @@ const defaultContextProps: ContextProps = {
 
 const CharacterEntryEditContext = createContext(defaultContextProps)
 
-function WaitlistCharacterEntryEditProvider({ children }: PropsWithChildren) {
+function WaitlistCharacterEntryEditProvider({ children }: PropsWithChildrenPlusRenderProps<ProviderRenderProps>) {
     const [canEdit, setCanEdit] = useState(false)
 
     const startEditingCallbackRef = useRef<NoopFunction>()
@@ -112,7 +119,15 @@ function WaitlistCharacterEntryEditProvider({ children }: PropsWithChildren) {
         [canEdit, startEditing, finishEditing, handleActionButtonClick]
     )
 
-    return <CharacterEntryEditContext.Provider value={contextValue}>{children}</CharacterEntryEditContext.Provider>
+    return (
+        <CharacterEntryEditContext.Provider value={contextValue}>
+            {renderChildren(children, {
+                canEdit,
+                startEditing,
+                finishEditing,
+            })}
+        </CharacterEntryEditContext.Provider>
+    )
 }
 
 function useWaitlistCharacterEntryEditHandler(

@@ -14,7 +14,7 @@ import { WaitlistCharacterEntryEditProvider } from '@/Providers/WaitlistCharacte
 import { WaitlistCharacterSelectionProvider } from '@/Providers/WaitlistCharacterSelectionProvider'
 import { useWaitlistCharacters } from '@/Providers/WaitlistCharactersProvider'
 import { useWaitlist } from '@/Providers/WaitlistProvider'
-import { CharacterOrId, WaitlistCharacterDataDiff, WaitlistCharacterEntry, WaitlistInfo } from '@/types'
+import { CharacterOrId, WaitlistCharacterEntry, WaitlistInfo } from '@/types'
 import { getCharacterId, tw } from '@/utils'
 import { getCharacterDataDifferences, getWaitlistEntryDiffAction } from '@/utils/waitlist'
 
@@ -90,7 +90,12 @@ export default function Waitlist({ waitlist, className = '' }: WaitlistProps) {
                             >
                                 {({ character }) => (
                                     <WaitlistCharacterEntryEditProvider key={character.id}>
-                                        <WaitlistGrid.Row character={character} />
+                                        {({ canEdit }) => (
+                                            <WaitlistGrid.Row
+                                                character={character}
+                                                className={tw({ 'max-sm:bg-gray-50 max-sm:dark:bg-gray-700': canEdit })}
+                                            />
+                                        )}
                                     </WaitlistCharacterEntryEditProvider>
                                 )}
                             </WaitlistGrid>

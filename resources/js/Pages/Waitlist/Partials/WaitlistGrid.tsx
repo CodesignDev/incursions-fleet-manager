@@ -2,7 +2,7 @@
  * Disable the no-use-before-define error for functions only, allows the relevant
  * components to be laid out in the order they are exported */
 
-import { createContext, ReactNode, useContext, useMemo } from 'react'
+import { createContext, PropsWithChildren, ReactNode, useContext, useMemo } from 'react'
 
 import useElementId from '@/Hooks/useElementId'
 import CharacterSelectionCheckbox from '@/Pages/Waitlist/Partials/CharacterSelectionCheckbox'
@@ -26,7 +26,14 @@ type WaitlistGridProps = {
     noItemsMessage?: string
 }
 
-type WaitlistGridRowProps = {
+type WaitlistGridElementProps = {
+    className?: string
+}
+
+type WaitlistGridWrapperProps = WaitlistGridElementProps
+type WaitlistGridHeaderProps = WaitlistGridElementProps
+
+type WaitlistGridRowProps = WaitlistGridElementProps & {
     character: Character
 }
 
@@ -64,11 +71,12 @@ function WaitlistGrid({
     return (
         <div className="space-y-2">
             {header && <h3 className="px-4 font-semibold">{header}</h3>}
+
             <div className="inline-block min-w-full pt-2 align-middle">
                 <WaitlistGridContext.Provider value={tableContextValue}>
                     <div
-                        className={tw('grid min-w-full grid-cols-1 sm:grid-cols-[minmax(0,16rem)_1fr]', {
-                            'grid-cols-[1fr_6rem] sm:grid-cols-[minmax(0,16rem)_1fr_6rem]': showRowActions,
+                        className={tw('grid min-w-full grid-cols-1 gap-x-2.5 sm:grid-cols-[minmax(0,16rem)_1fr]', {
+                            'grid-cols-[1fr_2.5rem] sm:grid-cols-[minmax(0,16rem)_1fr_min-content]': showRowActions,
                         })}
                     >
                         <GridHeader />
@@ -87,17 +95,16 @@ function WaitlistGrid({
     )
 }
 
-function GridHeader() {
+function GridRowWrapper({ className = '', children }: PropsWithChildren<WaitlistGridWrapperProps>) {
+    return <div className={tw('col-span-full grid grid-cols-subgrid px-4', className)}>{children}</div>
+}
+
+function GridHeader({ className = '' }: WaitlistGridHeaderProps) {
     const { includeSelectionCheckbox, includeRowActions } = useContext(WaitlistGridContext)
 
     return (
-        <>
-            <div
-                className={tw(
-                    'flex flex-row items-center gap-x-6 px-4 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-200',
-                    headerBorderClassName
-                )}
-            >
+        <GridRowWrapper className={tw(headerBorderClassName, className)}>
+            <div className="flex flex-row items-center gap-x-6 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-200">
                 {includeSelectionCheckbox && (
                     <div className="flex">
                         <CharacterSelectionCheckbox.ToggleAll indeterminateToChecked />
@@ -109,33 +116,27 @@ function GridHeader() {
                 </div>
             </div>
 
-            <div
-                className={tw(
-                    'hidden px-4 py-3.5 text-left text-sm font-semibold text-gray-900 sm:block dark:text-gray-200',
-                    headerBorderClassName
-                )}
-            >
+            <div className="hidden py-3.5 text-left text-sm font-semibold text-gray-900 sm:block dark:text-gray-200">
                 Ship(s)
             </div>
 
-            {includeRowActions && <div className={tw('', headerBorderClassName)} />}
-        </>
+            {includeRowActions && <div />}
+        </GridRowWrapper>
     )
 }
 
-function GridRow({ character }: WaitlistGridRowProps) {
+function GridRow({ character, className = '' }: WaitlistGridRowProps) {
     const { includeSelectionCheckbox, includeRowActions } = useContext(WaitlistGridContext)
     const { isSelected } = useWaitlistCharacterSelector(character)
 
     const checkboxId = useElementId(`checkbox-${character.id}`)
 
     return (
-        <>
+        <GridRowWrapper className={tw(rowBorderClassName, className)}>
             <div
                 className={tw(
-                    'relative grid grid-cols-[min-content_1fr] grid-rows-[min-content_1fr] flex-row gap-x-6 gap-y-1.5 p-4 sm:flex sm:items-center',
-                    { 'grid-cols-1': !includeSelectionCheckbox },
-                    rowBorderClassName
+                    'relative grid grid-cols-[min-content_1fr] grid-rows-[min-content_1fr] flex-row gap-x-6 gap-y-1.5 py-4 sm:flex sm:items-center',
+                    { 'grid-cols-1': !includeSelectionCheckbox }
                 )}
             >
                 {includeSelectionCheckbox && (
@@ -156,16 +157,16 @@ function GridRow({ character }: WaitlistGridRowProps) {
                 </span>
             </div>
 
-            <div className={tw('hidden items-center p-4 text-sm sm:flex', rowBorderClassName)}>
+            <div className="hidden items-center py-4 text-sm sm:flex">
                 <CharacterShipEntry character={character} />
             </div>
 
             {includeRowActions && (
-                <div className={tw('flex items-stretch py-4 pr-4', rowBorderClassName)}>
+                <div className="flex items-stretch justify-end py-4">
                     <CharacterShipActions character={character} />
                 </div>
             )}
-        </>
+        </GridRowWrapper>
     )
 }
 
