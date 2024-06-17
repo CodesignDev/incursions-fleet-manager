@@ -38,6 +38,7 @@ export default function Waitlist({ waitlist, className = '' }: WaitlistProps) {
     const [waitlistedCharacters, remainingCharacters] = useWaitlistedCharacters(characters, charactersOnWaitlist)
 
     useEffect(() => {
+        if (!onWaitlist) return
         if (!previousCharacterData || isEqual(currentCharacterData, previousCharacterData)) return
 
         const diff = getCharacterDataDifferences(currentCharacterData, previousCharacterData)
@@ -77,41 +78,43 @@ export default function Waitlist({ waitlist, className = '' }: WaitlistProps) {
     return (
         <div className={tw('space-y-4', className)}>
             <div className="space-y-6">
-                <WaitlistCharacterDataProvider
-                    initialData={characterData}
-                    onCharacterDataUpdate={setCurrentCharacterData}
-                >
-                    {onWaitlist && waitlistedCharacters.length > 0 ? (
-                        <>
-                            <WaitlistGrid
-                                header="Characters currently on Waitlist"
-                                characters={waitlistedCharacters}
-                                showRowActions
-                            >
-                                {({ character }) => (
-                                    <WaitlistCharacterEntryEditProvider key={character.id}>
-                                        {({ canEdit }) => (
-                                            <WaitlistGrid.Row
-                                                character={character}
-                                                className={tw({ 'max-sm:bg-gray-50 max-sm:dark:bg-gray-700': canEdit })}
-                                            />
-                                        )}
-                                    </WaitlistCharacterEntryEditProvider>
-                                )}
-                            </WaitlistGrid>
-                            <WaitlistGrid
-                                header="Add additional characters"
-                                characters={remainingCharacters}
-                                showRowActions
-                            >
-                                {({ character }) => (
-                                    <WaitlistCharacterEntryEditProvider key={character.id}>
-                                        <WaitlistGrid.Row character={character} />
-                                    </WaitlistCharacterEntryEditProvider>
-                                )}
-                            </WaitlistGrid>
-                        </>
-                    ) : (
+                {onWaitlist && waitlistedCharacters.length > 0 ? (
+                    <WaitlistCharacterDataProvider
+                        key="active-waitlist-data"
+                        initialData={characterData}
+                        onCharacterDataUpdate={setCurrentCharacterData}
+                    >
+                        <WaitlistGrid
+                            header="Characters currently on Waitlist"
+                            characters={waitlistedCharacters}
+                            showRowActions
+                        >
+                            {({ character }) => (
+                                <WaitlistCharacterEntryEditProvider key={character.id}>
+                                    {({ canEdit }) => (
+                                        <WaitlistGrid.Row
+                                            character={character}
+                                            className={tw({ 'max-sm:bg-gray-50 max-sm:dark:bg-gray-700': canEdit })}
+                                        />
+                                    )}
+                                </WaitlistCharacterEntryEditProvider>
+                            )}
+                        </WaitlistGrid>
+                        <WaitlistGrid
+                            key="waitlist-data"
+                            header="Add additional characters"
+                            characters={remainingCharacters}
+                            showRowActions
+                        >
+                            {({ character }) => (
+                                <WaitlistCharacterEntryEditProvider key={character.id}>
+                                    <WaitlistGrid.Row character={character} />
+                                </WaitlistCharacterEntryEditProvider>
+                            )}
+                        </WaitlistGrid>
+                    </WaitlistCharacterDataProvider>
+                ) : (
+                    <WaitlistCharacterDataProvider initialData={[]} onCharacterDataUpdate={setCurrentCharacterData}>
                         <WaitlistCharacterSelectionProvider
                             options={characters}
                             initialSelectedOptions={charactersOnWaitlist}
@@ -119,8 +122,8 @@ export default function Waitlist({ waitlist, className = '' }: WaitlistProps) {
                         >
                             <WaitlistGrid header="Join the Waitlist" characters={characters} showSelectionCheckbox />
                         </WaitlistCharacterSelectionProvider>
-                    )}
-                </WaitlistCharacterDataProvider>
+                    </WaitlistCharacterDataProvider>
+                )}
             </div>
 
             <Tooltip
