@@ -6,13 +6,14 @@ use App\Enums\WaitlistRemovalReason;
 use App\Http\Requests\JoinWaitlistRequest;
 use App\Models\Waitlist;
 use App\Models\WaitlistEntry;
+use App\Traits\HasWaitlistCharacterInputFormatters;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Collection;
 
 class WaitlistController extends Controller
 {
+    use HasWaitlistCharacterInputFormatters;
+
     public function joinWaitlist(JoinWaitlistRequest $request, Waitlist $waitlist): RedirectResponse
     {
         // Create the waitlist entry for the user
@@ -48,19 +49,5 @@ class WaitlistController extends Controller
         $entry->characterEntries->each->remove($request->user(), WaitlistRemovalReason::SELF_REMOVED);
 
         return back()->with('status', 'Removed from waitlist');
-    }
-
-    private function formatCharacterInputArray(array $data): Collection
-    {
-        return collect($data)
-            ->map(fn ($entry) => $this->formatCharacterInput($entry))
-            ->filter(fn ($entry) => data_get($entry, 'ships', []) || data_get($entry, 'ship', ''));
-    }
-
-    private function formatCharacterInput(array $data): array
-    {
-        $requiredKeys = ['character', 'ship', 'ships'];
-
-        return Arr::only($data, $requiredKeys);
     }
 }

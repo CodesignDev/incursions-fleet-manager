@@ -4,6 +4,7 @@ use App\Http\Controllers\FleetController;
 use App\Http\Controllers\RegisterFleetController;
 use App\Http\Controllers\WaitlistController;
 use App\Http\Controllers\WaitlistDashboardController;
+use App\Http\Controllers\WaitlistUpdateCharactersController;
 use Illuminate\Support\Facades\Route;
 
 Route::inertia('/', 'Dashboard')->middleware(['auth', 'verified'])->name('dashboard');
@@ -16,6 +17,8 @@ Route::middleware('auth')->group(function () {
         Route::prefix('/{waitlist}')->controller(WaitlistController::class)->group(function () {
             Route::post('/', 'joinWaitlist')->name('join');
             Route::delete('/', 'leaveWaitlist')->name('leave');
+
+            Route::put('/', [WaitlistUpdateCharactersController::class, '__invoke'])->name('update');
         });
     });
 

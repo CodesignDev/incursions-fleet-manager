@@ -16,7 +16,7 @@ export default function WaitlistActionsHandler({ children }: PropsWithChildren) 
     }, [])
 
     const handleUpdate = useCallback((waitlist: WaitlistInfo, data: WaitlistUpdateEntry) => {
-        router.post(route('waitlist.update', waitlist), { ...data })
+        router.put(route('waitlist.update', waitlist), { ...data })
     }, [])
 
     return (
