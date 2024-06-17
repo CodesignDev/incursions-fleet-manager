@@ -6,6 +6,7 @@ import { createContext, ReactNode, useContext, useMemo } from 'react'
 
 import useElementId from '@/Hooks/useElementId'
 import CharacterSelectionCheckbox from '@/Pages/Waitlist/Partials/CharacterSelectionCheckbox'
+import CharacterShipActions from '@/Pages/Waitlist/Partials/CharacterShipActions'
 import CharacterShipEntry from '@/Pages/Waitlist/Partials/CharacterShipEntry'
 import { useWaitlistCharacterSelector } from '@/Providers/WaitlistCharacterSelectionProvider'
 import { Character, PropsWithChildrenPlusRenderProps } from '@/types'
@@ -159,7 +160,11 @@ function GridRow({ character }: WaitlistGridRowProps) {
                 <CharacterShipEntry character={character} />
             </div>
 
-            {includeRowActions && <div className={tw('whitespace-nowrap px-4', rowBorderClassName)}>Actions</div>}
+            {includeRowActions && (
+                <div className={tw('flex items-stretch py-4 pr-4', rowBorderClassName)}>
+                    <CharacterShipActions character={character} />
+                </div>
+            )}
         </>
     )
 }

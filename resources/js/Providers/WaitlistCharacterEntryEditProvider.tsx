@@ -19,12 +19,16 @@ type ContextProps = {
     startEditing: () => void
     finishEditing: () => void
     handleActionButtonClick: (action: WaitlistEditActionType) => void
+    startEditingCallback: MutableRefObject<NoopFunction | undefined>
+    finishEditingCallback: MutableRefObject<NoopFunction | undefined>
     saveChangesHandler: MutableRefObject<NoopFunction | undefined>
     discardChangesHandler: MutableRefObject<NoopFunction | undefined>
     removeEntryHandler: MutableRefObject<NoopFunction | undefined>
 }
 
 type WaitlistCharacterEditHandlerOptions = {
+    onStartEditing?: () => void
+    onFinishEditing?: () => void
     onSaveChanges?: () => void
     onDiscardChanges?: () => void
     onRemoveEntry?: () => void
@@ -33,9 +37,7 @@ type WaitlistCharacterEditHandlerOptions = {
 type WaitlistEntryEditHandlerOutput = Pick<
     ContextProps,
     'canEdit' | 'startEditing' | 'finishEditing' | 'handleActionButtonClick'
-> & {}
-
-type ProviderProps = {}
+>
 
 type WaitlistEditActionType = 'edit' | 'save' | 'discard' | 'remove'
 
@@ -44,6 +46,8 @@ const defaultContextProps: ContextProps = {
     startEditing: noop,
     finishEditing: noop,
     handleActionButtonClick: noop,
+    startEditingCallback: { current: noop },
+    finishEditingCallback: { current: noop },
     saveChangesHandler: { current: noop },
     discardChangesHandler: { current: noop },
     removeEntryHandler: { current: noop },
@@ -51,8 +55,11 @@ const defaultContextProps: ContextProps = {
 
 const CharacterEntryEditContext = createContext(defaultContextProps)
 
-function WaitlistCharacterEntryEditProvider({ children }: PropsWithChildren<ProviderProps>) {
+function WaitlistCharacterEntryEditProvider({ children }: PropsWithChildren) {
     const [canEdit, setCanEdit] = useState(false)
+
+    const startEditingCallbackRef = useRef<NoopFunction>()
+    const finishEditingCallbackRef = useRef<NoopFunction>()
 
     const saveChangesHandlerRef = useRef<NoopFunction>()
     const discardChangesHandlerRef = useRef<NoopFunction>()
@@ -61,22 +68,34 @@ function WaitlistCharacterEntryEditProvider({ children }: PropsWithChildren<Prov
     const startEditing = useCallback(() => setCanEdit(true), [])
     const finishEditing = useCallback(() => setCanEdit(false), [])
 
-    const handleActionButtonClick = useCallback((action: WaitlistEditActionType) => {
-        switch (action) {
-            case 'edit':
-                startEditing()
-                break
-            case 'save':
-                saveChangesHandlerRef.current?.()
-                break
-            case 'discard':
-                discardChangesHandlerRef.current?.()
-                break
-            case 'remove':
-                removeEntryHandlerRef.current?.()
-                break
+    const handleActionButtonClick = useCallback(
+        (action: WaitlistEditActionType) => {
+            // eslint-disable-next-line default-case
+            switch (action) {
+                case 'edit':
+                    startEditing()
+                    break
+                case 'save':
+                    saveChangesHandlerRef.current?.()
+                    break
+                case 'discard':
+                    discardChangesHandlerRef.current?.()
+                    break
+                case 'remove':
+                    removeEntryHandlerRef.current?.()
+                    break
+            }
+        },
+        [startEditing]
+    )
+
+    useEffect(() => {
+        if (canEdit) {
+            startEditingCallbackRef.current?.()
+        } else {
+            finishEditingCallbackRef.current?.()
         }
-    }, [])
+    }, [canEdit])
 
     const contextValue = useMemo(
         () => ({
@@ -84,11 +103,13 @@ function WaitlistCharacterEntryEditProvider({ children }: PropsWithChildren<Prov
             startEditing,
             finishEditing,
             handleActionButtonClick,
+            startEditingCallback: startEditingCallbackRef,
+            finishEditingCallback: finishEditingCallbackRef,
             saveChangesHandler: saveChangesHandlerRef,
             discardChangesHandler: discardChangesHandlerRef,
             removeEntryHandler: removeEntryHandlerRef,
         }),
-        [canEdit, handleActionButtonClick]
+        [canEdit, startEditing, finishEditing, handleActionButtonClick]
     )
 
     return <CharacterEntryEditContext.Provider value={contextValue}>{children}</CharacterEntryEditContext.Provider>
@@ -97,22 +118,36 @@ function WaitlistCharacterEntryEditProvider({ children }: PropsWithChildren<Prov
 function useWaitlistCharacterEntryEditHandler(
     options: WaitlistCharacterEditHandlerOptions = {}
 ): WaitlistEntryEditHandlerOutput {
-    const { onSaveChanges, onDiscardChanges, onRemoveEntry } = options
+    const { onStartEditing, onFinishEditing, onSaveChanges, onDiscardChanges, onRemoveEntry } = options
 
-    const { saveChangesHandler, discardChangesHandler, removeEntryHandler, ...context } =
-        useContext(CharacterEntryEditContext)
+    const {
+        startEditingCallback,
+        finishEditingCallback,
+        saveChangesHandler,
+        discardChangesHandler,
+        removeEntryHandler,
+        ...context
+    } = useContext(CharacterEntryEditContext)
+
+    useEffect(() => {
+        startEditingCallback.current = onStartEditing
+    }, [onStartEditing]) // eslint-disable-line react-hooks/exhaustive-deps
+
+    useEffect(() => {
+        finishEditingCallback.current = onFinishEditing
+    }, [onFinishEditing]) // eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {
         saveChangesHandler.current = onSaveChanges
-    }, [onSaveChanges])
+    }, [onSaveChanges]) // eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {
         discardChangesHandler.current = onDiscardChanges
-    }, [onDiscardChanges])
+    }, [onDiscardChanges]) // eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {
         removeEntryHandler.current = onRemoveEntry
-    }, [onRemoveEntry])
+    }, [onRemoveEntry]) // eslint-disable-line react-hooks/exhaustive-deps
 
     return context
 }

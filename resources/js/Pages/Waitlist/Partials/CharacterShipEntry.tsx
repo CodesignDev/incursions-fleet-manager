@@ -15,12 +15,13 @@ type CharacterShipEntryProps = {
 }
 
 export default function CharacterShipEntry({ character, placeholder }: CharacterShipEntryProps) {
-    const { onWaitlist = false } = useWaitlist()
+    const { onWaitlist = false, characterOnWaitlist = false } = useWaitlist(character)
     const { isSelected, selectOption } = useWaitlistCharacterSelector(character)
 
     /* eslint-disable @typescript-eslint/no-use-before-define -- The eslint rule needs to be disabled
      to allow the functions to be defined properly */
     const { canEdit, finishEditing } = useWaitlistCharacterEntryEditHandler({
+        onStartEditing: () => handleStartEdit(),
         onSaveChanges: () => handleSaveChanges(),
         onDiscardChanges: () => handleDiscardChanges(),
         onRemoveEntry: () => handleRemoveEntry(),
@@ -33,7 +34,10 @@ export default function CharacterShipEntry({ character, placeholder }: Character
 
     const [internalValue, setInternalValue] = useState(value)
 
-    const allowEditing = useMemo(() => !onWaitlist || canEdit, [onWaitlist, canEdit])
+    const allowEditing = useMemo(
+        () => !onWaitlist || !characterOnWaitlist || canEdit,
+        [onWaitlist, characterOnWaitlist, canEdit]
+    )
 
     const handleChange: ChangeEventHandler<HTMLInputElement> = useCallback(
         (e) => {
@@ -51,15 +55,19 @@ export default function CharacterShipEntry({ character, placeholder }: Character
         if (isPending()) flush()
     }, [setValueDebounced])
 
+    const handleStartEdit = useCallback(() => {
+        setInternalValue(value)
+    }, [value])
+
     const handleSaveChanges = useCallback(() => {
         finishEditing()
-        setValue(internalValue)
-    }, [setValue, finishEditing])
+        if (characterOnWaitlist) setValue(internalValue !== '' ? internalValue : null)
+        if (!characterOnWaitlist && internalValue !== '') setValue(internalValue)
+    }, [characterOnWaitlist, internalValue, setValue, finishEditing])
 
     const handleDiscardChanges = useCallback(() => {
         finishEditing()
-        setInternalValue(value)
-    }, [value, finishEditing])
+    }, [finishEditing])
 
     const handleRemoveEntry = useCallback(() => {
         setValue(null)
@@ -71,7 +79,11 @@ export default function CharacterShipEntry({ character, placeholder }: Character
     }, [value, onWaitlist])
 
     if (!allowEditing) {
-        return <span>{value}</span>
+        return (
+            <div className="flex w-full cursor-not-allowed select-none flex-wrap rounded-md border border-gray-300 bg-gray-100 px-2 py-2.5 text-sm text-gray-600 shadow-sm empty:h-10 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-400">
+                {value}
+            </div>
+        )
     }
 
     return (
