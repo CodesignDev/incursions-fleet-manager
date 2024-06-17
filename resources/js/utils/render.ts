@@ -4,10 +4,9 @@ import { PropsWithChildrenPlusRenderProps } from '@/types'
 
 const defaultRenderFunc = (children: ReactNode) => children
 
-// eslint-disable-next-line import/prefer-default-export
-export function renderChildren<T>(
-    children: PropsWithChildrenPlusRenderProps<T>['children'],
-    props: T,
+export function renderChildren<TRenderProps>(
+    children: PropsWithChildrenPlusRenderProps<TRenderProps>['children'],
+    props: TRenderProps,
     renderFn?: (children: ReactNode) => ReactNode
 ) {
     if (typeof children !== 'function') {
@@ -16,4 +15,15 @@ export function renderChildren<T>(
     }
 
     return children(props)
+}
+
+export function processProps<TReturnValue, TRenderProps>(
+    value: TReturnValue | ((props: TRenderProps) => TReturnValue) | undefined,
+    props: TRenderProps
+): TReturnValue | undefined {
+    if (value instanceof Function) {
+        return value(props)
+    }
+
+    return value
 }
