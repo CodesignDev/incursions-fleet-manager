@@ -64,22 +64,20 @@ export default function NavBar() {
                     </div>
 
                     <div className="hidden sm:ms-6 sm:flex sm:items-center">
-                        <div className="relative ms-3">
-                            <Dropdown>
-                                <Dropdown.Button className="rounded-md px-3 py-2.5 text-sm/4 font-medium text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
-                                    {user.name}
-                                    <ChevronDownIcon className="-me-0.5 size-4" />
-                                </Dropdown.Button>
+                        <Dropdown>
+                            <Dropdown.Button className="rounded-md px-3 py-2.5 text-sm/4 font-medium text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
+                                {user.name}
+                                <ChevronDownIcon className="-me-0.5 size-4" />
+                            </Dropdown.Button>
 
-                                <Dropdown.Items>
-                                    {userMenuLinks.map(({ key, href, label, active: _, ...props }) => (
-                                        <Dropdown.Link key={key} href={href} {...props}>
-                                            {label}
-                                        </Dropdown.Link>
-                                    ))}
-                                </Dropdown.Items>
-                            </Dropdown>
-                        </div>
+                            <Dropdown.Items>
+                                {userMenuLinks.map(({ key, href, label, active: _, ...props }) => (
+                                    <Dropdown.Link key={key} href={href} {...props}>
+                                        {label}
+                                    </Dropdown.Link>
+                                ))}
+                            </Dropdown.Items>
+                        </Dropdown>
                     </div>
                 </div>
             </Container>
