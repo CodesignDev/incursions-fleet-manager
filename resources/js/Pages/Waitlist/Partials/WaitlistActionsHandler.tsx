@@ -3,7 +3,7 @@ import { PropsWithChildren, useCallback } from 'react'
 import { router } from '@inertiajs/react'
 
 import { WaitlistActionsProvider } from '@/Providers/WaitlistActionsProvider'
-import { WaitlistInfo, WaitlistJoinEntry, WaitlistUpdateEntry } from '@/types'
+import { WaitlistCharacterEntry, WaitlistInfo, WaitlistJoinEntry, WaitlistUpdateEntry } from '@/types'
 
 export default function WaitlistActionsHandler({ children }: PropsWithChildren) {
     const handleJoin = useCallback((waitlist: WaitlistInfo, characters: WaitlistJoinEntry[]) => {

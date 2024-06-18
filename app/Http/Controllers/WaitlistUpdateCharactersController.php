@@ -12,6 +12,9 @@ class WaitlistUpdateCharactersController extends Controller
 {
     use HasWaitlistCharacterInputFormatters;
 
+    /**
+     * Handle the incoming request.
+     */
     public function __invoke(WaitlistUpdateCharactersRequest $request, Waitlist $waitlist)
     {
         /** @var \App\Models\WaitlistEntry $entry */
@@ -36,6 +39,13 @@ class WaitlistUpdateCharactersController extends Controller
                 /** @var \App\Models\WaitlistCharacterEntry $characterEntry */
                 $characterEntry = $entry->characterEntries->firstWhere('character_id', $characterId);
                 optional($characterEntry)->remove($request->user(), WaitlistRemovalReason::SELF_REMOVED);
+
+                // Count how many other character entries and remove the overall entry if there isn't any more
+                $totalEntries = $entry->characterEntries->except(optional($characterEntry)->getKey())->count();
+                if ($totalEntries <= 0) {
+                    $entry->remove($request->user(), WaitlistRemovalReason::SELF_REMOVED);
+                }
+
                 break;
         }
 

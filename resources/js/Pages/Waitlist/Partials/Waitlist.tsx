@@ -26,7 +26,8 @@ type WaitlistProps = {
 export default function Waitlist({ waitlist, className = '' }: WaitlistProps) {
     const { onWaitlist, charactersOnWaitlist, characterData } = useWaitlist()
     const { characters } = useWaitlistCharacters()
-    const { joinWaitlistHandler, leaveWaitlistHandler, updateCharacterEntryHandler } = useWaitlistActions(waitlist)
+    const { joinWaitlistHandler, leaveWaitlistHandler, updateCharacterEntryHandler, dataSyncHandler } =
+        useWaitlistActions(waitlist)
 
     const [selectedCharacters, setSelectedCharacters] = useState<CharacterOrId[]>([])
     const [currentCharacterData, setCurrentCharacterData] = useState<WaitlistCharacterEntry[]>(characterData || [])
@@ -47,7 +48,7 @@ export default function Waitlist({ waitlist, className = '' }: WaitlistProps) {
         // Count total changes
         const totalChanges = sum([added.length, updated.length, removed.length])
         if (totalChanges > 1) {
-            // Sync entire changes instead
+            dataSyncHandler(characterData)
             return
         }
 
@@ -104,6 +105,7 @@ export default function Waitlist({ waitlist, className = '' }: WaitlistProps) {
                             key="waitlist-data"
                             header="Add additional characters"
                             characters={remainingCharacters}
+                            noItemsMessage="There are no other characters available to add to the waitlist."
                             showRowActions
                         >
                             {({ character }) => (
