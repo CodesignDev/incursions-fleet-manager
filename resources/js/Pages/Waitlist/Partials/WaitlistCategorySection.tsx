@@ -1,6 +1,7 @@
 import Container from '@/Components/Container'
 import Section from '@/Components/Section'
 import Waitlist from '@/Pages/Waitlist/Partials/Waitlist'
+import WaitlistQueueStats from '@/Pages/Waitlist/Partials/WaitlistQueueStats'
 import WaitlistSelector from '@/Pages/Waitlist/Partials/WaitlistSelector'
 import { WaitlistProvider } from '@/Providers/WaitlistProvider'
 import { WaitlistCategory } from '@/types'
@@ -15,9 +16,11 @@ export default function WaitlistCategorySection({ category }: WaitlistCategorySe
     return (
         <Container noBasePadding>
             <div className="flex grid-cols-[2fr,_1fr] flex-col gap-4 sm:grid">
-                <Section>Waitlist Queue</Section>
+                <Section className="space-y-2">
+                    <WaitlistQueueStats waitlists={waitlists} />
+                </Section>
 
-                <div className="row-span-2 contents">
+                <div className="row-span-2">
                     <Section>Fleet Info</Section>
                 </div>
 

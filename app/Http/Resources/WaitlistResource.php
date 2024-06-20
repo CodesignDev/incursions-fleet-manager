@@ -2,7 +2,7 @@
 
 namespace App\Http\Resources;
 
-use App\Models\WaitlistCharacterEntry;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Resources\MissingValue;
@@ -28,11 +28,16 @@ class WaitlistResource extends JsonResource
             return new MissingValue;
         }
 
-        return function ($entries) {
-            $entry = $entries->first(); // This is already constrained in the controller
+        return function (Collection $entries) use ($request) {
+            $entry = $entries->firstWhere('user_id', $request->user()->id);
+            $entryPosition = $entries->search($entry);
+
+            $onWaitlist = filled($entry);
 
             return $this->merge([
-                'on_waitlist' => filled($entry),
+                'total_entries' => $this->whenCounted('entries'),
+                'on_waitlist' => $onWaitlist,
+                'queue_position' => $this->when($onWaitlist, $entryPosition + 1),
                 'characters' => transform(
                     $entry,
                     fn ($entry) => $entry->characterEntries->mapWithKeys(fn ($character) => [
@@ -41,7 +46,8 @@ class WaitlistResource extends JsonResource
                             'ship' => $character->requested_ship,
                         ],
                     ]),
-                    new MissingValue),
+                    new MissingValue
+                ),
             ]);
         };
     }

@@ -21,7 +21,12 @@ class WaitlistDashboardController extends Controller
         // Get the list of categories and the fleets / waitlists available within each
         $categories = Category::query()
             ->whereHas('waitlists')
-            ->with(['fleets', 'waitlists.entries'])
+            ->with([
+                'fleets',
+                'waitlists' => fn ($query) => $query
+                    ->with(['entries'])
+                    ->withCount('entries')
+            ])
             ->get();
 
         return inertia('Waitlist/ViewWaitlist', [

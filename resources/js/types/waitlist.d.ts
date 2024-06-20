@@ -6,7 +6,9 @@ export type WaitlistInfo = {
 }
 
 export type Waitlist = WaitlistInfo & {
+    total_entries?: number
     on_waitlist: boolean
+    queue_position?: number
     characters?: WaitlistActiveCharacters
 }
 
