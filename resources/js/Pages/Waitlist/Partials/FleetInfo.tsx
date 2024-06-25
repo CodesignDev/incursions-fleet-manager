@@ -1,6 +1,7 @@
 import { PropsWithChildren, useMemo } from 'react'
 
 import { Disclosure, Transition } from '@headlessui/react'
+import { ArrowTopRightOnSquareIcon } from '@heroicons/react/16/solid'
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
 
 import useTailwindBreakpoint from '@/Hooks/useTailwindBreakpoint'
@@ -89,10 +90,10 @@ function FleetInfoRow({ label, className = '', labelClassName = '', children }: 
 }
 
 function FleetInfoSection({ fleet }: FleetInfoSectionProps) {
+    const { name: fleetName, fleet_boss: boss, comms, member_count: memberCount } = fleet
+
     const fleetBoss = useMemo(() => {
-        const {
-            fleet_boss: { character, user },
-        } = fleet
+        const { character, user } = boss
 
         if (!user || character === user) return character
         return (
@@ -103,7 +104,26 @@ function FleetInfoSection({ fleet }: FleetInfoSectionProps) {
                 </span>
             </div>
         )
-    }, [fleet])
+    }, [boss])
+
+    const fleetComms = useMemo(() => {
+        const { label, url } = comms
+
+        if (!url) return label
+        return (
+            <a
+                href={url}
+                target="_blank"
+                rel="nofollow noreferrer"
+                className="underline decoration-gray-200 underline-offset-4 hover:text-sky-600 hover:decoration-inherit focus:text-sky-600 focus:decoration-inherit focus:outline-none active:text-sky-700 active:decoration-inherit dark:decoration-gray-600 dark:hover:text-sky-500 dark:focus:text-sky-500 dark:active:text-sky-600"
+            >
+                {label}{' '}
+                <span className="inline-block align-middle">
+                    <ArrowTopRightOnSquareIcon className="inline size-4 align-baseline" />
+                </span>
+            </a>
+        )
+    }, [comms])
 
     return (
         <div className="space-y-4 py-4 first:pt-0 last:pb-0">
@@ -113,12 +133,11 @@ function FleetInfoSection({ fleet }: FleetInfoSectionProps) {
 
             <div className="grid grid-cols-[min-content_1fr] gap-x-4 gap-y-1.5">
                 <FleetInfoRow label="FC">{fleetBoss}</FleetInfoRow>
-
-                <FleetInfoRow label="Fleet Name">{fleet.name}</FleetInfoRow>
+                <FleetInfoRow label="Fleet Name">{fleetName}</FleetInfoRow>
                 <FleetInfoRow label="Fleet Type">Headquarters</FleetInfoRow>
                 <FleetInfoRow label="Fleet Location">1DQ1-A</FleetInfoRow>
-                <FleetInfoRow label="Mumble Channel">Incursion Comms A</FleetInfoRow>
-                <FleetInfoRow label="Fleet Members">{fleet.member_count}</FleetInfoRow>
+                <FleetInfoRow label="Mumble Channel">{fleetComms}</FleetInfoRow>
+                <FleetInfoRow label="Fleet Members">{memberCount}</FleetInfoRow>
                 <FleetInfoRow label="Characters in Fleet">None</FleetInfoRow>
             </div>
         </div>

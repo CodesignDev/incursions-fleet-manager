@@ -19,6 +19,15 @@ class Fleet extends Model
     use FleetCanBeClosed, HasFactory, HasUuids, SoftDeletes;
 
     /**
+     * The relations to eager load on every query.
+     *
+     * @var array
+     */
+    protected $with = [
+        'comms',
+    ];
+
+    /**
      * The model's attributes.
      *
      * @var array
@@ -90,6 +99,21 @@ class Fleet extends Model
     {
         return $this->belongsTo(Category::class)
             ->withDefault(['name' => 'Unknown']);
+    }
+
+    /**
+     * The comms channel that this fleet is using.
+     */
+    public function comms(): BelongsTo
+    {
+        return $this->belongsTo(CommsChannel::class, 'comms_channel_id')
+            ->withInactive()
+            ->withDefault([
+                'name' => 'No Comms Channel',
+                'label' => 'No Comms Channel',
+                'url' => '',
+                'active' => false,
+            ]);
     }
 
     /**
