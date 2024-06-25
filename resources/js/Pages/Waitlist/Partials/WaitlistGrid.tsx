@@ -139,18 +139,20 @@ function GridRow({ character, className = '' }: WaitlistGridRowProps) {
                     { 'grid-cols-1': !includeSelectionCheckbox }
                 )}
             >
-                {includeSelectionCheckbox && (
+                {includeSelectionCheckbox ? (
                     <>
                         {isSelected && <div className="absolute inset-y-0 -left-4 w-1 bg-primary-600" />}
                         <div className="row-span-2 flex py-0.5">
                             <CharacterSelectionCheckbox character={character} id={checkboxId} />
                         </div>
-                    </>
-                )}
 
-                <label htmlFor={checkboxId} className="text-sm/5 font-medium">
-                    {character.name}
-                </label>
+                        <label htmlFor={checkboxId} className="text-sm/5 font-medium">
+                            {character.name}
+                        </label>
+                    </>
+                ) : (
+                    <span className="text-sm/5 font-medium">{character.name}</span>
+                )}
 
                 <span className="text-sm sm:hidden">
                     <CharacterShipEntry character={character} />
