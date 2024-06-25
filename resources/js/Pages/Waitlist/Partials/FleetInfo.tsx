@@ -1,10 +1,11 @@
-import { PropsWithChildren, useMemo } from 'react'
+import { PropsWithChildren, ReactNode, useMemo } from 'react'
 
 import { Disclosure, Transition } from '@headlessui/react'
 import { ArrowTopRightOnSquareIcon } from '@heroicons/react/16/solid'
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
 
 import useTailwindBreakpoint from '@/Hooks/useTailwindBreakpoint'
+import FleetInfoStatusBanner from '@/Pages/Waitlist/Partials/FleetInfoStatusBanner'
 import { Fleet } from '@/types'
 import { tw } from '@/utils'
 
@@ -14,6 +15,7 @@ type FleetInfoProps = {
 
 type FleetInfoContainerProps = {
     count?: number
+    fleetStatus?: ReactNode
     className?: string
 }
 
@@ -27,7 +29,12 @@ type FleetInfoRowProps = {
     labelClassName?: string
 }
 
-function FleetInfoContainer({ count = 0, className = '', children }: PropsWithChildren<FleetInfoContainerProps>) {
+function FleetInfoContainer({
+    count = 0,
+    fleetStatus,
+    className = '',
+    children,
+}: PropsWithChildren<FleetInfoContainerProps>) {
     const { isAboveSm } = useTailwindBreakpoint('sm')
 
     const header = useMemo(
@@ -52,7 +59,23 @@ function FleetInfoContainer({ count = 0, className = '', children }: PropsWithCh
                         header
                     ) : (
                         <Disclosure.Button className="flex w-full flex-row items-center justify-between focus:outline-none">
-                            {header}
+                            <div className="flex flex-row items-center gap-x-3.5">
+                                {header}
+
+                                {fleetStatus && (
+                                    <Transition
+                                        show={!open}
+                                        enter="transition duration-100 ease-out"
+                                        enterFrom="transform opacity-0"
+                                        enterTo="transform opacity-100"
+                                        leave="transition duration-100 ease-out"
+                                        leaveFrom="transform opacity-100"
+                                        leaveTo="transform opacity-0"
+                                    >
+                                        {fleetStatus}
+                                    </Transition>
+                                )}
+                            </div>
                             <ChevronDownIcon
                                 className={tw('size-6 transition-transform', {
                                     'rotate-180': open,
@@ -64,11 +87,11 @@ function FleetInfoContainer({ count = 0, className = '', children }: PropsWithCh
                     <Transition
                         show={open || isAboveSm}
                         enter="transition duration-100 ease-out"
-                        enterFrom="transform -translate-y-1/3 sca le-95 opacity-0"
-                        enterTo="transform translate-y-0 scale-100 opacity-100"
+                        enterFrom="transform -translate-y-8 opacity-0"
+                        enterTo="transform translate-y-0 opacity-100"
                         leave="transition duration-75 ease-out"
-                        leaveFrom="transform scale-100 translate-y-0 opacity-100"
-                        leaveTo="transform -translate-y-1/4 scal e-95 opacity-0"
+                        leaveFrom="transform translate-y-0 opacity-100"
+                        leaveTo="transform -translate-y-8 opacity-0"
                     >
                         <Disclosure.Panel static className={className}>
                             {children}
@@ -90,7 +113,7 @@ function FleetInfoRow({ label, className = '', labelClassName = '', children }: 
 }
 
 function FleetInfoSection({ fleet }: FleetInfoSectionProps) {
-    const { name: fleetName, fleet_boss: boss, comms, member_count: memberCount } = fleet
+    const { name: fleetName, status, fleet_boss: boss, comms, member_count: memberCount } = fleet
 
     const fleetBoss = useMemo(() => {
         const { character, user } = boss
@@ -127,9 +150,7 @@ function FleetInfoSection({ fleet }: FleetInfoSectionProps) {
 
     return (
         <div className="space-y-4 py-4 first:pt-0 last:pb-0">
-            <div className="rounded-md bg-red-700 px-2 py-1 text-center text-sm font-bold text-white shadow-sm dark:bg-amber-700">
-                Fleet is currently on break
-            </div>
+            {status !== 'unknown' && <FleetInfoStatusBanner status={status} />}
 
             <div className="grid grid-cols-[min-content_1fr] gap-x-4 gap-y-1.5">
                 <FleetInfoRow label="FC">{fleetBoss}</FleetInfoRow>
@@ -145,8 +166,21 @@ function FleetInfoSection({ fleet }: FleetInfoSectionProps) {
 }
 
 export default function FleetInfo({ fleets = [] }: FleetInfoProps) {
+    const overallFleetStatus = useMemo(() => {
+        return fleets
+            .filter(({ status }) => status !== 'unknown')
+            .slice(0, 3)
+            .map(({ id, status }) => (
+                <FleetInfoStatusBanner key={id} status={status} shortStatus className="rounded py-0.5" />
+            ))
+    }, [fleets])
+
     return (
-        <FleetInfoContainer count={fleets.length} className="divide-y divide-gray-300 dark:divide-gray-600">
+        <FleetInfoContainer
+            fleetStatus={overallFleetStatus}
+            count={fleets.length}
+            className="divide-y divide-gray-300 dark:divide-gray-600"
+        >
             {fleets
                 ? fleets.map((fleet) => <FleetInfoSection key={fleet.id} fleet={fleet} />)
                 : 'There are no available fleets.'}

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\FleetStatus;
 use App\Models\Concerns\FleetCanBeClosed;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -44,6 +45,7 @@ class Fleet extends Model
     protected $fillable = [
         'esi_fleet_id',
         'name',
+        'status',
         'untracked',
         'has_fleet_advert',
         'free_move_enabled',
@@ -55,6 +57,7 @@ class Fleet extends Model
     public function casts(): array
     {
         return [
+            'status' => FleetStatus::class,
             'untracked' => 'boolean',
             'has_fleet_advert' => 'boolean',
             'free_move_enabled' => 'boolean',

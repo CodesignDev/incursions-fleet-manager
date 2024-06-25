@@ -1,12 +1,15 @@
 export type Fleet = {
     id: string
     name: string
+    status: FleetStatus
     tracked: boolean
     fleet_boss: FleetBoss
     comms: FleetCommsChannel
     locations?: FleetLocation[]
     member_count: number
 }
+
+export type FleetStatus = 'forming' | 'running' | 'on-break' | 'docking' | 'standing-down' | 'unknown'
 
 export type FleetBoss = {
     character: string
