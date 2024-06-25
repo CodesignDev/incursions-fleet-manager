@@ -1,5 +1,6 @@
 import Container from '@/Components/Container'
 import Section from '@/Components/Section'
+import FleetInfo from '@/Pages/Waitlist/Partials/FleetInfo'
 import Waitlist from '@/Pages/Waitlist/Partials/Waitlist'
 import WaitlistQueueStats from '@/Pages/Waitlist/Partials/WaitlistQueueStats'
 import WaitlistSelector from '@/Pages/Waitlist/Partials/WaitlistSelector'
@@ -20,8 +21,10 @@ export default function WaitlistCategorySection({ category }: WaitlistCategorySe
                     <WaitlistQueueStats waitlists={waitlists} />
                 </Section>
 
-                <div className="row-span-2">
-                    <Section>Fleet Info</Section>
+                <div className="row-span-2 contents sm:block">
+                    <Section className="space-y-2">
+                        <FleetInfo fleets={fleets} />
+                    </Section>
                 </div>
 
                 <Section noPadding className="py-4">

@@ -1,0 +1,139 @@
+import { PropsWithChildren, useMemo } from 'react'
+
+import { Disclosure, Transition } from '@headlessui/react'
+import { ChevronDownIcon } from '@heroicons/react/20/solid'
+
+import useTailwindBreakpoint from '@/Hooks/useTailwindBreakpoint'
+import { Fleet } from '@/types'
+import { tw } from '@/utils'
+
+type FleetInfoProps = {
+    fleets?: Fleet[]
+}
+
+type FleetInfoContainerProps = {
+    count?: number
+    className?: string
+}
+
+type FleetInfoSectionProps = {
+    fleet: Fleet
+}
+
+type FleetInfoRowProps = {
+    label: string
+    className?: string
+    labelClassName?: string
+}
+
+function FleetInfoContainer({ count = 0, className = '', children }: PropsWithChildren<FleetInfoContainerProps>) {
+    const { isAboveSm } = useTailwindBreakpoint('sm')
+
+    const header = useMemo(
+        () => (
+            <div className="flex items-center gap-x-2.5">
+                <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">Fleet Info</h3>
+                {count > 0 && (
+                    <span className="rounded-full bg-gray-300 px-2.5 py-0.5 text-xs font-bold dark:bg-gray-950">
+                        {count}
+                    </span>
+                )}
+            </div>
+        ),
+        [count]
+    )
+
+    return (
+        <Disclosure>
+            {({ open }) => (
+                <>
+                    {isAboveSm ? (
+                        header
+                    ) : (
+                        <Disclosure.Button className="flex w-full flex-row items-center justify-between focus:outline-none">
+                            {header}
+                            <ChevronDownIcon
+                                className={tw('size-6 transition-transform', {
+                                    'rotate-180': open,
+                                })}
+                            />
+                        </Disclosure.Button>
+                    )}
+
+                    <Transition
+                        show={open || isAboveSm}
+                        enter="transition duration-100 ease-out"
+                        enterFrom="transform -translate-y-1/3 sca le-95 opacity-0"
+                        enterTo="transform translate-y-0 scale-100 opacity-100"
+                        leave="transition duration-75 ease-out"
+                        leaveFrom="transform scale-100 translate-y-0 opacity-100"
+                        leaveTo="transform -translate-y-1/4 scal e-95 opacity-0"
+                    >
+                        <Disclosure.Panel static className={className}>
+                            {children}
+                        </Disclosure.Panel>
+                    </Transition>
+                </>
+            )}
+        </Disclosure>
+    )
+}
+
+function FleetInfoRow({ label, className = '', labelClassName = '', children }: PropsWithChildren<FleetInfoRowProps>) {
+    return (
+        <>
+            <div className={tw('text-nowrap text-gray-500 dark:text-gray-400', labelClassName)}>{label}:</div>
+            <div className={className}>{children}</div>
+        </>
+    )
+}
+
+function FleetInfoSection({ fleet }: FleetInfoSectionProps) {
+    const fleetBoss = useMemo(() => {
+        const {
+            fleet_boss: { character, user },
+        } = fleet
+
+        if (!user || character === user) return character
+        return (
+            <div className="flex flex-col items-start gap-y-0.5">
+                {user}
+                <span className="text-xs font-normal text-gray-600 dark:text-gray-400">
+                    (Fleet is under {character})
+                </span>
+            </div>
+        )
+    }, [fleet])
+
+    return (
+        <div className="space-y-4 py-4 first:pt-0 last:pb-0">
+            <div className="rounded-md bg-red-700 px-2 py-1 text-center text-sm font-bold text-white shadow-sm dark:bg-amber-700">
+                Fleet is currently on break
+            </div>
+
+            <div className="grid grid-cols-[min-content_1fr] gap-x-4 gap-y-1.5">
+                <FleetInfoRow label="FC">{fleetBoss}</FleetInfoRow>
+
+                <FleetInfoRow label="Fleet Name">{fleet.name}</FleetInfoRow>
+                <FleetInfoRow label="Fleet Type">Headquarters</FleetInfoRow>
+                <FleetInfoRow label="Fleet Location">1DQ1-A</FleetInfoRow>
+                <FleetInfoRow label="Mumble Channel">Incursion Comms A</FleetInfoRow>
+                <FleetInfoRow label="Fleet Members">{fleet.member_count}</FleetInfoRow>
+                <FleetInfoRow label="Characters in Fleet">None</FleetInfoRow>
+            </div>
+        </div>
+    )
+}
+
+export default function FleetInfo({ fleets = [] }: FleetInfoProps) {
+    return (
+        <FleetInfoContainer count={fleets.length} className="divide-y divide-gray-300 dark:divide-gray-600">
+            {fleets
+                ? fleets.map((fleet) => <FleetInfoSection key={fleet.id} fleet={fleet} />)
+                : 'There are no available fleets.'}
+            {/* <div className="py-8"> */}
+            {/*    <div className="h-16 bg-gray-900 dark:bg-gray-50" /> */}
+            {/* </div> */}
+        </FleetInfoContainer>
+    )
+}

@@ -22,7 +22,9 @@ class WaitlistDashboardController extends Controller
         $categories = Category::query()
             ->whereHas('waitlists')
             ->with([
-                'fleets',
+                'fleets' => fn($query) => $query
+                    ->with(['boss', 'members'])
+                    ->withCount('members'),
                 'waitlists' => fn ($query) => $query
                     ->with(['entries'])
                     ->withCount('entries')
