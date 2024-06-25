@@ -20,7 +20,7 @@ class ActiveFlagScope implements Scope
      */
     public function apply(Builder $builder, Model $model): void
     {
-        $builder->where('active', true);
+        $builder->where($model->getQualifiedActiveFlagColumn(), true);
     }
 
     /**
@@ -53,7 +53,10 @@ class ActiveFlagScope implements Scope
     protected function addWithoutInactive(Builder $builder): void
     {
         $builder->macro('withoutInactive', function (Builder $builder) {
-            $builder->withoutGlobalScope($this)->where('active', true);
+            $builder->withoutGlobalScope($this)->where(
+                $builder->getModel()->getActiveFlagColumn(),
+                true
+            );
 
             return $builder;
         });
@@ -65,7 +68,10 @@ class ActiveFlagScope implements Scope
     protected function addOnlyInactive(Builder $builder): void
     {
         $builder->macro('onlyInactive', function (Builder $builder) {
-            $builder->withoutGlobalScope($this)->where('active', 0);
+            $builder->withoutGlobalScope($this)->where(
+                $builder->getModel()->getActiveFlagColumn(),
+                0
+            );
 
             return $builder;
         });
