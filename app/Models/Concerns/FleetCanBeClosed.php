@@ -19,9 +19,7 @@ trait FleetCanBeClosed
      */
     public function initializeFleetCanBeClosed(): void
     {
-        $this->mergeCasts([
-            'closed_at' => 'datetime',
-        ]);
+        $this->mergeCasts([$this->getClosedAtColumn() => 'datetime']);
     }
 
     /**
@@ -37,7 +35,7 @@ trait FleetCanBeClosed
         $time = $this->freshTimestamp();
 
         // Set the relevant fields
-        $this->closed_at = $time;
+        $this->{$this->getClosedAtColumn()} = $time;
 
         return $this->save();
     }
@@ -55,6 +53,24 @@ trait FleetCanBeClosed
      */
     public function closed(): bool
     {
-        return ! is_null($this->closed_at);
+        return ! is_null(
+            $this->{$this->getClosedAtColumn()}
+        );
+    }
+
+    /**
+     * Get the name of the "closed at" column.
+     */
+    public function getClosedAtColumn(): string
+    {
+        return defined(static::class.'::CLOSED_AT') ? static::CLOSED_AT : 'closed_at';
+    }
+
+    /**
+     * Get the fully qualified "closed at" column.
+     */
+    public function getQualifiedClosedAtColumn(): string
+    {
+        return $this->qualifyColumn($this->getClosedAtColumn());
     }
 }

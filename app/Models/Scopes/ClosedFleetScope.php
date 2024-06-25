@@ -20,7 +20,7 @@ class ClosedFleetScope implements Scope
      */
     public function apply(Builder $builder, Model $model): void
     {
-        $builder->whereNull('closed_at');
+        $builder->whereNull($model->getQualifiedClosedAtColumn());
     }
 
     /**
@@ -55,7 +55,9 @@ class ClosedFleetScope implements Scope
         $builder->macro('withoutClosedFleets', function (Builder $builder) {
             $model = $builder->getModel();
 
-            $builder->withoutGlobalScope($this)->whereNull('closed_at');
+            $builder->withoutGlobalScope($this)->whereNull(
+                $model->getQualifiedClosedAtColumn()
+            );
 
             return $builder;
         });
@@ -69,7 +71,9 @@ class ClosedFleetScope implements Scope
         $builder->macro('onlyClosedFleets', function (Builder $builder) {
             $model = $builder->getModel();
 
-            $builder->withoutGlobalScope($this)->whereNotNull('closed_at');
+            $builder->withoutGlobalScope($this)->whereNotNull(
+                $model->getQualifiedClosedAtColumn()
+            );
 
             return $builder;
         });
