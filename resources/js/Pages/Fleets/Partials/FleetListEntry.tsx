@@ -17,7 +17,7 @@ function FleetEntryWrapper({ fleet, children }: PropsWithChildren<Pick<FleetList
     if (isAboveMd) return children
 
     return (
-        <Link href={route('fleets.show', fleet)} className="first:rounded-t-lg last:rounded-b-lg hover:bg-gray-600">
+        <Link href={route('fleets.show', { fleet })} className="first:rounded-t-lg last:rounded-b-lg hover:bg-gray-600">
             {children}
         </Link>
     )
@@ -80,7 +80,7 @@ export default function FleetListEntry({ fleet }: FleetListEntryProps) {
                     {isBelowMd && <ChevronRightIcon className="size-6" />}
                     {isAboveMd && (
                         <Link
-                            href={route('fleets.show', fleet)}
+                            href={route('fleets.show', { fleet })}
                             styledAsButton
                             className="flex items-center justify-center py-2"
                         >

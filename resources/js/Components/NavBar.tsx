@@ -11,7 +11,11 @@ import { NavBarLinks } from '@/Links/nav-bar'
 import { UserMenuLinks } from '@/Links/user-menu'
 import { parseLinks, tw } from '@/utils'
 
-export default function NavBar() {
+type NavBarProps = {
+    fluid?: boolean
+}
+
+export default function NavBar({ fluid = false }: NavBarProps) {
     const [showMobileNavigation, toggleMobileNavigation] = useToggle(false)
     const { user } = useCurrentLoggedInUser()
 
@@ -20,7 +24,7 @@ export default function NavBar() {
 
     return (
         <nav className="border-b border-gray-100 bg-white dark:border-gray-700 dark:bg-gray-800">
-            <Container>
+            <Container fluid={fluid}>
                 <div className="flex h-16 sm:justify-between">
                     <div className="-ms-2 me-4 flex items-center sm:hidden">
                         <button

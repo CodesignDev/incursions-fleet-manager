@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\FleetController;
+use App\Http\Controllers\FleetManagerController;
 use App\Http\Controllers\RegisterFleetController;
 use App\Http\Controllers\WaitlistController;
 use App\Http\Controllers\WaitlistDashboardController;
@@ -29,7 +30,9 @@ Route::middleware('auth')->group(function () {
         Route::post('/register', [RegisterFleetController::class, '__invoke']);
 
         Route::prefix('/{fleet}')->group(function () {
-            Route::get('/', [FleetController::class, 'show'])->name('show');
+            Route::get('/{page?}', [FleetManagerController::class, '__invoke'])
+                ->whereIn('page', \App\Enums\FleetManagementPage::cases())
+                ->name('show');
         });
     });
 

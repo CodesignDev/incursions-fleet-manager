@@ -7,8 +7,10 @@ type ContainerProps = {
     width?: ContainerWidths | ''
     disableResponsive?: boolean
     fluid?: boolean
+    addVerticalPadding?: boolean
     noPadding?: boolean
     noBasePadding?: boolean
+    noBaseVerticalPadding?: boolean
 }
 
 const containerWidths = {
@@ -32,8 +34,10 @@ export default function Container<T extends ElementType = 'div'>({
     width = 'xl',
     disableResponsive = false,
     fluid = false,
+    addVerticalPadding = false,
     noPadding = false,
     noBasePadding = false,
+    noBaseVerticalPadding = false,
     children,
     ...props
 }: PropsWithout<T, ContainerProps>) {
@@ -50,7 +54,9 @@ export default function Container<T extends ElementType = 'div'>({
                     [containerWidth]: !fluid,
                     'mx-auto': !disableResponsive,
                     'sm:px-6 lg:px-8': !noPadding,
+                    'sm:py-6 lg:py-8': addVerticalPadding,
                     'px-4': !noBasePadding && !noPadding,
+                    'py-4': !noBaseVerticalPadding && addVerticalPadding,
                 },
                 className
             ),

@@ -5,11 +5,13 @@ import { tw } from '@/utils'
 
 type SectionProps = {
     noPadding?: boolean
+    addRounding?: boolean
 }
 
 export default function Section<T extends ElementType = 'div'>({
     as,
     noPadding,
+    addRounding,
     children,
     ...props
 }: Props<T, SectionProps>) {
@@ -21,6 +23,7 @@ export default function Section<T extends ElementType = 'div'>({
                 'bg-white text-gray-800 shadow-sm sm:rounded-lg dark:bg-gray-800 dark:text-gray-200',
                 {
                     'p-4': !noPadding,
+                    'rounded-lg': addRounding,
                 },
                 props.className
             ),

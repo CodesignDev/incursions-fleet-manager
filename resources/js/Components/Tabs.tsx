@@ -86,7 +86,7 @@ function Tab({ as: _ = 'button', className, ...props }: TabProps<'button'>) {
                     'group inline-flex items-center border-b-2 border-transparent px-1 py-2 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700 focus:border-gray-300 focus:outline-none dark:text-gray-400 dark:hover:border-gray-300 dark:hover:text-gray-300 dark:focus:border-gray-300 ',
                     {
                         'flex flex-1 flex-row justify-center': fullWidthTabs,
-                        'border-primary-500 text-primary-600 hover:border-primary-500 focus:border-primary-500 dark:border-primary-500 dark:text-gray-200 dark:hover:border-primary-500 dark:hover:text-gray-200 dark:focus:border-primary-500':
+                        'border-primary-400 text-primary-600 hover:border-primary-400 hover:text-primary-600 focus:border-primary-400 dark:border-primary-600 dark:text-gray-200 dark:hover:border-primary-600 dark:hover:text-gray-200 dark:focus:border-primary-600':
                             selected,
                     },
                     className

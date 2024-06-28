@@ -2,7 +2,7 @@ import { HTMLAttributes } from 'react'
 
 import { match, tw } from '@/utils'
 
-type SpinnerProps = {
+export type SpinnerProps = {
     type?: SpinnerType
 }
 
