@@ -15,6 +15,7 @@ use ArrayAccess;
 use Closure;
 use Illuminate\Console\Scheduling\Event;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Schema\ColumnDefinition;
 use Illuminate\Http\Client\PendingRequest;
@@ -60,6 +61,9 @@ class AppServiceProvider extends ServiceProvider
 
         // Disable wrapping of API resources
         JsonResource::withoutWrapping();
+
+        // Enable strict mode for models
+        Model::shouldBeStrict();
     }
 
     /**
