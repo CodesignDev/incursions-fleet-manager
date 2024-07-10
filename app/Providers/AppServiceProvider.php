@@ -12,6 +12,7 @@ use App\Observers\FleetMemberInviteObserver;
 use App\Observers\WaitlistEntryObserver;
 use App\Services\Inertia\ZiggyHttpGateway;
 use ArrayAccess;
+use Closure;
 use Illuminate\Console\Scheduling\Event;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Schema\Blueprint;
@@ -21,6 +22,8 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\ServiceProvider;
+use Inertia\Inertia;
+use Inertia\LazyProp;
 use Inertia\Ssr\Gateway;
 use Laravel\Socialite\Contracts\Factory as SocialiteFactory;
 
@@ -91,6 +94,14 @@ class AppServiceProvider extends ServiceProvider
 
         // Event macro that defines a daily schedule at EVE downtime
         Event::mixin(new EventEveDowntimeMixin());
+
+        // Inertia macros
+        Inertia::macro('lazyIf', function (Closure|bool $value, callable $callback): callable|LazyProp {
+            return value($value) ? $this->lazy($callback): $callback;
+        });
+        Inertia::macro('lazyUnless', function (Closure|bool $value, callable $callback): callable|LazyProp {
+            return value($value) ? $callback : $this->lazy($callback);
+        });
     }
 
     /**
