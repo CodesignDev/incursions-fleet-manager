@@ -3,15 +3,15 @@ import { FleetManagementPageType } from '@/Constants/FleetManagementPageType'
 import { FleetManagerExtendedPageProps } from '@/Pages/Fleets/FleetManager'
 import useFleetPageLoader from '@/Pages/Fleets/Partials/Hooks/useFleetPageLoader'
 
-export default function FleetManagerMembersView() {
+export default function FleetManagerSettingsView() {
     const { loading, error, hasData, data, updateData } = useFleetPageLoader<FleetManagerExtendedPageProps>(
-        FleetManagementPageType.FleetMembers,
-        'fleet_members',
+        FleetManagementPageType.FleetSettings,
+        'fleet_settings',
         { initialValue: [] }
     )
 
     if (loading && !hasData) return <PageLoadingSpinner />
-    if (error) return <div>There was an error while fetching the members information</div>
+    if (error) return <div>There was an error while fetching the fleet settings</div>
 
-    return <>Fleet Members</>
+    return <>Fleet Settings Page</>
 }

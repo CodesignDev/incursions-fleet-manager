@@ -9,6 +9,7 @@ import Tabs from '@/Components/Tabs'
 import { FleetManagementPageType } from '@/Constants/FleetManagementPageType'
 import ApplicationLayout from '@/Layouts/ApplicationLayout'
 import FleetManagerMembersView from '@/Pages/Fleets/Partials/FleetManagerMembersView'
+import FleetManagerSettingsView from '@/Pages/Fleets/Partials/FleetManagerSettingsView'
 import { FleetProvider } from '@/Providers/FleetProvider'
 import { Fleet, PageProps } from '@/types'
 
@@ -16,19 +17,20 @@ const FleetManagerWaitlistView = lazy(() => import('@/Pages/Fleets/Partials/Flee
 
 type FleetManagerPageProps = {
     fleet: Fleet
-    default_page_tab: FleetManagementPageType
+    default_tab: FleetManagementPageType
 }
 
 export type FleetManagerExtendedPageProps = FleetManagerPageProps & {
     waitlist_entries?: []
-    members?: []
+    fleet_members?: []
+    fleet_settings?: []
 }
 
-export default function FleetManager({ fleet, default_page_tab: defaultTabKey }: PageProps<FleetManagerPageProps>) {
+export default function FleetManager({ fleet, default_tab: defaultTabKey }: PageProps<FleetManagerPageProps>) {
     const { name: fleetName = 'Unknown' } = fleet
 
     const defaultPageTab = useMemo(
-        () => Object.keys(FleetManagementPageType).findIndex((tab) => tab === (defaultTabKey as string)),
+        () => Object.values(FleetManagementPageType).findIndex((tab) => tab === (defaultTabKey as string)),
         [defaultTabKey]
     )
 
@@ -63,15 +65,22 @@ export default function FleetManager({ fleet, default_page_tab: defaultTabKey }:
                                             <FleetManagerWaitlistView />
                                         </Suspense>
                                     </Tabs.Panel>
+
                                     <Tabs.Panel>
                                         <Suspense fallback={<PageLoadingSpinner />}>
                                             <FleetManagerMembersView />
                                         </Suspense>
                                     </Tabs.Panel>
-                                    <Tabs.Panel>Fleet Settings view</Tabs.Panel>
+
+                                    <Tabs.Panel>
+                                        <Suspense fallback={<PageLoadingSpinner />}>
+                                            <FleetManagerSettingsView />
+                                        </Suspense>
+                                    </Tabs.Panel>
                                 </Tabs.Panels>
                             </Tabs>
                         </Section>
+
                         <Section>Extra Panels</Section>
                     </div>
                 </FleetProvider>
