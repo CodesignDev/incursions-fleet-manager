@@ -30,7 +30,7 @@ export default function FleetManager({ fleet, default_tab: defaultTabKey }: Page
     const { name: fleetName = 'Unknown' } = fleet
 
     const defaultPageTab = useMemo(
-        () => Object.values(FleetManagementPageType).findIndex((tab) => tab === (defaultTabKey as string)),
+        () => Object.values(FleetManagementPageType).findIndex((tab) => tab === defaultTabKey),
         [defaultTabKey]
     )
 

@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 
 import { Character, CharacterOrId } from '@/types'
-import { isActiveCharacter } from '@/utils/waitlist'
+import { isActiveCharacter } from '@/utils'
 
 export default function useWaitlistedCharacters(
     characters: Character[],

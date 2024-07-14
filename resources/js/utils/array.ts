@@ -1,4 +1,5 @@
-// eslint-disable-next-line import/prefer-default-export
+import { isArray } from 'lodash-es'
+
 export function flattenGroupedArray<T, TGroup>(
     entries: readonly T[] | TGroup[],
     isGroupPredicate: (entry: T | TGroup) => boolean,
@@ -13,4 +14,8 @@ export function flattenGroupedArray<T, TGroup>(
     })
 
     return flattenedEntries
+}
+
+export function wrapArray<T>(thing: T | T[]) {
+    return isArray(thing) ? thing : [thing]
 }

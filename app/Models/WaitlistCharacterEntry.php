@@ -7,12 +7,22 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Znck\Eloquent\Relations\BelongsToThrough as BelongsToThroughRelation;
 use Znck\Eloquent\Traits\BelongsToThrough;
 
 class WaitlistCharacterEntry extends Model
 {
     use BelongsToThrough, EntryIsRemovable, HasFactory, HasUuids;
+
+    /**
+     * The relations to eager load on every query.
+     *
+     * @var array
+     */
+    protected $with = [
+        'doctrineShips',
+    ];
 
     /**
      * The attributes that are mass assignable.
@@ -46,5 +56,19 @@ class WaitlistCharacterEntry extends Model
     public function character(): BelongsTo
     {
         return $this->belongsTo(Character::class);
+    }
+
+    /**
+     * The doctrine ships that this character is associated with.
+     */
+    public function doctrineShips(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            DoctrineShip::class,
+            WaitlistCharacterShipEntry::class,
+            'entry_id',
+            'ship_id'
+        )
+            ->withTimestamps();
     }
 }

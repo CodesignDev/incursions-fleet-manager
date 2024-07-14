@@ -1,13 +1,15 @@
-import { ChangeEventHandler, useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react'
 
+import { isEmpty } from 'lodash-es'
 import { useDebounceCallback } from 'usehooks-ts'
 
-import TextInput from '@/Components/TextInput'
+import CharacterShipDisplay from '@/Pages/Waitlist/Partials/CharacterShipDisplay'
+import CharacterShipInput from '@/Pages/Waitlist/Partials/CharacterShipInput'
 import { useWaitlistCharacterData } from '@/Providers/WaitlistCharacterDataProvider'
 import { useWaitlistCharacterEntryEditHandler } from '@/Providers/WaitlistCharacterEntryEditProvider'
 import { useWaitlistCharacterSelector } from '@/Providers/WaitlistCharacterSelectionProvider'
 import { useWaitlist } from '@/Providers/WaitlistProvider'
-import { CharacterOrId } from '@/types'
+import { CharacterOrId, WaitlistCharacterEntryData } from '@/types'
 
 type CharacterShipEntryProps = {
     character: CharacterOrId
@@ -15,26 +17,24 @@ type CharacterShipEntryProps = {
 }
 
 export default function CharacterShipEntry({ character, placeholder }: CharacterShipEntryProps) {
-    const { onWaitlist = false, characterOnWaitlist = false } = useWaitlist(character)
+    const { onWaitlist = false, hasDoctrine, characterOnWaitlist = false } = useWaitlist(character)
     const { isSelected, selectOption } = useWaitlistCharacterSelector(character)
 
-    const { canEdit, finishEditing, registerEventListeners } = useWaitlistCharacterEntryEditHandler()
+    const { isCurrentlyEditing, finishEditing, registerEventListeners } = useWaitlistCharacterEntryEditHandler()
 
-    const [value, setValue] = useWaitlistCharacterData(character, '')
+    const [value, setValue] = useWaitlistCharacterData(character, hasDoctrine ? [] : '')
 
     const setValueDebounced = useDebounceCallback(setValue, 2000)
 
     const [internalValue, setInternalValue] = useState(value)
 
     const allowEditing = useMemo(
-        () => !onWaitlist || !characterOnWaitlist || canEdit,
-        [onWaitlist, characterOnWaitlist, canEdit]
+        () => !onWaitlist || !characterOnWaitlist || isCurrentlyEditing,
+        [onWaitlist, characterOnWaitlist, isCurrentlyEditing]
     )
 
-    const handleChange: ChangeEventHandler<HTMLInputElement> = useCallback(
-        (e) => {
-            const inputValue = e.target.value
-
+    const handleChange = useCallback(
+        (inputValue: WaitlistCharacterEntryData) => {
             setInternalValue(inputValue)
             if (!onWaitlist) setValueDebounced(inputValue)
             if (!isSelected) selectOption(inputValue !== '')
@@ -53,8 +53,8 @@ export default function CharacterShipEntry({ character, placeholder }: Character
 
     const handleSaveChanges = useCallback(() => {
         finishEditing()
-        if (characterOnWaitlist) setValue(internalValue !== '' ? internalValue : null)
-        if (!characterOnWaitlist && internalValue !== '') setValue(internalValue)
+        if (characterOnWaitlist) setValue(!isEmpty(internalValue) ? internalValue : null)
+        if (!characterOnWaitlist && !isEmpty(internalValue)) setValue(internalValue)
     }, [characterOnWaitlist, internalValue, setValue, finishEditing])
 
     const handleDiscardChanges = useCallback(() => {
@@ -72,33 +72,26 @@ export default function CharacterShipEntry({ character, placeholder }: Character
 
     useLayoutEffect(() => {
         registerEventListeners({ onStartEditing: handleStartEdit })
-    }, [handleStartEdit])
+    }, [registerEventListeners, handleStartEdit])
 
     useLayoutEffect(() => {
         registerEventListeners({ onSaveChanges: handleSaveChanges })
-    }, [handleSaveChanges])
+    }, [registerEventListeners, handleSaveChanges])
 
     useLayoutEffect(() => {
         registerEventListeners({ onDiscardChanges: handleDiscardChanges })
-    }, [handleDiscardChanges])
+    }, [registerEventListeners, handleDiscardChanges])
 
     useLayoutEffect(() => {
         registerEventListeners({ onRemoveEntry: handleRemoveEntry })
-    }, [handleRemoveEntry])
+    }, [registerEventListeners, handleRemoveEntry])
 
-    if (!allowEditing) {
-        return (
-            <div className="flex w-full cursor-not-allowed select-none flex-wrap rounded-md border border-gray-300 bg-gray-100 px-2 py-2.5 text-sm text-gray-600 shadow-sm empty:h-10 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-400">
-                {value}
-            </div>
-        )
-    }
+    if (!allowEditing) return <CharacterShipDisplay value={value} />
 
     return (
-        <TextInput
-            className="w-full px-2 text-sm leading-6 disabled:select-none"
-            placeholder={placeholder || 'Ships you can bring...'}
+        <CharacterShipInput
             value={internalValue}
+            placeholder={placeholder}
             onChange={handleChange}
             onBlur={syncChanges}
         />

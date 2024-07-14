@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 
-import { first, isEqual, sum } from 'lodash-es'
+import { first, isEmpty, isEqual, sum } from 'lodash-es'
 
 import Tooltip from '@/Components/Tooltip'
 import usePrevious from '@/Hooks/usePrevious'
@@ -15,8 +15,7 @@ import { WaitlistCharacterSelectionProvider } from '@/Providers/WaitlistCharacte
 import { useWaitlistCharacters } from '@/Providers/WaitlistCharactersProvider'
 import { useWaitlist } from '@/Providers/WaitlistProvider'
 import { CharacterOrId, WaitlistCharacterEntry, WaitlistInfo } from '@/types'
-import { getCharacterId, tw } from '@/utils'
-import { getCharacterDataDifferences, getWaitlistEntryDiffAction } from '@/utils/waitlist'
+import { getCharacterDataDifferences, getCharacterId, getWaitlistEntryDiffAction, tw } from '@/utils'
 
 type WaitlistProps = {
     waitlist: WaitlistInfo
@@ -56,12 +55,12 @@ export default function Waitlist({ waitlist, className = '' }: WaitlistProps) {
         const item = first([...added, ...updated, ...removed]) as WaitlistCharacterEntry | undefined
         const action = getWaitlistEntryDiffAction(diff, item)
         if (item && action) updateCharacterEntryHandler({ action, ...item })
-    }, [currentCharacterData, previousCharacterData])
+    }, [currentCharacterData, previousCharacterData]) // eslint-disable-line react-hooks/exhaustive-deps
 
     const handleJoinButtonClick = useCallback(() => {
         const selectedCharacterIds = selectedCharacters.map(getCharacterId)
         const data = currentCharacterData.filter(
-            ({ character, ship }) => selectedCharacterIds.includes(character) && ship !== ''
+            ({ character, ships }) => selectedCharacterIds.includes(character) && !isEmpty(ships)
         )
 
         if (data.length > 0) {
@@ -92,10 +91,12 @@ export default function Waitlist({ waitlist, className = '' }: WaitlistProps) {
                         >
                             {({ character }) => (
                                 <WaitlistCharacterEntryEditProvider key={character.id}>
-                                    {({ canEdit }) => (
+                                    {({ isCurrentlyEditing }) => (
                                         <WaitlistGrid.Row
                                             character={character}
-                                            className={tw({ 'max-sm:bg-gray-50 max-sm:dark:bg-gray-700': canEdit })}
+                                            className={tw({
+                                                'max-sm:bg-gray-50 max-sm:dark:bg-gray-700': isCurrentlyEditing,
+                                            })}
                                         />
                                     )}
                                 </WaitlistCharacterEntryEditProvider>

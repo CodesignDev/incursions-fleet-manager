@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\WaitlistRemovalReason;
 use App\Http\Requests\JoinWaitlistRequest;
 use App\Models\Waitlist;
+use App\Models\WaitlistCharacterEntry;
 use App\Models\WaitlistEntry;
 use App\Traits\HasWaitlistCharacterInputFormatters;
 use Illuminate\Http\RedirectResponse;
@@ -21,17 +22,33 @@ class WaitlistController extends Controller
         $entry = $waitlist->entries()->firstOrCreate(['user_id' => $request->user()->id]);
 
         // Get the formatted request data
-        $characters = $this->formatCharacterInputArray($request->safe()->characters);
+        $data = $this->formatCharacterInputArray(
+            $request->safe()->input('characters', [])
+        );
+
+        // Get the list of character related data
+        $characters = $data
+            ->map(
+                fn($entry) => collect(['character_id' => data_get($entry, 'character')])
+                    ->unless($waitlist->has_doctrine)
+                    ->merge(['requested_ship' => data_get($entry, 'ships')])
+                    ->toArray()
+            );
+
+        // If the waitlist has a doctrine, pull the ships from the character data
+        $ships = collect(
+            $waitlist->has_doctrine ? $data->pluck('ships', 'character') : []
+        );
 
         // Create the character entries
-        $entry->characterEntries()->createMany(
-            $characters
-                ->map(fn ($entry) => [
-                    'character_id' => $entry['character'],
-                    'requested_ship' => $entry['ship'],
-                ])
-                ->toArray()
-        );
+        $entry->characterEntries()->createMany($characters->toArray())
+
+            // Apply any doctrine ship relationships
+            ->when($ships->isNotEmpty())
+            ->each(function (WaitlistCharacterEntry $entry) use ($ships) {
+                $characterShips = $ships->get($entry->character_id, []);
+                $entry->doctrineShips()->attach(array_unique($characterShips, SORT_REGULAR));
+            });
 
         return back()->with('status', 'Joined waitlist.');
     }
@@ -46,7 +63,11 @@ class WaitlistController extends Controller
 
         // Remove the relevant entries
         $entry->remove($request->user(), WaitlistRemovalReason::SELF_REMOVED);
-        $entry->characterEntries->each->remove($request->user(), WaitlistRemovalReason::SELF_REMOVED);
+
+        $entry->characterEntries->each(function ($characterEntry) use ($request) {
+            $characterEntry->remove($request->user(), WaitlistRemovalReason::SELF_REMOVED);
+            $characterEntry->doctrineShips()->detach();
+        });
 
         return back()->with('status', 'Removed from waitlist');
     }

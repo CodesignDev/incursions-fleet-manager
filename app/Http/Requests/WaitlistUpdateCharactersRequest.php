@@ -6,17 +6,9 @@ use App\Enums\WaitlistUpdateCharacterActionType;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class WaitlistUpdateCharactersRequest extends FormRequest
+class WaitlistUpdateCharactersRequest extends JoinWaitlistRequest
 {
     use HasWaitlistCharacterRules;
-
-    /**
-     * Determine if the user is authorized to make this request.
-     */
-    public function authorize(): bool
-    {
-        return true;
-    }
 
     /**
      * Get the validation rules that apply to the request.
@@ -25,12 +17,12 @@ class WaitlistUpdateCharactersRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
+        return $this->includeDoctrineBasedRules($this->waitlistHasDoctrine(), fn () => [
             'action' => [
                 'required',
                 Rule::enum(WaitlistUpdateCharacterActionType::class),
             ],
             ...$this->applyCharacterRules(),
-        ];
+        ]);
     }
 }

@@ -71,8 +71,7 @@ export default function WaitlistSelector({
 
             <Tabs.TabPanels>
                 {waitlists.map((waitlist) => {
-                    const { id } = waitlist
-                    return <Tabs.TabPanel key={id}>{renderChildren(children, { waitlist })}</Tabs.TabPanel>
+                    return <Tabs.TabPanel key={waitlist.id}>{renderChildren(children, { waitlist })}</Tabs.TabPanel>
                 })}
             </Tabs.TabPanels>
         </Tabs.TabGroup>

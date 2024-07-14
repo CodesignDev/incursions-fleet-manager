@@ -11,13 +11,11 @@ trait HasWaitlistCharacterInputFormatters
     {
         return collect($data)
             ->map(fn ($entry) => $this->formatCharacterInput($entry))
-            ->filter(fn ($entry) => data_get($entry, 'ships', []) || data_get($entry, 'ship', ''));
+            ->filter(fn ($entry) => data_get($entry, 'ships'));
     }
 
     protected function formatCharacterInput(array $data): array
     {
-        $requiredKeys = ['character', 'ship', 'ships'];
-
-        return Arr::only($data, $requiredKeys);
+        return Arr::only($data, ['character', 'ships']);
     }
 }

@@ -8,7 +8,7 @@ type ContextProps = {
     updateCharacterData: (character: CharacterOrId, ship: Nullable<WaitlistCharacterEntryData>) => void
 }
 
-type WaitlistCharacterDataOutput = ContextProps
+type WaitlistCharacterDataOutput = ContextProps & [ContextProps['characterData'], ContextProps['updateCharacterData']]
 type WaitlistScopedCharacterDataOutput<T = WaitlistCharacterEntryData> = [
     T,
     (value: Nullable<WaitlistCharacterEntryData>) => void,
@@ -36,24 +36,24 @@ function WaitlistCharacterDataProvider({
 }: PropsWithChildren<ProviderProps>) {
     const [characterData, setCharacterData] = useState<WaitlistCharacterEntry[]>(() => initialData || [])
 
-    const handleDataUpdate = useCallback((character: CharacterOrId, ship: Nullable<WaitlistCharacterEntryData>) => {
+    const handleDataUpdate = useCallback((character: CharacterOrId, ships: Nullable<WaitlistCharacterEntryData>) => {
         const characterId = getCharacterId(character)
 
         setCharacterData((previousCharacterData) => {
-            if (ship === null) {
+            if (ships === null) {
                 return previousCharacterData.filter((item) => item.character !== characterId)
             }
 
             if (previousCharacterData.some((item) => item.character === characterId)) {
                 return previousCharacterData.map((item) => {
                     if (item.character === characterId) {
-                        return { ...item, ship }
+                        return { ...item, ships }
                     }
                     return item
                 })
             }
 
-            return [...previousCharacterData, { character: characterId, ship }]
+            return [...previousCharacterData, { character: characterId, ships }]
         })
     }, [])
 
@@ -85,9 +85,9 @@ function useWaitlistCharacterData(character?: CharacterOrId, initialValue?: Wait
     const { characterData, updateCharacterData } = useContext(CharacterDataContext)
 
     const requestedCharacterData = useMemo(() => {
-        if (!character) return ''
+        if (!character) return undefined
 
-        return characterData.find((item) => item.character === getCharacterId(character))?.ship || initialValue
+        return characterData.find((item) => item.character === getCharacterId(character))?.ships || initialValue
     }, [characterData, character, initialValue])
 
     const handleUpdateCharacterData = useCallback(
@@ -103,7 +103,7 @@ function useWaitlistCharacterData(character?: CharacterOrId, initialValue?: Wait
         return Object.assign([characterData, updateCharacterData], {
             characterData,
             updateCharacterData,
-        }) as WaitlistCharacterDataOutput
+        })
     }
 
     return Object.assign([requestedCharacterData, handleUpdateCharacterData], {

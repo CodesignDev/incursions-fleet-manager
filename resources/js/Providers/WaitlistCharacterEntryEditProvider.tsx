@@ -6,7 +6,7 @@ import { noop, renderChildren } from '@/utils'
 type NoopFunction = () => void
 
 type ContextProps = {
-    canEdit: boolean
+    isCurrentlyEditing: boolean
     startEditing: () => void
     finishEditing: () => void
     handleActionButtonClick: (action: WaitlistEditActionType) => void
@@ -22,7 +22,7 @@ type WaitlistCharacterEditEventHandlers = {
 }
 
 type ProviderRenderProps = {
-    canEdit: boolean
+    isCurrentlyEditing: boolean
     startEditing: () => void
     finishEditing: () => void
 }
@@ -32,7 +32,7 @@ type WaitlistEntryEditHandlerOutput = ContextProps
 type WaitlistEditActionType = 'edit' | 'save' | 'discard' | 'remove'
 
 const defaultContextProps: ContextProps = {
-    canEdit: false,
+    isCurrentlyEditing: false,
     startEditing: noop,
     finishEditing: noop,
     handleActionButtonClick: noop,
@@ -42,7 +42,7 @@ const defaultContextProps: ContextProps = {
 const CharacterEntryEditContext = createContext(defaultContextProps)
 
 function WaitlistCharacterEntryEditProvider({ children }: PropsWithChildrenPlusRenderProps<ProviderRenderProps>) {
-    const [canEdit, setCanEdit] = useState(false)
+    const [isCurrentlyEditing, setIsCurrentlyEditing] = useState(false)
 
     const startEditingCallbackRef = useRef<NoopFunction>()
     const finishEditingCallbackRef = useRef<NoopFunction>()
@@ -51,8 +51,8 @@ function WaitlistCharacterEntryEditProvider({ children }: PropsWithChildrenPlusR
     const discardChangesHandlerRef = useRef<NoopFunction>()
     const removeEntryHandlerRef = useRef<NoopFunction>()
 
-    const startEditing = useCallback(() => setCanEdit(true), [])
-    const finishEditing = useCallback(() => setCanEdit(false), [])
+    const startEditing = useCallback(() => setIsCurrentlyEditing(true), [])
+    const finishEditing = useCallback(() => setIsCurrentlyEditing(false), [])
 
     const handleActionButtonClick = useCallback(
         (action: WaitlistEditActionType) => {
@@ -87,28 +87,28 @@ function WaitlistCharacterEntryEditProvider({ children }: PropsWithChildrenPlusR
     }, [])
 
     useEffect(() => {
-        if (canEdit) {
+        if (isCurrentlyEditing) {
             startEditingCallbackRef.current?.()
         } else {
             finishEditingCallbackRef.current?.()
         }
-    }, [canEdit])
+    }, [isCurrentlyEditing])
 
     const contextValue = useMemo(
         () => ({
-            canEdit,
+            isCurrentlyEditing,
             startEditing,
             finishEditing,
             handleActionButtonClick,
             registerEventListeners,
         }),
-        [canEdit, startEditing, finishEditing, handleActionButtonClick, registerEventListeners]
+        [isCurrentlyEditing, startEditing, finishEditing, handleActionButtonClick, registerEventListeners]
     )
 
     return (
         <CharacterEntryEditContext.Provider value={contextValue}>
             {renderChildren(children, {
-                canEdit,
+                isCurrentlyEditing,
                 startEditing,
                 finishEditing,
             })}

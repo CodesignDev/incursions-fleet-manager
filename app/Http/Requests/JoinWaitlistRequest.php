@@ -23,9 +23,21 @@ class JoinWaitlistRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
+        return $this->includeDoctrineBasedRules($this->waitlistHasDoctrine(), fn () => [
             'characters.*' => $this->characterArrayRule(),
             ...$this->applyCharacterRules('characters.*'),
-        ];
+        ]);
+    }
+
+    /**
+     * Does the waitlist on this request have a doctrine attached to it.
+     */
+    protected function waitlistHasDoctrine(): bool
+    {
+        // Get the waitlist that this request is for
+        /** @var \App\Models\Waitlist $waitlist */
+        $waitlist = $this->route('waitlist');
+
+        return optional($waitlist)->has_doctrine ?? false;
     }
 }

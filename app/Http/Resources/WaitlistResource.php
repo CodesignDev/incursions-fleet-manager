@@ -18,6 +18,7 @@ class WaitlistResource extends JsonResource
     {
         return [
             $this->attributes(['id', 'name']),
+            'doctrine' => $this->doctrine_id,
             $this->whenLoaded('entries', $this->getWaitlistUserEntryData($request)),
         ];
     }
@@ -32,6 +33,7 @@ class WaitlistResource extends JsonResource
             $entry = $entries->firstWhere('user_id', $request->user()->id);
             $entryPosition = $entries->search($entry);
 
+            $hasDoctrine = $this->resource->has_doctrine;
             $onWaitlist = filled($entry);
 
             return $this->merge([
@@ -43,7 +45,9 @@ class WaitlistResource extends JsonResource
                     fn ($entry) => $entry->characterEntries->mapWithKeys(fn ($character) => [
                         $character->character_id => [
                             'character' => $character->character_id,
-                            'ship' => $character->requested_ship,
+                            'ships' => $hasDoctrine
+                                ? $character->doctrineShips->pluck('id')
+                                : $character->requested_ship,
                         ],
                     ]),
                     new MissingValue

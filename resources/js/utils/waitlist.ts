@@ -1,4 +1,4 @@
-import { difference, differenceBy, map, pick, remove } from 'lodash-es'
+import { difference, differenceBy, map, pick } from 'lodash-es'
 
 import { CharacterOrId, WaitlistCharacterDataDiff, WaitlistCharacterEntry } from '@/types'
 import { getCharacterId } from '@/utils/characters'
@@ -29,7 +29,7 @@ export function getCharacterDataDifferences(
     const updatedEntries = differenceBy(
         currentData.filter((item) => !newCharacters.includes(item.character)),
         previousData.filter((item) => !removedCharacters.includes(item.character)),
-        'ship'
+        'ships'
     )
 
     return {
@@ -39,6 +39,7 @@ export function getCharacterDataDifferences(
     }
 }
 
+// eslint-disable-next-line consistent-return
 export function getWaitlistEntryDiffAction(
     diff: WaitlistCharacterDataDiff,
     searchItem: WaitlistCharacterEntry | undefined
@@ -46,6 +47,7 @@ export function getWaitlistEntryDiffAction(
     if (!searchItem) return undefined
 
     const { character } = searchItem
+    // eslint-disable-next-line default-case
     switch (true) {
         case diff.added.some((item) => item.character === character):
             return 'add'

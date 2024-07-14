@@ -6,6 +6,7 @@ use App\Enums\WaitlistRemovalReason;
 use App\Enums\WaitlistUpdateCharacterActionType;
 use App\Http\Requests\WaitlistUpdateCharactersRequest;
 use App\Models\Waitlist;
+use App\Models\WaitlistCharacterShipEntry;
 use App\Traits\HasWaitlistCharacterInputFormatters;
 
 class WaitlistUpdateCharactersController extends Controller
@@ -17,32 +18,45 @@ class WaitlistUpdateCharactersController extends Controller
      */
     public function __invoke(WaitlistUpdateCharactersRequest $request, Waitlist $waitlist)
     {
+        // Does the waitlist have a doctrine attached to it
+        $hasDoctrine = $waitlist->has_doctrine;
+
         /** @var \App\Models\WaitlistEntry $entry */
         $entry = $waitlist->entries()->where(['user_id' => $request->user()->id])->firstOrFail();
 
         $action = $request->enum('action', WaitlistUpdateCharacterActionType::class);
         $validatedData = $request->validated();
 
+        // Format the input data
         $characterData = $this->formatCharacterInput($validatedData);
         $characterId = data_get($characterData, 'character');
-        $requestedShip = data_get($characterData, 'ship');
-        $query = ['character_id' => $characterId];
+        $requestedShips = data_get($characterData, 'ships');
 
         switch ($action) {
             case WaitlistUpdateCharacterActionType::ADD:
             case WaitlistUpdateCharacterActionType::UPDATE:
-                $method = $action === WaitlistUpdateCharacterActionType::UPDATE ? 'updateOrCreate' : 'firstOrCreate';
-                $entry->characterEntries()->{$method}($query, ['requested_ship' => $requestedShip]);
+                /** @var \App\Models\WaitlistCharacterEntry $characterEntry */
+                $characterEntry = $entry->characterEntries()->updateOrCreate(
+                    ['character_id' => $characterId],
+                    ['requested_ship' => $hasDoctrine ? '' : $requestedShips]
+                );
+                if ($hasDoctrine && is_array($requestedShips) && count($requestedShips) > 0) {
+                    $characterEntry->doctrineShips()->sync($requestedShips);
+                }
                 break;
 
             case WaitlistUpdateCharacterActionType::REMOVE:
                 /** @var \App\Models\WaitlistCharacterEntry $characterEntry */
                 $characterEntry = $entry->characterEntries->firstWhere('character_id', $characterId);
-                optional($characterEntry)->remove($request->user(), WaitlistRemovalReason::SELF_REMOVED);
+                if (is_null($characterEntry)) {
+                    break;
+                }
 
-                // Count how many other character entries and remove the overall entry if there isn't any more
-                $totalEntries = $entry->characterEntries->except(optional($characterEntry)->getKey())->count();
-                if ($totalEntries <= 0) {
+                $characterEntry->remove($request->user(), WaitlistRemovalReason::SELF_REMOVED);
+                $characterEntry->doctrineShips()->detach();
+
+                // Count how many other character entries and remove the overall entry if there isn't any others
+                if ($entry->characterEntries->except($characterEntry->getKey())->isEmpty()) {
                     $entry->remove($request->user(), WaitlistRemovalReason::SELF_REMOVED);
                 }
 

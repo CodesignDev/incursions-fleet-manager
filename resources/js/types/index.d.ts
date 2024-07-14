@@ -4,6 +4,7 @@ import { User } from '@/types/user'
 
 // Index list: START - Automatically generated - DO NOT REMOVE
 export * from './characters'
+export * from './doctrine'
 export * from './dropdown'
 export * from './fleets'
 export * from './links'

@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\CharacterResource;
+use App\Http\Resources\DoctrineResource;
 use App\Http\Resources\WaitlistCategoryResource;
 use App\Models\Category;
+use App\Models\Doctrine;
 use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Http\Request;
 
@@ -31,9 +33,13 @@ class WaitlistDashboardController extends Controller
             ])
             ->get();
 
+        // Get the doctrines for the waitlists that are available
+        $doctrines = Doctrine::whereIn('id', $categories->flatMap(fn ($category) => $category->waitlists)->pluck('doctrine_id'))->get();
+
         return inertia('Waitlist/ViewWaitlist', [
             'characters' => CharacterResource::collection($characters),
             'categories' => WaitlistCategoryResource::collection($categories),
+            'doctrines' => DoctrineResource::collection($doctrines),
         ]);
     }
 }

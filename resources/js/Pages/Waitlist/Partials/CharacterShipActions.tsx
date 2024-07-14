@@ -24,7 +24,7 @@ type DropdownEditButtonProps = {
 const buttonClassNames = tw`w-fit rounded-none border border-l-0 border-gray-100 p-2.5 first:rounded-l-lg first:border-l last:rounded-r-lg focus:ring-0 focus:ring-offset-0 dark:border-gray-700`
 
 function DropdownEditButtons({ characterOnWaitlist }: DropdownEditButtonProps) {
-    const { canEdit, handleActionButtonClick } = useWaitlistCharacterEntryEditHandler()
+    const { isCurrentlyEditing, handleActionButtonClick } = useWaitlistCharacterEntryEditHandler()
 
     const [showSaveButtons, setShowSaveButtons] = useState(false)
 
@@ -34,8 +34,8 @@ function DropdownEditButtons({ characterOnWaitlist }: DropdownEditButtonProps) {
             return
         }
 
-        delay(() => setShowSaveButtons(canEdit), 100)
-    }, [characterOnWaitlist, canEdit])
+        delay(() => setShowSaveButtons(isCurrentlyEditing), 100)
+    }, [characterOnWaitlist, isCurrentlyEditing])
 
     return (
         <Dropdown.Items width="sm">
@@ -64,7 +64,7 @@ function DropdownEditButtons({ characterOnWaitlist }: DropdownEditButtonProps) {
 
 export default function CharacterShipActions({ character }: CharacterShipActionProps) {
     const { onWaitlist = false, characterOnWaitlist = false } = useWaitlist(character)
-    const { canEdit: isCurrentlyEditing, handleActionButtonClick } = useWaitlistCharacterEntryEditHandler()
+    const { isCurrentlyEditing, handleActionButtonClick } = useWaitlistCharacterEntryEditHandler()
 
     const { isBelowSm } = useTailwindBreakpoint('sm')
 

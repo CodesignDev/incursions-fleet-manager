@@ -1,18 +1,21 @@
 import { createContext, PropsWithChildren, useCallback, useContext, useMemo } from 'react'
 
-import { CharacterOrId, Waitlist, WaitlistCharacterEntry, WaitlistInfo } from '@/types'
+import { useDoctrines } from '@/Providers/DoctrineProvider'
+import { CharacterOrId, Doctrine, Nullable, Waitlist, WaitlistCharacterEntry, WaitlistInfo } from '@/types'
 import { getCharacterId } from '@/utils'
 
 type ContextProps = {
     waitlist: WaitlistInfo
     onWaitlist: boolean
+    doctrine: Nullable<Doctrine>
+    hasDoctrine: boolean
     characterData: WaitlistCharacterEntry[]
     charactersOnWaitlist: number[]
     isCharacterOnWaitlist: (character: CharacterOrId) => boolean
 }
 
 type UseWaitlistOutput = ContextProps
-type UseWaitlistCharacterScopedOutput = Pick<ContextProps, 'waitlist' | 'onWaitlist'> & {
+type UseWaitlistCharacterScopedOutput = Pick<ContextProps, 'waitlist' | 'onWaitlist' | 'doctrine' | 'hasDoctrine'> & {
     characterOnWaitlist: boolean
 }
 
@@ -23,6 +26,8 @@ type ProviderProps = {
 const defaultContextProps: ContextProps = {
     waitlist: { id: '', name: '' },
     onWaitlist: false,
+    doctrine: null,
+    hasDoctrine: false,
     characterData: [],
     charactersOnWaitlist: [],
     isCharacterOnWaitlist: () => false,
@@ -31,7 +36,13 @@ const defaultContextProps: ContextProps = {
 const WaitlistContext = createContext(defaultContextProps)
 
 function WaitlistProvider({ waitlist, children }: PropsWithChildren<ProviderProps>) {
+    const { getDoctrine } = useDoctrines()
     const { on_waitlist: onWaitlist = false, characters } = waitlist
+
+    const doctrine = useMemo(() => {
+        const { doctrine: doctrineId } = waitlist
+        return doctrineId ? getDoctrine(doctrineId) : null
+    }, [waitlist, getDoctrine])
 
     const characterData = useMemo(() => {
         if (!characters || !onWaitlist) return []
@@ -52,11 +63,13 @@ function WaitlistProvider({ waitlist, children }: PropsWithChildren<ProviderProp
         return {
             waitlist,
             onWaitlist,
+            doctrine,
+            hasDoctrine: !!doctrine,
             characterData,
             charactersOnWaitlist,
             isCharacterOnWaitlist,
         }
-    }, [waitlist, onWaitlist, characterData, charactersOnWaitlist, isCharacterOnWaitlist])
+    }, [waitlist, onWaitlist, doctrine, characterData, charactersOnWaitlist, isCharacterOnWaitlist])
 
     return <WaitlistContext.Provider value={contextValue}>{children}</WaitlistContext.Provider>
 }

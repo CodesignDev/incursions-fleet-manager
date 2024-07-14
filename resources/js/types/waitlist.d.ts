@@ -6,6 +6,7 @@ export type WaitlistInfo = {
 }
 
 export type Waitlist = WaitlistInfo & {
+    doctrine: string | null
     total_entries?: number
     on_waitlist: boolean
     queue_position?: number
@@ -25,10 +26,10 @@ type WaitlistActiveCharacters = {
 
 type WaitlistCharacterEntry = {
     character: number
-    ship: WaitlistCharacterEntryData
+    ships: WaitlistCharacterEntryData
 }
 
-export type WaitlistCharacterEntryData = string
+export type WaitlistCharacterEntryData = string | string[]
 
 export type WaitlistJoinEntry = WaitlistCharacterEntry
 export type WaitlistUpdateEntry =
