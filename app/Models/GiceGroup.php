@@ -33,7 +33,8 @@ class GiceGroup extends Model
      */
     public function users(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, GiceGroupMember::class)
+        return $this
+            ->belongsToMany(User::class, GiceGroupMember::class)
             ->withPivot('is_primary_group')
             ->as('affiliation')
             ->withTimestamps();
@@ -44,7 +45,8 @@ class GiceGroup extends Model
      */
     public function roles(): BelongsToMany
     {
-        return $this->belongsToMany(Role::class, ManagedGroupRole::class, 'group_id')
+        return $this
+            ->belongsToMany(Role::class, ManagedGroupRole::class, 'group_id')
             ->withPivot('auto_remove_role')
             ->as('managed_role')
             ->withTimestamps();

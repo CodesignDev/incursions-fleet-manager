@@ -100,7 +100,8 @@ class Fleet extends Model
      */
     public function category(): BelongsTo
     {
-        return $this->belongsTo(Category::class)
+        return $this
+            ->belongsTo(Category::class)
             ->withDefault(['name' => 'Unknown']);
     }
 
@@ -109,7 +110,8 @@ class Fleet extends Model
      */
     public function comms(): BelongsTo
     {
-        return $this->belongsTo(CommsChannel::class, 'comms_channel_id')
+        return $this
+            ->belongsTo(CommsChannel::class, 'comms_channel_id')
             ->withInactive()
             ->withDefault([
                 'name' => 'No Comms Channel',

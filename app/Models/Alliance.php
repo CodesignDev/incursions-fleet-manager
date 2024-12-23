@@ -43,7 +43,8 @@ class Alliance extends Model
      */
     public function members(): HasManyThrough
     {
-        return $this->through($this->corporations())
+        return $this
+            ->through($this->corporations())
             ->has(fn ($corp) => $corp->members());
     }
 }

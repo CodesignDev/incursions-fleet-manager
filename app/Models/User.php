@@ -56,7 +56,8 @@ class User extends Authenticatable
      */
     public function giceGroups(): BelongsToMany
     {
-        return $this->belongsToMany(GiceGroup::class, GiceGroupMember::class)
+        return $this
+            ->belongsToMany(GiceGroup::class, GiceGroupMember::class)
             ->withPivot('is_primary_group')
             ->as('affiliation')
             ->withTimestamps();

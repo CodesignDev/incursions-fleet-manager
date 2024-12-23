@@ -31,7 +31,8 @@ class Role extends SpatieRole
      */
     public function groups(): BelongsToMany
     {
-        return $this->belongsToMany(GiceGroup::class, ManagedGroupRole::class, relatedPivotKey: 'group_id')
+        return $this
+            ->belongsToMany(GiceGroup::class, ManagedGroupRole::class, relatedPivotKey: 'group_id')
             ->withPivot(['prevent_manual_assignment', 'auto_remove_role'])
             ->as('managed_role')
             ->withTimestamps();

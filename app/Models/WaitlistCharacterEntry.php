@@ -64,12 +64,13 @@ class WaitlistCharacterEntry extends Model
      */
     public function ships(): BelongsToMany
     {
-        return $this->belongsToMany(
-            DoctrineShip::class,
-            WaitlistCharacterShipEntry::class,
-            'entry_id',
-            'ship_id'
-        )
+        return $this
+            ->belongsToMany(
+                DoctrineShip::class,
+                WaitlistCharacterShipEntry::class,
+                'entry_id',
+                'ship_id'
+            )
             ->withTimestamps();
     }
 
