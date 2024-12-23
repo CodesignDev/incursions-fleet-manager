@@ -72,12 +72,12 @@ namespace EsiProxy.Controllers
             }
             catch (NoEsiTokenFoundException)
             {
-                _logger.LogError("No token found for requested entity while proxing ESI request {RequestMethod} {EsiRoute}", requestMethod, esiRoute);
+                _logger.LogError("No token found for requested entity while proxying ESI request {RequestMethod} {EsiRoute}", requestMethod, esiRoute);
                 Response.StatusCode = 401;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An exception occured while proxying ESI request {RequestMethod} {EsiRoute}", requestMethod, esiRoute);
+                _logger.LogError(ex, "An exception occurred while proxying ESI request {RequestMethod} {EsiRoute}", requestMethod, esiRoute);
                 Response.StatusCode = 503;
             }
         }
