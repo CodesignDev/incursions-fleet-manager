@@ -15,7 +15,7 @@ class WaitlistController extends Controller
 {
     use HasWaitlistCharacterInputFormatters;
 
-    public function joinWaitlist(JoinWaitlistRequest $request, Waitlist $waitlist): RedirectResponse
+    public function join(JoinWaitlistRequest $request, Waitlist $waitlist): RedirectResponse
     {
         // Create the waitlist entry for the user
         /** @var WaitlistEntry $entry */
@@ -47,13 +47,13 @@ class WaitlistController extends Controller
             ->when($ships->isNotEmpty())
             ->each(function (WaitlistCharacterEntry $entry) use ($ships) {
                 $characterShips = $ships->get($entry->character_id, []);
-                $entry->doctrineShips()->attach(array_unique($characterShips, SORT_REGULAR));
+                $entry->ships()->attach(array_unique($characterShips, SORT_REGULAR));
             });
 
         return back()->with('status', 'Joined waitlist.');
     }
 
-    public function leaveWaitlist(Request $request, Waitlist $waitlist): RedirectResponse
+    public function leave(Request $request, Waitlist $waitlist): RedirectResponse
     {
         /** @var WaitlistEntry $entry */
         $entry = $waitlist->entries()->firstWhere(['user_id' => $request->user()->id]);

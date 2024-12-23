@@ -16,8 +16,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/', [WaitlistDashboardController::class, '__invoke'])->name('dashboard');
 
         Route::prefix('/{waitlist}')->controller(WaitlistController::class)->group(function () {
-            Route::post('/', 'joinWaitlist')->name('join');
-            Route::delete('/', 'leaveWaitlist')->name('leave');
+            Route::post('/', 'join')->name('join');
+            Route::delete('/', 'leave')->name('leave');
 
             Route::put('/', [WaitlistUpdateCharactersController::class, '__invoke'])->name('update');
         });
