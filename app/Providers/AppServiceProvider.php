@@ -3,7 +3,9 @@
 namespace App\Providers;
 
 use App\Auth\GiceSocialiteProvider;
+use App\Macros\BlueprintMixin;
 use App\Macros\EventEveDowntimeMixin;
+use App\Macros\InertiaMixin;
 use App\Models\FleetInvite;
 use App\Models\FleetMember;
 use App\Models\WaitlistEntry;
@@ -71,6 +73,11 @@ class AppServiceProvider extends ServiceProvider
      */
     private function bootMacros(): void
     {
+        // Register class mixins
+        Blueprint::mixin(new BlueprintMixin());
+        Event::mixin(new EventEveDowntimeMixin());
+        Inertia::mixin(new InertiaMixin());
+
         // Register an Arr helper to update a value
         Arr::macro('update', function (array|ArrayAccess &$array, int|null|string $key, callable $update, $default = null): array {
             $existingValue = Arr::get($array, $key, $default);
@@ -79,32 +86,14 @@ class AppServiceProvider extends ServiceProvider
             return Arr::set($array, $key, $updatedValue);
         });
 
-        // Register a helper for creating unsigned non-incrementing ids
-        Blueprint::macro('staticId', function ($column = 'id'): ColumnDefinition {
-            return $this->unsignedBigInteger($column)->primary();
-        });
-        Blueprint::macro('uuidId', function ($column = 'id'): ColumnDefinition {
-            return $this->uuid($column)->primary();
-        });
-
         // Register a macro on the eloquent builder to pull in the model's scopes
         Builder::macro('withModelScopes', function (): static {
+            /** @var \Illuminate\Database\Eloquent\Builder $this */
             if (is_null($this->model)) {
                 return $this;
             }
 
             return $this->model->registerGlobalScopes($this);
-        });
-
-        // Event macro that defines a daily schedule at EVE downtime
-        Event::mixin(new EventEveDowntimeMixin());
-
-        // Inertia macros
-        Inertia::macro('lazyIf', function (Closure|bool $value, callable $callback): callable|LazyProp {
-            return value($value) ? $this->lazy($callback): $callback;
-        });
-        Inertia::macro('lazyUnless', function (Closure|bool $value, callable $callback): callable|LazyProp {
-            return value($value) ? $callback : $this->lazy($callback);
         });
     }
 
