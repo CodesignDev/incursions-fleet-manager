@@ -6,7 +6,7 @@ import useFleetPageLoader from '@/Pages/Fleets/Partials/Hooks/useFleetPageLoader
 export default function FleetManagerWaitlistView() {
     const { loading, error, hasData, data, updateData } = useFleetPageLoader<FleetManagerExtendedPageProps>(
         FleetManagementPageType.Waitlist,
-        'waitlist_entries',
+        'waitlists',
         { initialValue: [] }
     )
 

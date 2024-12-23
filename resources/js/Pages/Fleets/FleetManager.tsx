@@ -8,12 +8,12 @@ import Section from '@/Components/Section'
 import Tabs from '@/Components/Tabs'
 import { FleetManagementPageType } from '@/Constants/FleetManagementPageType'
 import ApplicationLayout from '@/Layouts/ApplicationLayout'
-import FleetManagerMembersView from '@/Pages/Fleets/Partials/FleetManagerMembersView'
-import FleetManagerSettingsView from '@/Pages/Fleets/Partials/FleetManagerSettingsView'
 import { FleetProvider } from '@/Providers/FleetProvider'
 import { Fleet, PageProps } from '@/types'
 
 const FleetManagerWaitlistView = lazy(() => import('@/Pages/Fleets/Partials/FleetManagerWaitlistView'))
+const FleetManagerMembersView = lazy(() => import('@/Pages/Fleets/Partials/FleetManagerMembersView'))
+const FleetManagerSettingsView = lazy(() => import('@/Pages/Fleets/Partials/FleetManagerSettingsView'))
 
 type FleetManagerPageProps = {
     fleet: Fleet
@@ -21,7 +21,7 @@ type FleetManagerPageProps = {
 }
 
 export type FleetManagerExtendedPageProps = FleetManagerPageProps & {
-    waitlist_entries?: []
+    waitlists?: []
     fleet_members?: []
     fleet_settings?: []
 }

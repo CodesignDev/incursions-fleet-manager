@@ -17,12 +17,14 @@ class FleetManagerController extends Controller
         return inertia('Fleets/FleetManager', [
             'default_tab' => $page,
             'fleet' => fn () => new FleetResource($fleet),
-            'waitlist_entries' => Inertia::lazyUnless(
+            'waitlists' => Inertia::lazyUnless(
                 $page === FleetManagementPage::WAITLIST,
                 function () use ($fleet) {
                     $fleet->load([
+                        'waitlists.doctrine',
                         'waitlists.entries',
                         'waitlists.entries.user',
+                        'waitlists.entries.characterEntries',
                     ]);
 
                     return FleetWaitlistResource::collection($fleet->waitlists);
