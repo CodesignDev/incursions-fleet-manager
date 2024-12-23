@@ -152,7 +152,8 @@ class Fleet extends Model
         // can work with the through() helper
         $relation = $this
             ->through($this->members())
-            ->has(fn ($member) => $member->hasOne(Character::class, 'id', 'character_id'));
+            ->has(fn ($member) => $member->hasOne(Character::class, 'id', 'character_id'))
+            ->one();
 
         // Apply a custom filter to the relation
         $relation->where('fleet_members.fleet_boss', true);
