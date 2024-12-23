@@ -54,7 +54,7 @@ class ActiveFlagScope implements Scope
     {
         $builder->macro('withoutInactive', function (Builder $builder) {
             $builder->withoutGlobalScope($this)->where(
-                $builder->getModel()->getActiveFlagColumn(),
+                $builder->getModel()->getQualifiedActiveFlagColumn(),
                 true
             );
 
@@ -69,7 +69,7 @@ class ActiveFlagScope implements Scope
     {
         $builder->macro('onlyInactive', function (Builder $builder) {
             $builder->withoutGlobalScope($this)->where(
-                $builder->getModel()->getActiveFlagColumn(),
+                $builder->getModel()->getQualifiedActiveFlagColumn(),
                 0
             );
 
