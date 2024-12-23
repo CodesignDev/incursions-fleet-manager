@@ -75,15 +75,15 @@ class FetchAllianceStandings implements ShouldQueue
         $newEntries = $standingEntries->whereNotIn('contact_id', $currentStandings->pluck('contact_id'));
         $updatedEntries = $standingEntries
             ->filter()
-            ->where(function ($entry) use ($currentStandings) {
-                $currentEntry = $currentStandings->firstWhere('contact_id', data_get($entry, 'contact_id'));
-                if (is_null($currentEntry)) {
-                    return false;
-                }
-
-                return data_get($entry, 'contact_id') === $currentEntry->contact_id
-                    && data_get($entry, 'standing') !== $currentEntry->standing;
-            })
+            ->where(
+                fn ($entry) => transform(
+                    $currentStandings->firstWhere('contact_id', data_get($entry, 'contact_id')),
+                    fn ($currentEntry) =>
+                        data_get($entry, 'contact_id') === $currentEntry->contact_id &&
+                        data_get($entry, 'standing') !== $currentEntry->standing,
+                    false
+                )
+            )
             ->pluck('standing', 'contact_id');
 
         // Add new entries to the database using upsert
@@ -96,7 +96,7 @@ class FetchAllianceStandings implements ShouldQueue
         // Update the standing value for any existing values
         AllianceStandings::whereIn('contact_id', $updatedEntries->keys())
             ->get()
-            ->each(fn(AllianceStandings $entry) => $entry->update(
+            ->each(fn (AllianceStandings $entry) => $entry->update(
                 ['standing' => $updatedEntries->get($entry->contact_id, 0)]
             ));
 

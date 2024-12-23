@@ -17,12 +17,15 @@ class WaitlistUpdateCharactersRequest extends JoinWaitlistRequest
      */
     public function rules(): array
     {
-        return $this->includeDoctrineBasedRules($this->waitlistHasDoctrine(), fn () => [
-            'action' => [
-                'required',
-                Rule::enum(WaitlistUpdateCharacterActionType::class),
-            ],
-            ...$this->applyCharacterRules(),
-        ]);
+        return $this->includeDoctrineBasedRules(
+            $this->waitlistHasDoctrine(),
+            fn () => [
+                'action' => [
+                    'required',
+                    Rule::enum(WaitlistUpdateCharacterActionType::class),
+                ],
+                ...$this->applyCharacterRules(),
+            ]
+        );
     }
 }

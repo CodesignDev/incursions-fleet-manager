@@ -46,7 +46,7 @@ trait EntryIsRemovable
     }
 
     /**
-     * Remove the entry from the waitlist.
+     * Remove the entry and apply relevant data for the removal.
      */
     public function remove(?User $removedBy = null, ?WaitlistRemovalReason $removalReason = null): bool
     {
@@ -74,7 +74,7 @@ trait EntryIsRemovable
     }
 
     /**
-     * Remove the waitlist entry without raising any events.
+     * Remove the entry without raising any events.
      */
     public function removeQuietly(?User $removedBy = null, ?WaitlistRemovalReason $removalReason = null): bool
     {

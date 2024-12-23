@@ -34,7 +34,7 @@ trait HasActiveFlag
     }
 
     /**
-     * Initialize the unlisted fleet trait for an instance.
+     * Initialize the has active flag trait for an instance.
      */
     public function initializeHasActiveFlag(): void
     {

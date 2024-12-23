@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 trait IsOrdered
 {
     /**
-     * Boot the has active flag trait for a model.
+     * Boot the is ordered trait for a model.
      */
     public static function bootIsOrdered(): void
     {
@@ -31,7 +31,7 @@ trait IsOrdered
     }
 
     /**
-     * Initialize the unlisted fleet trait for an instance.
+     * Initialize the is ordered trait for an instance.
      */
     public function initializeIsOrdered(): void
     {

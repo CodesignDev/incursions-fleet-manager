@@ -23,10 +23,13 @@ class JoinWaitlistRequest extends FormRequest
      */
     public function rules(): array
     {
-        return $this->includeDoctrineBasedRules($this->waitlistHasDoctrine(), fn () => [
-            'characters.*' => $this->characterArrayRule(),
-            ...$this->applyCharacterRules('characters.*'),
-        ]);
+        return $this->includeDoctrineBasedRules(
+            $this->waitlistHasDoctrine(),
+            fn () => [
+                'characters.*' => $this->characterArrayRule(),
+                ...$this->applyCharacterRules('characters.*'),
+            ]
+        );
     }
 
     /**

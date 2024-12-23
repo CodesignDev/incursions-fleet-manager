@@ -7,7 +7,7 @@ use App\Models\Scopes\ClosedFleetScope;
 trait FleetCanBeClosed
 {
     /**
-     * Boot the unlisted fleet trait for a model.
+     * Boot the fleet can be closed trait for a model.
      */
     public static function bootFleetCanBeClosed(): void
     {
@@ -15,7 +15,7 @@ trait FleetCanBeClosed
     }
 
     /**
-     * Initialize the unlisted fleet trait for an instance.
+     * Initialize the fleet can be closed trait for an instance.
      */
     public function initializeFleetCanBeClosed(): void
     {

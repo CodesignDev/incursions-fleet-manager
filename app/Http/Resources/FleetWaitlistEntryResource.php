@@ -18,18 +18,19 @@ class FleetWaitlistEntryResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'user' => $this->whenLoaded('user', fn (User $user) => [
-                'id' => $user->id,
-                'name' => $user->name,
-            ]),
+            'user' => $this->whenLoaded('user', fn (User $user) => $user->only(['id', 'name'])),
             'characters' => $this->whenLoaded(
                 'characterEntries',
-                fn ($entries) => $entries->mapWithKeys(fn (WaitlistCharacterEntry $character) => [
-                    $character->character_id => [
-                        'character' => $character->character_id,
-                        'ship' => $character->requested_ship,
-                    ],
-                ])
+                fn ($entries) => $entries
+                    ->map(fn (WaitlistCharacterEntry $entry) => [
+                        'character' => $entry->character->only(['id', 'name']),
+                        'ships' => $this->whenNotNull(
+                            $entry->requested_ship,
+                            $entry->ships->select(['id', 'name'])
+                        ),
+                        'note' => $this->when(false, ''),
+                    ])
+                    ->toArray()
             ),
             'joined_at' => $this->created_at,
         ];

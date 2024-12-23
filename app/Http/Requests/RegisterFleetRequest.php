@@ -12,7 +12,7 @@ class RegisterFleetRequest extends FormRequest
     /**
      * The regex used to validate the fleet url and extract the fleet ID.
      */
-    public const ESI_FLEET_URL_REGEX = '/^https:\/\/esi\.evetech\.net\/v1\/fleets\/\d+\/\?.*/i';
+    public const ESI_FLEET_URL_REGEX = '/^https:\/\/esi\.evetech\.net\/v1\/fleets\/(\d+)\/\?.*/i';
 
     /**
      * Determine if the user is authorized to make this request.
@@ -40,7 +40,12 @@ class RegisterFleetRequest extends FormRequest
                 'required_if:url,null',
                 'numeric',
                 Rule::exists(Character::class, 'id')->where('user_id', $this->user()->id),
-                Rule::notIn(Fleet::with('boss')->whereTracked()->get()->map(fn ($fleet) => $fleet->boss->id)),
+                Rule::notIn(
+                    Fleet::with('boss')
+                        ->whereTracked()
+                        ->get()
+                        ->map(fn ($fleet) => $fleet->boss->id)
+                ),
             ],
             'name' => 'required|string|max:150',
         ];

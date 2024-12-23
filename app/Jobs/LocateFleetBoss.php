@@ -39,8 +39,8 @@ class LocateFleetBoss implements ShouldQueue
             : Fleet::query()
                 ->when(
                     is_numeric($fleet),
-                    fn(Builder $query) => $query->where('esi_fleet_id', $fleet),
-                    fn(Builder $query) => $query->where('id', $fleet)
+                    fn (Builder $query) => $query->where('esi_fleet_id', $fleet),
+                    fn (Builder $query) => $query->where('id', $fleet)
                 )
                 ->first();
     }
