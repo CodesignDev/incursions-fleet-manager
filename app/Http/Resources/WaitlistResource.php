@@ -46,7 +46,7 @@ class WaitlistResource extends JsonResource
                         $character->character_id => [
                             'character' => $character->character_id,
                             'ships' => $hasDoctrine
-                                ? $character->doctrineShips->pluck('id')
+                                ? $character->ships->pluck('id')
                                 : $character->requested_ship,
                         ],
                     ])
