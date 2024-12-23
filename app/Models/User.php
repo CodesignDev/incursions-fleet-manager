@@ -70,4 +70,12 @@ class User extends Authenticatable
     {
         return $this->hasMany(Character::class);
     }
+
+    /**
+     * @{inheritDoc}
+     */
+    public function getRememberTokenName(): ?string
+    {
+        return null;
+    }
 }
