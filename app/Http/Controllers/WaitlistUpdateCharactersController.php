@@ -41,7 +41,7 @@ class WaitlistUpdateCharactersController extends Controller
                     ['requested_ship' => $hasDoctrine ? '' : $requestedShips]
                 );
                 if ($hasDoctrine && is_array($requestedShips) && count($requestedShips) > 0) {
-                    $characterEntry->doctrineShips()->sync($requestedShips);
+                    $characterEntry->ships()->sync($requestedShips);
                 }
                 break;
 
@@ -53,7 +53,7 @@ class WaitlistUpdateCharactersController extends Controller
                 }
 
                 $characterEntry->remove($request->user(), WaitlistRemovalReason::SELF_REMOVED);
-                $characterEntry->doctrineShips()->detach();
+                $characterEntry->ships()->detach();
 
                 // Count how many other character entries and remove the overall entry if there isn't any others
                 if ($entry->characterEntries->except($characterEntry->getKey())->isEmpty()) {

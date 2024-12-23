@@ -21,7 +21,8 @@ class WaitlistCharacterEntry extends Model
      * @var array
      */
     protected $with = [
-        'doctrineShips',
+        'character',
+        'ships',
     ];
 
     /**
@@ -61,7 +62,7 @@ class WaitlistCharacterEntry extends Model
     /**
      * The doctrine ships that this character is associated with.
      */
-    public function doctrineShips(): BelongsToMany
+    public function ships(): BelongsToMany
     {
         return $this->belongsToMany(
             DoctrineShip::class,
@@ -70,5 +71,13 @@ class WaitlistCharacterEntry extends Model
             'ship_id'
         )
             ->withTimestamps();
+    }
+
+    /**
+     * Alias for the ships relation.
+     */
+    public function doctrineShips(): BelongsToMany
+    {
+        return $this->ships();
     }
 }
