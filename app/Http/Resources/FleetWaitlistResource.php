@@ -15,6 +15,7 @@ class FleetWaitlistResource extends WaitlistResource
     {
         return [
             $this->attributes(['id', 'name']),
+            'doctrine' => $this->whenLoaded('doctrine', fn ($doctrine) => $doctrine->only(['id', 'name'])),
             'entries' => $this->whenLoaded('entries', FleetWaitlistEntryResource::collection(...)),
         ];
     }

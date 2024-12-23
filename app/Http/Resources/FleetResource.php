@@ -18,7 +18,7 @@ class FleetResource extends JsonResource
         return [
             $this->attributes(['id', 'name']),
             'status' => $this->whenNotNull($this->status, FleetStatus::UNKNOWN),
-            'tracked' => transform($this->untracked, fn ($value) => !$value, true),
+            'tracked' => $this->transform($this->untracked, fn ($value) => !$value, true),
             'fleet_boss' => $this->whenLoaded('boss', fn ($fleetBoss) => [
                 'character' => $fleetBoss->name,
                 'user' => $this->when($fleetBoss->relationLoaded('user'), $fleetBoss->user->name),

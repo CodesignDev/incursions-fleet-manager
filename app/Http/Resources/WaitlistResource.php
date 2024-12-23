@@ -40,7 +40,7 @@ class WaitlistResource extends JsonResource
                 'total_entries' => $this->whenCounted('entries'),
                 'on_waitlist' => $onWaitlist,
                 'queue_position' => $this->when($onWaitlist, $entryPosition + 1),
-                'characters' => transform(
+                'characters' => $this->transform(
                     $entry,
                     fn ($entry) => $entry->characterEntries->mapWithKeys(fn ($character) => [
                         $character->character_id => [
@@ -49,8 +49,7 @@ class WaitlistResource extends JsonResource
                                 ? $character->doctrineShips->pluck('id')
                                 : $character->requested_ship,
                         ],
-                    ]),
-                    new MissingValue
+                    ])
                 ),
             ]);
         };
