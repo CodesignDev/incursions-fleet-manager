@@ -5,7 +5,7 @@ namespace App\Jobs;
 use App\Facades\Esi;
 use App\Models\Character;
 use App\Models\Fleet;
-use App\Models\User;
+use App\Models\FleetScan;
 use Illuminate\Bus\Batchable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\Eloquent\Builder;
@@ -66,46 +66,25 @@ class ScanForCharacterOwnedFleet implements ShouldQueue
             $fleetId = Arr::get($data, 'fleet_id');
             $fleetBoss = Arr::get($data, 'fleet_boss_id');
 
-            $fleet = null;
-
-            // Check if the fleet already exists in the system
-            $unknownFleet = Fleet::whereEsiFleetId($fleetId)->doesntExist();
-
-            // Check if the fleet is not known by the system
-            if ($unknownFleet) {
-
-                // Check if the fleet boss is valid
-                $validFleetBoss = $fleetBoss === $this->character->id;
-                if (! $validFleetBoss) {
-                    $characters = Character::whereWhitelisted()
-                        ->where('user_id', $this->character->user_id)
-                        ->pluck('id');
-
-                    $validFleetBoss = $characters->contains($fleetBoss);
-                }
-
-                // If the fleet boss is valid, create the fleet
-                if ($validFleetBoss) {
-                    $fleet = $this->createFleet($fleetId, $fleetBoss);
-                }
-            }
-
-            // There already is a fleet in the system with this id (but
-
-            // If the fleet is valid, trigger an update of the fleet info and members.
-            // This is added to the current batch so that the system can group all of the
-            // jobs together
-            if (filled($fleet)) {
-                $this->batch()?->add([
-                    new FetchFleetInformation($fleet),
-                    new FetchFleetMembers($fleet),
-                ]);
-            }
+            // Store the fleet found in the database
+            FleetScan::updateOrCreate([
+                'character_id' => $this->character->id,
+                'fleet_id' => $fleetId,
+            ], [
+                'fleet_boss_id' => $fleetBoss,
+            ]);
         }
 
         // Catch response errors
-        catch (RequestException) {
+        catch (RequestException $e) {
 
+            // Catch and ignore any 401 and 403 errors
+            if (in_array($e->response->status(), ['401', '403'])) {
+                return;
+            }
+
+            // Throw the exception up to be processed by the relevant middleware
+            throw $e;
         }
 
         // Catch connection related errors and requeue the job
@@ -120,20 +99,5 @@ class ScanForCharacterOwnedFleet implements ShouldQueue
     public function middleware(): array
     {
         return [new SkipIfBatchCancelled];
-    }
-
-    /**
-     * Create an untracked fleet for this scan.
-     */
-    private function createFleet(int $fleetId, int $fleetBoss): Fleet
-    {
-        return tap(
-            Fleet::create([
-                'esi_fleet_id' => $fleetId,
-                'name' => str('Fleet Scan ')->append('#', $fleetId),
-                'untracked' => true,
-            ]),
-            fn (Fleet $fleet) => $fleet->assignFleetBoss($fleetBoss)
-        );
     }
 }
