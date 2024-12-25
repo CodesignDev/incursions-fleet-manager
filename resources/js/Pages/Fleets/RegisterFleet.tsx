@@ -16,6 +16,7 @@ import Tabs from '@/Components/Tabs'
 import TextInput from '@/Components/TextInput'
 import { useCurrentLoggedInUser } from '@/Hooks/useCurrentUser'
 import ApplicationLayout from '@/Layouts/ApplicationLayout'
+import ScanForFleet from '@/Pages/Fleets/Partials/ScanForFleet'
 import { Character, CharacterDropdownEntry, GroupedCharacters } from '@/types'
 import { flattenCharacterList, formatCharacterDropdownEntries, isMatchingCharacter } from '@/utils'
 
@@ -119,7 +120,7 @@ export default function RegisterFleet({ characters }: RegisterFleetProps) {
                                                 <InputError message={errors.fleet_boss} className="mt-2" />
                                             </div>
 
-                                            <Button onClick={locateFleet}>Locate Fleet</Button>
+                                            <ScanForFleet />
                                         </div>
                                     </Tabs.Panel>
 
