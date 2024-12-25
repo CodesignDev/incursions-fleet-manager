@@ -12,6 +12,7 @@ Route::inertia('/', 'Dashboard')->middleware(['auth', 'verified'])->name('dashbo
 
 Route::middleware('auth')->group(function () {
 
+    // Waitlist
     Route::prefix('/waitlist')->as('waitlist.')->group(function () {
         Route::get('/', [WaitlistDashboardController::class, '__invoke'])->name('dashboard');
 
@@ -23,12 +24,17 @@ Route::middleware('auth')->group(function () {
         });
     });
 
+    // Fleet
     Route::prefix('/fleets')->as('fleets.')->group(function () {
+
+        // Dashboard
         Route::get('/', [FleetController::class, 'list'])->name('list');
 
+        // Register Fleet
         Route::get('/register', [FleetController::class, 'register'])->name('register');
         Route::post('/register', [RegisterFleetController::class, '__invoke']);
 
+        // Fleet Manager
         Route::prefix('/{fleet}')->group(function () {
             Route::get('/{page?}', [FleetManagerController::class, '__invoke'])
                 ->whereIn('page', \App\Enums\FleetManagementPage::cases())
