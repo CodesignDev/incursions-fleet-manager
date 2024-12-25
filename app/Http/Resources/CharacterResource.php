@@ -18,19 +18,17 @@ class CharacterResource extends JsonResource
         return [
             $this->attributes(['id', 'name']),
 
-            $this->mergeWhen($this->resource->relationLoaded('corporation'), function () {
-                $corporation = $this->resource->corporation;
-                return collect(['corporation' => $corporation->name])
+            $this->whenLoaded('corporation', fn ($corporation) => $this->merge(
+                collect(['corporation' => $corporation])
                     ->when(
-                        $corporation->relationLoaded('alliance') || $this->resource->relationLoaded('alliance'),
-                        function ($items) use ($corporation) {
-                            $alliance = $corporation->getRelation('alliance') ?? $this->resource->getRelation('alliance');
-
-                            return $items->merge(['alliance' => optional($alliance)->name]);
-                        }
+                        $corporation->relationLoaded('alliance'),
+                        fn ($data) => $data->merge('alliance', $corporation->alliance)
                     )
-                    ->filter();
-            }),
+                    ->when(
+                        $this->resource->relationLoaded('alliance'),
+                        fn ($data) => $data->merge('alliance', $this->resource->alliance)
+                    )
+            )),
         ];
     }
 }
