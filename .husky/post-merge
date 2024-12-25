@@ -17,6 +17,8 @@ line Updating composer dependencies
 git_root="$(git rev-parse --show-toplevel)"
 (
     cd "$git_root" || return
+    which php > /dev/null || { echo "PHP is not installed"; return; }
+    which composer > /dev/null || { echo "Composer is not installed"; return; }
     changed_files="$(git diff-tree -r --name-only --no-commit-id ORIG_HEAD HEAD)"
     echo "$changed_files" | grep -q "composer.lock" && eval "composer install" || echo "No new composer dependencies"
 )
