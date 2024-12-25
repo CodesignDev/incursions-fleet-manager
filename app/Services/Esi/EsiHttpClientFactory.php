@@ -22,7 +22,7 @@ class EsiHttpClientFactory extends HttpClientFactory
     /**
      * Do not apply the pre-configured esi configuration.
      */
-    public function ignoreDefaultOptions(): EsiHttpClientFactory
+    public function ignoreDefaultOptions(): static
     {
         $this->ignoreDefaultEsiConfiguration = true;
 
@@ -34,7 +34,7 @@ class EsiHttpClientFactory extends HttpClientFactory
      *
      * @var callable<\Illuminate\Http\Client\PendingRequest>|null  $callback
      */
-    public function withDefaultOptions(?callable $callback)
+    public function withDefaultOptions(?callable $callback): static
     {
         $this->esiConfigurationCallback = $callback;
 

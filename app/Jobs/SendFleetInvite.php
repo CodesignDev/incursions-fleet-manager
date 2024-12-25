@@ -6,15 +6,13 @@ use App\Enums\FleetInviteState;
 use App\Facades\Esi;
 use App\Models\Fleet;
 use App\Models\FleetInvite;
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
+use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Http\Client\RequestException;
 
-class SendFleetInvite implements ShouldQueue
+class SendFleetInvite extends EsiFleetJob
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Queueable;
 
     /**
      * The invite to be sent.
@@ -22,23 +20,32 @@ class SendFleetInvite implements ShouldQueue
     protected FleetInvite $invite;
 
     /**
-     * The fleet that the invite is for.
+     * The list of relations to be included with the fleet.
+     *
+     * @var string[]
      */
-    protected Fleet $fleet;
+    protected array $includedRelations = ['boss', 'members'];
+
+    /**
+     * The list of relations that are to be eager loaded.
+     *
+     * @var string[]
+     */
+    protected array $relationsToLoad = ['boss'];
 
     /**
      * Create a new job instance.
      */
     public function __construct(FleetInvite $invite, ?Fleet $fleet = null)
     {
-        // If not fleet was provided, check if the invite has it stored
+        // If no fleet was provided, attempt to grab it from the invite
         if (is_null($fleet) && ! $invite->relationLoaded('fleet')) {
             $invite->load('fleet.boss');
         }
 
-        // Store the invite and fleet
-        $this->fleet = $fleet ?? $invite->getRelation('fleet');
         $this->invite = $invite->withoutRelations();
+
+        parent::__construct($fleet ?? $invite->getRelation('fleet'));
     }
 
     /**
@@ -55,9 +62,6 @@ class SendFleetInvite implements ShouldQueue
         $character = $this->invite->character_id;
 
         // Get the fleet and its fleet boss
-        if (! $this->fleet->relationLoaded('boss')) {
-            $this->fleet->load('boss');
-        }
         $fleetBoss = $this->fleet->getRelation('boss');
 
         // Check if the member is in fleet (only if the relation is loaded)
@@ -66,42 +70,63 @@ class SendFleetInvite implements ShouldQueue
             return;
         }
 
-        // Send the invite to the character
-        $response = Esi::withCharacter($fleetBoss)
-            ->withUrlParameters(['fleet_id' => $this->fleet->esi_fleet_id])
-            ->post('/fleets/{fleet_id}/members', [
-                'character_id' => $this->invite->character_id,
-                'role' => 'squad_member',
-            ])
-            ->throwIfStatus(420)
-            ->throwIfServerError();
+        // Catch all possible errors from ESI
+        try {
 
-        // Perform an action based on the response status of the invite
-        switch ($response->status()) {
+            // Check if we have a fleet boss
+            if (filled($fleetBoss)) {
 
-            // Invite sent
-            case 204:
-                $this->invite->update([
-                    'state' => FleetInviteState::SENT,
-                    'invite_sent_at' => now(),
-                ]);
-                break;
+                // Query the fleet for fleet members
+                $response = Esi::withCharacter($fleetBoss)
+                    ->withUrlParameters(['fleet_id' => $this->fleet->esi_fleet_id])
+                    ->post('/fleets/{fleet_id}/members', [
+                        'character_id' => $this->invite->character_id,
+                        'role' => 'squad_member',
+                    ])
+                    ->throwUnlessStatus(fn ($status) => in_array($status, [404, 422]));
 
-            // Invite failed
-            case 422:
-                $this->invite->update(['state' => FleetInviteState::FAILED]);
-                break;
+                // Check the status of the response
+                if ($response->noContent()) { // 204
 
-            // Unable to send due to no access to fleet. Attempt to find the new
-            // fleet boss, and the fleet invite will be attempted again
-            case 404:
-                LocateFleetBoss::dispatch($this->fleet);
-                $this->release(5);
+                    // Update the fleet with the new information
+                    $this->invite->update([
+                        'state' => FleetInviteState::SENT,
+                        'invite_sent_at' => now(),
+                    ]);
+                    return;
+                }
+
+                // Check if the response was a failure
+                else if ($response->unprocessableEntity()) { // 422
+                    $this->invite->update(['state' => FleetInviteState::FAILED]);
+                    return;
+                }
+            }
+
+            // If we got to this point, that means that the fleet doesn't have a valid boss so attempt
+            // to locate one
+            $this->locateFleetBoss($this->fleet);
+            return;
+        }
+
+        // Catch request errors
+        catch (RequestException $e) {
+
+            // 401 and 403 errors are usually authentication errors and shouldn't occur
+            // in the normal running
+            if (in_array($e->response->status(), [401, 403])) {
                 return;
+            }
 
-            // Any other status code, throw the http exception
-            default:
-                $response->throw();
+            // Throw any 420 and server errors
+            if ($e->response->status() === 420 || $e->response->serverError()) {
+                throw $e;
+            }
+        }
+
+        // Catch any connection errors and just skip this fleet
+        catch (ConnectionException) {
+            return;
         }
     }
 }
