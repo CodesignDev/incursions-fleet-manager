@@ -5,17 +5,14 @@ namespace App\Jobs;
 use App\Models\AllianceStandings;
 use App\Models\BlacklistedCharacters;
 use App\Models\Character;
-use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
+use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Arr;
 
 class CheckCharacterBlacklistStatus implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Queueable;
 
     /**
      * The optional list of characters to check the blacklist status for.
