@@ -29,4 +29,43 @@ class FleetScannerApiController extends Controller
             201,
         );
     }
+
+    public function checkProgress(string $jobId)
+    {
+        // Find the batch with the passed id
+        $batch = Bus::findBatch($jobId);
+
+        // If no batch was found, return a 404 error
+        if (is_null($batch)) {
+            return response()->json(['error' => 'Not Found'], 404);
+        }
+
+        // If the batch is still in progress, return a 202
+        if (! $batch->finished() && ! $batch->hasFailures()) {
+            return response()->noContent(202);
+        }
+
+        // If the batch failed, return a 422
+        if ($batch->hasFailures()) {
+            return response()->json(['error' => 'failed'], 422);
+        }
+
+        // If the batch succeeded then just return a 200
+        return response()->json(['message' => 'Successful']);
+    }
+
+    public function cancel(string $jobId)
+    {
+        // Find the batch with the passed id
+        $batch = Bus::findBatch($jobId);
+
+        // If there is no batch with this ID, return a 404
+        if (is_null($batch)) {
+            return response()->json(['error' => 'Not Found'], 404);
+        }
+
+        // Cancel the batch and return a 204
+        $batch->cancel();
+        return response()->noContent();
+    }
 }
