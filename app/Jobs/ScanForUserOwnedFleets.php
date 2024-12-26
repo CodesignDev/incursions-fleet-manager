@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Bus\Batchable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Queue\Middleware\SkipIfBatchCancelled;
 
 class ScanForUserOwnedFleets implements ShouldQueue
 {
@@ -44,5 +45,13 @@ class ScanForUserOwnedFleets implements ShouldQueue
         $this->batch()?->add(
             $characters->mapInto(ScanForCharacterOwnedFleet::class)
         );
+    }
+
+    /**
+     * Get the middleware the job should pass through.
+     */
+    public function middleware(): array
+    {
+        return [new SkipIfBatchCancelled];
     }
 }
