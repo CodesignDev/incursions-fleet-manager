@@ -2,7 +2,6 @@
 
 namespace App\Jobs;
 
-use App\Facades\Esi;
 use App\Models\User;
 use Illuminate\Bus\Batchable;
 use Illuminate\Contracts\Queue\ShouldQueue;
