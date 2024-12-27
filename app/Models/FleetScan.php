@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -24,6 +25,11 @@ class FleetScan extends Model
         'fleet_id',
         'fleet_boss_id',
     ];
+
+    public function scopeWhereIsFleetBoss(Builder $builder): void
+    {
+        $builder->whereColumn('character_id', 'fleet_boss_id');
+    }
 
     /**
      * The character this fleet scan belongs to.

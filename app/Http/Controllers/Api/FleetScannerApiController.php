@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\ClearPreviousFleetScans;
+use App\Jobs\CreateFleetsFromFleetScans;
 use App\Jobs\ScanForUserOwnedFleets;
+use Illuminate\Bus\Batch;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Bus;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,7 +24,13 @@ class FleetScannerApiController extends Controller
                 new ClearPreviousFleetScans($user),
                 new ScanForUserOwnedFleets($user),
             ]
-        ])->dispatch();
+        ])
+            ->then(function (Batch $batch) use ($user) {
+                if (!$batch->cancelled()) {
+                    CreateFleetsFromFleetScans::dispatch($user);
+                }
+            })
+            ->dispatch();
 
         return response()->json(
             ['id' => $batch->id],
