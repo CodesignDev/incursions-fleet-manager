@@ -11,6 +11,7 @@ use Illuminate\Http\Client\Response;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use Illuminate\Support\Uri;
 
 class PendingEsiRequest extends PendingRequest
 {
@@ -166,7 +167,15 @@ class PendingEsiRequest extends PendingRequest
     {
         // If the url starts with http/https, then return the url as is
         if (Str::startsWith($url, ['http://', 'https://'])) {
-            return $url;
+
+            // Normalize the url
+            $uri = Uri::of($url);
+
+            // Remove the scheme and host from the url
+            return (string) Str::of($uri)
+                ->replace($uri->scheme().'://', '')
+                ->replace($uri->host(), '')
+                ->start('/');
         }
 
         // Default ESI versions are v1-v6 / latest / dev / legacy
