@@ -16,6 +16,7 @@ import Tabs from '@/Components/Tabs'
 import TextInput from '@/Components/TextInput'
 import { useCurrentLoggedInUser } from '@/Hooks/useCurrentUser'
 import ApplicationLayout from '@/Layouts/ApplicationLayout'
+import FleetLinkInput from '@/Pages/Fleets/Partials/FleetLinkInput'
 import ScanForFleet from '@/Pages/Fleets/Partials/ScanForFleet'
 import { Character, CharacterDropdownEntry, GroupedCharacters } from '@/types'
 import { flattenCharacterList, formatCharacterDropdownEntries, isMatchingCharacter } from '@/utils'
@@ -74,8 +75,6 @@ export default function RegisterFleet({ characters }: RegisterFleetProps) {
         [setData]
     )
 
-    const locateFleet = useCallback(() => {}, [])
-
     return (
         <ApplicationLayout
             header={
@@ -129,9 +128,10 @@ export default function RegisterFleet({ characters }: RegisterFleetProps) {
                                             External Fleet Link
                                         </InputLabel>
 
-                                        <TextInput
+                                        <FleetLinkInput
                                             id={`fleet-url-${formId}`}
-                                            className="mt-1 w-full text-sm leading-6"
+                                            containerClassName="w-full"
+                                            className="w-full text-sm leading-6"
                                             placeholder="https://esi.evetech.net/v1/fleets/..."
                                             value={data.url || ''}
                                             onChange={(e) => setData('url', e.target.value)}
