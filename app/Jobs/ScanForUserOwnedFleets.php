@@ -30,11 +30,6 @@ class ScanForUserOwnedFleets implements ShouldQueue
      */
     public function handle(): void
     {
-        // Exit if the batch has been cancelled
-        if ($this->batch()?->cancelled()) {
-            return;
-        }
-
         // Get the list of valid characters from this user
         $characters = $this->user->characters()
             ->whereWhitelisted()
