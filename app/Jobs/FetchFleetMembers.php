@@ -61,7 +61,7 @@ class FetchFleetMembers extends EsiFleetJob
                             'location_id' => Arr::get($character, 'solar_system_id'),
                             'ship_id' => Arr::get($character, 'ship_type_id'),
                             'joined_at' => Arr::get($character, 'join_time'),
-                            'exempt_from_fleet_warp' => Arr::get($character, 'takes_fleet_warp'),
+                            'exempt_from_fleet_warp' => ! Arr::get($character, 'takes_fleet_warp'),
                         ]))
                     );
 
@@ -81,6 +81,8 @@ class FetchFleetMembers extends EsiFleetJob
                             $entry->update([
                                 'location_id' => Arr::get($data, 'solar_system_id'),
                                 'ship_id' => Arr::get($data, 'ship_type_id'),
+                                'joined_at' => Arr::get($data, 'join_time'),
+                                'exempt_from_fleet_warp' => ! Arr::get($data, 'takes_fleet_warp'),
                             ]);
                         });
 
