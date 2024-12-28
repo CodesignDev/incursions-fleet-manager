@@ -116,7 +116,9 @@ export default function FleetLinkInput({
                 </div>
             </div>
 
-            <Button onClick={verifyLink}>{buttonLabel || 'Verify Link'}</Button>
+            <Button className="disabled:cursor-not-allowed" onClick={verifyLink} disabled={isVerifying}>
+                {buttonLabel || 'Verify Link'}
+            </Button>
         </div>
     )
 }
