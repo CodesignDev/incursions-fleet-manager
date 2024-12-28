@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Helpers\FleetLink;
 use App\Models\Character;
 use App\Models\Fleet;
 use Illuminate\Foundation\Http\FormRequest;
@@ -9,11 +10,6 @@ use Illuminate\Validation\Rule;
 
 class RegisterFleetRequest extends FormRequest
 {
-    /**
-     * The regex used to validate the fleet url and extract the fleet ID.
-     */
-    public const ESI_FLEET_URL_REGEX = '/^https:\/\/esi\.evetech\.net\/v1\/fleets\/(\d+)\/\?.*/i';
-
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -33,7 +29,7 @@ class RegisterFleetRequest extends FormRequest
             'url' => [
                 'nullable',
                 'required_if:fleet_boss,null',
-                'regex:'.self::ESI_FLEET_URL_REGEX,
+                ...FleetLink::validationRules(),
             ],
             'fleet_boss' => [
                 'nullable',

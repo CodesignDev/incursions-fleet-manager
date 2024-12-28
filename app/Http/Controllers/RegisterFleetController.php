@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Facades\Esi;
+use App\Helpers\FleetLink;
 use App\Http\Requests\RegisterFleetRequest;
 use App\Models\Fleet;
 use Illuminate\Http\Client\RequestException;
@@ -89,9 +90,7 @@ class RegisterFleetController extends Controller
 
         // Otherwise get the URL, and register the fleet using this
         else if ($data->has('url')) {
-            $fleetId = str($data->url)
-                ->match(RegisterFleetRequest::ESI_FLEET_URL_REGEX)
-                ->toInteger();
+            $fleetId = FleetLink::extractFleetIdFromLink($data->url);
 
             // Try and find the fleet boss for this fleet
             $characters = $request->user()->characters()->whereWhitelisted()->pluck('id');
