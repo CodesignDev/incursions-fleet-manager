@@ -10,10 +10,11 @@ use Illuminate\Http\Request;
 
 class FleetController extends Controller
 {
-    public function list(Request $request): Responsable
+    public function list(): Responsable
     {
         // Get the list of fleets
         $fleets = Fleet::query()
+            ->whereTracked()
             ->with(['members', 'boss.user'])
             ->withCount('members')
             ->get();
