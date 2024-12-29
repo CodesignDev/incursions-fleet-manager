@@ -16,7 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('constellation_id');
             $table->string('name');
             $table->float('security');
-            $table->unsignedBigInteger('radius');
+            $table->unsignedBigInteger('radius')->nullable();
             $table->timestamps();
         });
     }
