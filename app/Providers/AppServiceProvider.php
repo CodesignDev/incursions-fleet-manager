@@ -14,12 +14,10 @@ use App\Observers\FleetMemberInviteObserver;
 use App\Observers\WaitlistEntryObserver;
 use App\Services\Inertia\ZiggyHttpGateway;
 use ArrayAccess;
-use Closure;
 use Illuminate\Console\Scheduling\Event;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Database\Schema\ColumnDefinition;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Arr;
@@ -60,6 +58,7 @@ class AppServiceProvider extends ServiceProvider
 
         // Register GICE HTTP api client
         $this->registerGiceApiClient();
+        $this->registerSDEApiClient();
 
         // Disable wrapping of API resources
         JsonResource::withoutWrapping();
@@ -89,11 +88,11 @@ class AppServiceProvider extends ServiceProvider
         // Register a macro on the eloquent builder to pull in the model's scopes
         Builder::macro('withModelScopes', function (): static {
             /** @var \Illuminate\Database\Eloquent\Builder $this */
-            if (is_null($this->model)) {
+            if (is_null($this->getModel())) {
                 return $this;
             }
 
-            return $this->model->registerGlobalScopes($this);
+            return $this->getModel()->registerGlobalScopes($this);
         });
     }
 
@@ -130,6 +129,29 @@ class AppServiceProvider extends ServiceProvider
             $clientId = config('gice.client_id');
             $clientSecret = config('gice.client_secret');
             $request->withBasicAuth($clientId, $clientSecret);
+
+            return $request;
+        });
+    }
+
+    /**
+     * Register the SDE client
+     */
+    private function registerSDEApiClient(): void
+    {
+        // Create a macro to pre-configure the HTTP client for SDE api requests
+        Http::macro('sde', function (): PendingRequest {
+
+            // Create request
+            $request = Http::asJson();
+
+            // Configure the base url
+            $sdeHost = config('sde.host', 'sde.jita.space');
+            $sdePort = config('sde.port', 443);
+            $sdeScheme = config('sde.scheme', 'https');
+            $sdeVersion = config('sde.version', 'latest');
+            $sdeBaseUrl = rtrim(sprintf('%s://%s:%s/%s', $sdeScheme, $sdeHost, $sdePort, $sdeVersion), '/');
+            $request->baseUrl($sdeBaseUrl);
 
             return $request;
         });
