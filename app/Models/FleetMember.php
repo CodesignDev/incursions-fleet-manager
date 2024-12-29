@@ -68,4 +68,12 @@ class FleetMember extends Model
     {
         return $this->belongsTo(Character::class);
     }
+
+    /**
+     * The system which this fleet member is currently at.
+     */
+    public function location(): BelongsTo
+    {
+        return $this->belongsTo(Universe\SolarSystem::class);
+    }
 }
