@@ -27,20 +27,14 @@ class FleetResource extends JsonResource
                 'label' => $comms->label,
                 'url' => $this->whenNotNull($comms->url, ''),
             ]),
-            'locations' => $this->whenLoaded('members', fn($members) => collect($members)
+            'locations' => $this->whenLoaded('members', fn ($members) => collect($members)
                 ->groupBy('location_id')
-                ->sortByDesc(fn ($members) => $members->map->count())
-                ->map(function ($members, $location) {
-                    if (blank($location)) {
-                        $location = 'unknown';
-                    }
-
-                    return [
-                        'solar_system_id' => $location ?? 'unknown',
-                        'solar_system_name' => 'TBC',
-                        'count' => $members->count(),
-                    ];
-                })
+                ->sortByDesc(fn ($members) => $members->count())
+                ->map(fn($members, $locationId) => [
+                    'solar_system_id' => $locationId ?: -1,
+                    'solar_system_name' => optional($members->first()->location)->name ?: 'Unknown',
+                    'count' => $members->count()
+                ])
                 ->values()),
             'member_count' => $this->whenCounted('members'),
         ];

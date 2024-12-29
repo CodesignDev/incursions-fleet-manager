@@ -15,6 +15,15 @@ class FleetMember extends Model
     public const DELETED_AT = 'left_at';
 
     /**
+     * The relations to eager load on every query.
+     *
+     * @var array
+     */
+    protected $with = [
+        'location',
+    ];
+
+    /**
      * The model's attributes.
      *
      * @var array
@@ -74,6 +83,6 @@ class FleetMember extends Model
      */
     public function location(): BelongsTo
     {
-        return $this->belongsTo(Universe\SolarSystem::class);
+        return $this->belongsTo(Universe\SolarSystem::class, 'location_id');
     }
 }
