@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Enums\ExpectedEveIdRange;
 use App\Exceptions\InvalidEveIdRange;
 use App\Models\Universe\Constellation;
 use App\Models\Universe\Region;
