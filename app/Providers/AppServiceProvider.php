@@ -23,10 +23,10 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\ServiceProvider;
-use Inertia\Inertia;
-use Inertia\LazyProp;
+use Inertia\ResponseFactory as Inertia;
 use Inertia\Ssr\Gateway;
 use Laravel\Socialite\Contracts\Factory as SocialiteFactory;
+use ReflectionException;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -73,9 +73,11 @@ class AppServiceProvider extends ServiceProvider
     private function bootMacros(): void
     {
         // Register class mixins
-        Blueprint::mixin(new BlueprintMixin());
-        Event::mixin(new EventEveDowntimeMixin());
-        Inertia::mixin(new InertiaMixin());
+        try {
+            Blueprint::mixin(new BlueprintMixin());
+            Event::mixin(new EventEveDowntimeMixin());
+            Inertia::mixin(new InertiaMixin());
+        } catch (ReflectionException) {}
 
         // Register an Arr helper to update a value
         Arr::macro('update', function (array|ArrayAccess &$array, int|null|string $key, callable $update, $default = null): array {
