@@ -3,13 +3,14 @@
 namespace App\Models\Universe;
 
 use App\Models\Concerns\IsSdeUniverseModel;
+use App\Models\Universe\Concerns\HasPositionalData;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Constellation extends Model
 {
-    use IsSdeUniverseModel;
+    use HasPositionalData, IsSdeUniverseModel;
 
     /**
      * The attributes that are mass assignable.

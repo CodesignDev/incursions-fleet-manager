@@ -54,7 +54,7 @@ class FetchSolarSystemInformationFromSDE implements ShouldQueue
         try {
 
             // Fetch the system information and name from the SDE
-            $systemInformation = Http::sde()
+            $systemInfo = Http::sde()
                 ->withUrlParameters(['system_id' => $this->solarSystemId])
                 ->get('/universe/solarSystems/{system_id}')
                 ->throw()
@@ -64,17 +64,24 @@ class FetchSolarSystemInformationFromSDE implements ShouldQueue
             $systemName = $this->fetchNameFromSde($this->solarSystemId, 'Unknown System #'.$this->solarSystemId);
 
             // Extract the constellation and region ids from the response
-            $constellationId = $systemInformation->value('constellationID');
-            $regionId = $systemInformation->value('regionID');
+            $constellationId = $systemInfo->value('constellationID');
+            $regionId = $systemInfo->value('regionID');
 
             // Create the solar system entry for the requested system
-            SolarSystem::create([
-                'system_id' => $systemInformation->value('solarSystemID', $this->solarSystemId),
+            tap(SolarSystem::create([
+                'system_id' => $systemInfo->value('solarSystemID', $this->solarSystemId),
                 'constellation_id' => $constellationId,
                 'name' => $systemName,
-                'security' => $systemInformation->value('security', 0),
-                'radius' => $systemInformation->value('radius'),
-            ]);
+                'security' => $systemInfo->value('security', 0),
+                'radius' => $systemInfo->value('radius'),
+            ]), function (SolarSystem $system) use ($systemInfo) {
+
+                /** @noinspection PhpParamsInspection */
+                $system
+                    ->setPosition(...$systemInfo->value('center', []))
+                    ->setPosition(...$systemInfo->value('min', []), prefix: 'min')
+                    ->setPosition(...$systemInfo->value('max', []), prefix: 'max');
+            });
 
             // Fetch and create the constellation info if the information doesn't exist in the database
             if (filled($constellationId) && Constellation::whereConstellationId($constellationId)->doesntExist()) {
@@ -90,12 +97,19 @@ class FetchSolarSystemInformationFromSDE implements ShouldQueue
                 $constellationName = $this->fetchNameFromSde($constellationId, 'Unknown Constellation #'.$constellationId);
 
                 // Create the constellation
-                Constellation::create([
+                tap (Constellation::create([
                     'constellation_id' => $constellationInfo->value('constellationID', $constellationId),
                     'region_id' => $constellationInfo->value('regionID', $regionId),
                     'name' => $constellationName,
                     'radius' => $constellationInfo->value('radius'),
-                ]);
+                ]), function (Constellation $constellation) use ($constellationInfo) {
+
+                    /** @noinspection PhpParamsInspection */
+                    $constellation
+                        ->setPosition(...$constellationInfo->value('center', []))
+                        ->setPosition(...$constellationInfo->value('min', []), prefix: 'min')
+                        ->setPosition(...$constellationInfo->value('max', []), prefix: 'max');
+                });
             }
 
             // Create the region info if it doesn't exist in the database
@@ -112,10 +126,17 @@ class FetchSolarSystemInformationFromSDE implements ShouldQueue
                 $regionName = $this->fetchNameFromSde($regionId, 'Unknown Region #'.$regionId);
 
                 // Create the region
-                Region::create([
+                tap(Region::create([
                     'region_id' => $regionInfo->value('regionID', $regionId),
                     'name' => $regionName,
-                ]);
+                ]), function (Region $region) use ($regionInfo) {
+
+                    /** @noinspection PhpParamsInspection */
+                    $region
+                        ->setPosition(...$regionInfo->value('center', []))
+                        ->setPosition(...$regionInfo->value('min', []), prefix: 'min')
+                        ->setPosition(...$regionInfo->value('max', []), prefix: 'max');
+                });
             }
         }
 

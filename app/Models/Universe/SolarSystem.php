@@ -3,6 +3,7 @@
 namespace App\Models\Universe;
 
 use App\Models\Concerns\IsSdeUniverseModel;
+use App\Models\Universe\Concerns\HasPositionalData;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Znck\Eloquent\Relations\BelongsToThrough as BelongsToThroughRelation;
@@ -10,7 +11,7 @@ use Znck\Eloquent\Traits\BelongsToThrough;
 
 class SolarSystem extends Model
 {
-    use BelongsToThrough, IsSdeUniverseModel;
+    use BelongsToThrough, HasPositionalData, IsSdeUniverseModel;
 
     /**
      * The attributes that are mass assignable.
