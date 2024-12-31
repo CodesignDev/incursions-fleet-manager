@@ -3,20 +3,34 @@
 namespace App\Models\Concerns;
 
 use Illuminate\Support\Str;
+use Parental\HasParent;
 
 trait IsSdeUniverseModel
 {
     /**
-     * Get the table associated with the model.
+     * Initialize the trait.
      *
-     * @return string
+     * @return void
      */
-    public function getTable(): string
+    protected function initializeIsSdeUniverseModel(): void
     {
-        return $this->table ?? Str::of(class_basename($this))
-            ->pluralStudly()
-            ->prepend('Universe')
-            ->snake();
+        // Class name
+        $class = class_basename($this);
+
+        // Compatibility with Parental
+        if (in_array(HasParent::class, class_uses_recursive($this), false) && method_exists($this, 'getParentClass')) {
+            $class = class_basename($this->getParentClass() ?? get_class($this));
+        }
+
+        // Set the table name
+        if (! isset($this->table)) {
+            $this->table = Str::snake('Universe'.Str::pluralStudly($class));
+        }
+
+        // Set primary key
+        if ($this->getKeyName() === 'id') {
+            $this->primaryKey = Str::afterLast(Str::snake($class), '_').'_id';
+        }
     }
 
     /**
@@ -27,18 +41,5 @@ trait IsSdeUniverseModel
     public function getIncrementing(): bool
     {
         return false;
-    }
-
-    /**
-     * Get the primary key for the model.
-     *
-     * @return string
-     */
-    public function getKeyName(): string
-    {
-        return Str::of(class_basename($this))
-            ->snake()
-            ->afterLast('_')
-            ->append('_id');
     }
 }

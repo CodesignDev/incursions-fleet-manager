@@ -4,8 +4,54 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5447ea421d288dd0c5382b50287c0a34",
+    "content-hash": "725dbc9bf5a9a317a2de382fb626b1a2",
     "packages": [
+        {
+            "name": "archtechx/enums",
+            "version": "v1.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/archtechx/enums.git",
+                "reference": "27d0405b983b14a2ee90621c4034eeb6010c0a0c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/archtechx/enums/zipball/27d0405b983b14a2ee90621c4034eeb6010c0a0c",
+                "reference": "27d0405b983b14a2ee90621c4034eeb6010c0a0c",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.1"
+            },
+            "require-dev": {
+                "larastan/larastan": "^2.4",
+                "orchestra/testbench": "^8.0",
+                "pestphp/pest": "^2.0",
+                "pestphp/pest-plugin-laravel": "^2.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "ArchTech\\Enums\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Samuel Štancl",
+                    "email": "samuel@archte.ch"
+                }
+            ],
+            "description": "Helpers for making PHP enums more lovable.",
+            "support": {
+                "issues": "https://github.com/archtechx/enums/issues",
+                "source": "https://github.com/archtechx/enums/tree/v1.1.1"
+            },
+            "time": "2024-10-29T15:38:32+00:00"
+        },
         {
             "name": "brick/math",
             "version": "0.12.1",
@@ -3285,6 +3331,67 @@
             "time": "2024-12-14T21:12:59+00:00"
         },
         {
+            "name": "plank/laravel-metable",
+            "version": "6.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/plank/laravel-metable.git",
+                "reference": "9c91fff0bcb2318f20837dc96f8afbfe1c37776e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/plank/laravel-metable/zipball/9c91fff0bcb2318f20837dc96f8afbfe1c37776e",
+                "reference": "9c91fff0bcb2318f20837dc96f8afbfe1c37776e",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "illuminate/database": "^10.48.25|^11.34.0",
+                "illuminate/support": "^10.48.25|^11.34.0",
+                "php": ">=8.1",
+                "phpoption/phpoption": "^1.9.3"
+            },
+            "require-dev": {
+                "guzzlehttp/guzzle": "^7.9",
+                "guzzlehttp/promises": "^1.5",
+                "laravel/legacy-factories": "^1.4.0",
+                "mockery/mockery": "^1.6.0",
+                "nesbot/carbon": "^2.72.0",
+                "orchestra/testbench": "^9.0",
+                "php-coveralls/php-coveralls": "^2.7.0",
+                "phpunit/phpunit": "^10.5"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Plank\\Metable\\MetableServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Plank\\Metable\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Sean Fraser",
+                    "email": "sean@plankdesign.com"
+                }
+            ],
+            "description": "A package for attaching arbitrary data to Eloquent models",
+            "support": {
+                "issues": "https://github.com/plank/laravel-metable/issues",
+                "source": "https://github.com/plank/laravel-metable/tree/6.1.0"
+            },
+            "time": "2024-12-05T02:34:26+00:00"
+        },
+        {
             "name": "psr/clock",
             "version": "1.0.0",
             "source": {
@@ -6545,6 +6652,67 @@
             "time": "2024-11-08T15:48:14+00:00"
         },
         {
+            "name": "tightenco/parental",
+            "version": "v1.4.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/tighten/parental.git",
+                "reference": "90e80a93409aac080e74ee441a462875006f0e00"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/tighten/parental/zipball/90e80a93409aac080e74ee441a462875006f0e00",
+                "reference": "90e80a93409aac080e74ee441a462875006f0e00",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/database": "^9.0||^10.0||^11.0",
+                "illuminate/events": "^9.0||^10.0||^11.0",
+                "php": "^8.0"
+            },
+            "require-dev": {
+                "orchestra/testbench": "^7.0||^8.0||^9.0",
+                "phpunit/phpunit": "^9.5.10||^10.5",
+                "tightenco/duster": "^2.7"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Parental\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Caleb Porzio",
+                    "email": "calebporzio@gmail.com",
+                    "homepage": "https://calebporzio.com/",
+                    "role": "author"
+                },
+                {
+                    "name": "Steve McDougall",
+                    "email": "juststevemcd@gmail.com",
+                    "homepage": "https://www.juststeveking.uk/",
+                    "role": "developer"
+                }
+            ],
+            "description": "A simple eloquent trait that allows relationships to be accessed through child models.",
+            "support": {
+                "issues": "https://github.com/tighten/parental/issues",
+                "source": "https://github.com/tighten/parental/tree/v1.4.0"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/calebporzio",
+                    "type": "github"
+                }
+            ],
+            "time": "2024-03-12T13:04:57+00:00"
+        },
+        {
             "name": "tightenco/ziggy",
             "version": "v2.4.1",
             "source": {
@@ -6826,6 +6994,66 @@
                 }
             ],
             "time": "2024-11-21T01:49:47+00:00"
+        },
+        {
+            "name": "wandersonwhcr/romans",
+            "version": "v1.5.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/wandersonwhcr/romans.git",
+                "reference": "4d916b93e9e6d35a48d418ea6960726929a76a3f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/wandersonwhcr/romans/zipball/4d916b93e9e6d35a48d418ea6960726929a76a3f",
+                "reference": "4d916b93e9e6d35a48d418ea6960726929a76a3f",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.0"
+            },
+            "require-dev": {
+                "php-parallel-lint/php-parallel-lint": "1.3.*",
+                "phpmd/phpmd": "2.11.*",
+                "phpunit/phpunit": "9.5.*",
+                "psr/cache": "3.0.*",
+                "sebastian/phpcpd": "6.0.*",
+                "slevomat/coding-standard": "7.0.*",
+                "squizlabs/php_codesniffer": "3.6.*"
+            },
+            "suggest": {
+                "symfony/cache": "Cache results to improve performance (or any PSR-6 implementation)"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "1.6.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Romans\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "A Simple PHP Roman Numerals Library",
+            "keywords": [
+                "converter",
+                "filter",
+                "format",
+                "roman",
+                "roman-number",
+                "roman-numeral",
+                "validator"
+            ],
+            "support": {
+                "issues": "https://github.com/wandersonwhcr/romans/issues",
+                "source": "https://github.com/wandersonwhcr/romans/tree/v1.5.2"
+            },
+            "time": "2021-12-21T16:56:59+00:00"
         },
         {
             "name": "webmozart/assert",

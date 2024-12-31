@@ -8,9 +8,11 @@ use App\Macros\EventEveDowntimeMixin;
 use App\Macros\InertiaMixin;
 use App\Models\FleetInvite;
 use App\Models\FleetMember;
+use App\Models\Universe\SolarSystem;
 use App\Models\WaitlistEntry;
 use App\Observers\FleetInviteStateObserver;
 use App\Observers\FleetMemberInviteObserver;
+use App\Observers\SolarSystemInfoObserver;
 use App\Observers\WaitlistEntryObserver;
 use App\Services\Inertia\ZiggyHttpGateway;
 use ArrayAccess;
@@ -22,11 +24,13 @@ use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Number;
 use Illuminate\Support\ServiceProvider;
 use Inertia\ResponseFactory as Inertia;
 use Inertia\Ssr\Gateway;
 use Laravel\Socialite\Contracts\Factory as SocialiteFactory;
 use ReflectionException;
+use Romans\Filter\IntToRoman;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -96,6 +100,13 @@ class AppServiceProvider extends ServiceProvider
 
             return $this->getModel()->registerGlobalScopes($this);
         });
+
+        // Register a macro on Number to convert a number ro a roman numeral
+        Number::macro('toRomanNumeral', function (int $number): string {
+            $number = max(0, $number);
+
+            return (new IntToRoman)->filter($number);
+        });
     }
 
     /**
@@ -107,6 +118,9 @@ class AppServiceProvider extends ServiceProvider
         FleetInvite::observe(FleetInviteStateObserver::class);
         FleetMember::observe(FleetMemberInviteObserver::class);
         WaitlistEntry::observe(WaitlistEntryObserver::class);
+
+        // Register listeners to the universe models
+        SolarSystem::observe(SolarSystemInfoObserver::class);
     }
 
     /**
