@@ -2,20 +2,16 @@
 
 namespace App\Models\Universe;
 
+use App\Models\Concerns\IsSdeUniverseModel;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class PositionData extends Model
 {
-    use HasUuids;
-
-    /**
-     * The table associated with the model.
-     *
-     * @var string|null
-     */
-    protected $table = 'universe_position_data';
+    use HasUuids, IsSdeUniverseModel {
+        HasUuids::getIncrementing insteadof IsSdeUniverseModel;
+    }
 
     /**
      * The attributes that aren't mass assignable.
