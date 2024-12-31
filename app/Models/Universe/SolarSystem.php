@@ -6,6 +6,8 @@ use App\Models\Concerns\IsSdeUniverseModel;
 use App\Models\Universe\Concerns\HasPositionalData;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Znck\Eloquent\Relations\BelongsToThrough as BelongsToThroughRelation;
 use Znck\Eloquent\Traits\BelongsToThrough;
 
@@ -59,5 +61,50 @@ class SolarSystem extends Model
                 Constellation::class => 'constellation_id',
             ]
         );
+    }
+
+    /**
+     * The star of the solar system.
+     */
+    public function star(): HasOne
+    {
+        return $this->hasOne(Star::class, 'system_id');
+    }
+
+    /**
+     * The list of planets that are part of this solar system.
+     */
+    public function planets(): HasMany
+    {
+        return $this->hasMany(Planet::class, 'system_id')
+            ->orderBy('celestial_index');
+    }
+
+    /**
+     * The list of moons that are part of this solar system.
+     */
+    public function moons(): HasMany
+    {
+        return $this->hasMany(Moon::class, 'system_id')
+            ->orderBy('celestial_index')
+            ->orderBy('orbital_index');
+    }
+
+    /**
+     * The list of asteroid belts that are part of this solar system.
+     */
+    public function asteroidBelts(): HasMany
+    {
+        return $this->hasMany(AsteroidBelt::class, 'system_id')
+            ->orderBy('celestial_index')
+            ->orderBy('orbital_index');
+    }
+
+    /**
+     * The list of asteroid belts that are part of this solar system. (Alias)
+     */
+    public function belts(): HasMany
+    {
+        return $this->asteroidBelts();
     }
 }

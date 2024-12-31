@@ -10,23 +10,25 @@ class Planet extends Celestial
     use HasParent;
 
     /**
-     * The moons that are linked to this planet.
+     * The moons that orbit this planet.
      */
     public function moons(): HasMany
     {
-        return $this->hasMany(Moon::class, 'orbital_id', 'celestial_id');
+        return $this->hasMany(Moon::class, 'orbital_id', 'celestial_id')
+            ->orderBy('orbital_index');
     }
 
     /**
-     * The asteroid belts that are linked to this planet.
+     * The asteroid belts that orbit this planet.
      */
     public function asteroidBelts(): HasMany
     {
-        return $this->hasMany(AsteroidBelt::class, 'orbital_id', 'celestial_id');
+        return $this->hasMany(AsteroidBelt::class, 'orbital_id', 'celestial_id')
+            ->orderBy('orbital_index');
     }
 
     /**
-     * Alias for the asteroid belt relationship.
+     * The asteroid belts that orbit this planet. (Alias)
      */
     public function belts(): HasMany
     {
