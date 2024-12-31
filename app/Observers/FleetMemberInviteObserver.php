@@ -13,6 +13,6 @@ class FleetMemberInviteObserver
     public function created(FleetMember $fleetMember): void
     {
         // Dispatch a job that tries to link up a fleet invite to this fleet member
-        LinkFleetInviteToMember::dispatch($fleetMember);
+        dispatch(new LinkFleetInviteToMember($fleetMember));
     }
 }
