@@ -27,7 +27,7 @@ class Region extends Model
      */
     public function constellations(): HasMany
     {
-        return $this->hasMany(Constellation::class);
+        return $this->hasMany(Constellation::class, 'region_id');
     }
 
     /**

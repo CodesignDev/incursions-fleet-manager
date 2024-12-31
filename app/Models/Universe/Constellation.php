@@ -41,7 +41,7 @@ class Constellation extends Model
      */
     public function region(): BelongsTo
     {
-        return $this->belongsTo(Region::class);
+        return $this->belongsTo(Region::class, 'region_id');
     }
 
     /**
@@ -49,6 +49,6 @@ class Constellation extends Model
      */
     public function systems(): HasMany
     {
-        return $this->hasMany(SolarSystem::class);
+        return $this->hasMany(SolarSystem::class, 'constellation_id');
     }
 }
