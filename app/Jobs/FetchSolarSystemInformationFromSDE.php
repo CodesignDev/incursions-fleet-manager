@@ -2,7 +2,7 @@
 
 namespace App\Jobs;
 
-use App\Enums\ExpectedEveIdRange;
+use App\Enums\EveIdRange;
 use App\Exceptions\InvalidEveIdRange;
 use App\Models\Universe\Constellation;
 use App\Models\Universe\Region;
@@ -46,8 +46,8 @@ class FetchSolarSystemInformationFromSDE implements ShouldQueue
         }
 
         // If the ID range is invalid, throw an exception and fail
-        if (Number::clamp($this->solarSystemId, 30_000_000, 33_000_000) !== $this->solarSystemId) {
-            throw (new InvalidEveIdRange())->withId($this->solarSystemId, ExpectedEveIdRange::AllSolarSystems);
+        if (EveIdRange::isValidId($this->solarSystemId, EveIdRange::AllSolarSystems)) {
+            throw (new InvalidEveIdRange())->withId($this->solarSystemId, EveIdRange::AllSolarSystems);
         }
 
         // Catch any and all http errors
