@@ -7,17 +7,17 @@ use App\Exceptions\InvalidEveIdRange;
 use App\Models\Universe\Constellation;
 use App\Models\Universe\Region;
 use App\Models\Universe\SolarSystem;
+use App\Traits\FetchesNamesFromSde;
 use Illuminate\Bus\Batchable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Number;
 
 class FetchSolarSystemInformationFromSDE implements ShouldQueue
 {
-    use Batchable, Queueable;
+    use Batchable, FetchesNamesFromSde, Queueable;
 
     /**
      * The solar system info to fetch from the SDE / ESI.
@@ -162,16 +162,5 @@ class FetchSolarSystemInformationFromSDE implements ShouldQueue
         catch (ConnectionException) {
             $this->release();
         }
-    }
-
-    /**
-     * Fetch the name for an item from the SDE
-     */
-    private function fetchNameFromSde(int $itemId, $default = null)
-    {
-        return rescue(fn () => Http::sde()
-            ->withUrlParameters(['item_id' => $itemId])
-            ->get('/inventory/names/{item_id}')
-            ->json('itemName', $default), rescue: $default);
     }
 }
