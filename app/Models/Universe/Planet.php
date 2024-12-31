@@ -15,7 +15,7 @@ class Planet extends Celestial
     public function moons(): HasMany
     {
         return $this->hasMany(Moon::class, 'orbital_id', 'celestial_id')
-            ->orderBy('orbital_index');
+            ->orderByCelestial();
     }
 
     /**
@@ -24,7 +24,7 @@ class Planet extends Celestial
     public function asteroidBelts(): HasMany
     {
         return $this->hasMany(AsteroidBelt::class, 'orbital_id', 'celestial_id')
-            ->orderBy('orbital_index');
+            ->orderByCelestial();
     }
 
     /**

@@ -77,7 +77,7 @@ class SolarSystem extends Model
     public function planets(): HasMany
     {
         return $this->hasMany(Planet::class, 'system_id')
-            ->orderBy('celestial_index');
+            ->orderByPlanet();
     }
 
     /**
@@ -86,8 +86,7 @@ class SolarSystem extends Model
     public function moons(): HasMany
     {
         return $this->hasMany(Moon::class, 'system_id')
-            ->orderBy('celestial_index')
-            ->orderBy('orbital_index');
+            ->orderByCelestial();
     }
 
     /**
@@ -96,8 +95,7 @@ class SolarSystem extends Model
     public function asteroidBelts(): HasMany
     {
         return $this->hasMany(AsteroidBelt::class, 'system_id')
-            ->orderBy('celestial_index')
-            ->orderBy('orbital_index');
+            ->orderByCelestial();
     }
 
     /**

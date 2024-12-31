@@ -4,6 +4,7 @@ namespace App\Models\Universe;
 
 use App\Models\Concerns\IsSdeUniverseModel;
 use App\Models\Universe\Concerns\HasPositionalData;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Parental\HasChildren;
@@ -65,6 +66,22 @@ class Celestial extends Model
             'moon' => Moon::class,
             'asteroid_belt' => AsteroidBelt::class,
         ];
+    }
+
+    /**
+     * Scope a query to sort by the celestial index.
+     */
+    public function scopeOrderByPlanet(Builder $builder, string $direction = 'asc'): void
+    {
+        $builder->orderBy('celestial_index', $direction);
+    }
+
+    /**
+     * Scope a query to sort by the celestial index and the orbital index.
+     */
+    public function scopeOrderByCelestial(Builder $builder, string $direction = 'asc'): void
+    {
+        $builder->orderByPlanet($direction)->orderBy('orbital_index', $direction);
     }
 
     /**
