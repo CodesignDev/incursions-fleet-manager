@@ -48,13 +48,18 @@ class FetchCorporationInformation implements ShouldQueue
                 ->withUrlParameters(['corporation_id' => $corporation])
                 ->get('/corporations/{corporation_id}')
                 ->throw()
-                ->json();
+                ->fluent();
 
             // Get only the required information from the data
             Corporation::query()->updateOrCreate(
                 ['id' => $corporation],
-                Arr::only($corporationData, ['name', 'ticker', 'tax_rate', 'alliance_id'])
+                $corporationData->only(['name', 'ticker', 'tax_rate', 'alliance_id'])
             );
+
+            // If there is a home station, queue up the job to fetch that info
+            $corporationData->whenHas('home_station_id', function ($homeStation) {
+                dispatch(new FetchNpcStationInformationFromSde($homeStation));
+            });
         }
     }
 }

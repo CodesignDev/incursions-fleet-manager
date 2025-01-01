@@ -63,8 +63,9 @@ class FetchCelestialsForSolarSystemFromSde implements ShouldQueue
         ), fn () => $this->collateCelestialIdsFromSde());
 
         // Build a list of celestials to fetch and create jobs for them
-        $jobBatch = Bus::batch(
+        $celestialJobBatch = Bus::batch(
             collect($celestials)
+                ->except(['stations', 'has_all_stations'])
                 ->flatMap(fn ($group, $key) => Arr::map(
                     Arr::wrap($group),
                     fn ($value) => ['celestial' => $value, 'type' => Str::singular($key)]
@@ -78,11 +79,23 @@ class FetchCelestialsForSolarSystemFromSde implements ShouldQueue
                 ))
         );
 
-        // Dispatch the jobs as a nested job chain so things are processed in order
-        Bus::chain([
-            $jobBatch,
-            new BuildOrbitalMapForSolarSystem($this->solarSystemId)
-        ])->dispatch();
+        // Build a list of jobs to fetch the npc stations
+        $stationJobBatch = collect($celestials)
+            ->only('stations')
+            ->flatten()
+            ->mapInto(FetchNpcStationInformationFromSde::class);
+
+        // Dispatch the relevant jobs
+        Bus::batch([
+            [
+                $celestialJobBatch,
+                new BuildOrbitalMapForSolarSystem($this->solarSystemId)
+            ],
+            ...$stationJobBatch,
+        ])
+            ->withOption('fetch_npc_stations', blank(Arr::get($celestials, 'stations', [])))
+            ->dispatch();
+
     }
 
     /**
@@ -100,6 +113,7 @@ class FetchCelestialsForSolarSystemFromSde implements ShouldQueue
                 'planets' => $planetData->pluck('planet_id'),
                 'moons' => $planetData->flatMap(fn ($planet) => data_get($planet, 'moons', [])),
                 'asteroid_belts' => $planetData->flatMap(fn ($planet) => data_get($planet, 'asteroid_belts', [])),
+                'stations' => $data->value('stations'),
             ])->toArray();
         };
     }
@@ -128,7 +142,7 @@ class FetchCelestialsForSolarSystemFromSde implements ShouldQueue
                     ->get('/universe/planets/{planet_id}')
                     ->throw()
                     ->collect()
-                    ->only(['moons', 'asteroidBelts']), [])
+                    ->only(['moons', 'asteroidBelts', 'npcStations']), [])
             );
 
             return collect([
@@ -136,6 +150,9 @@ class FetchCelestialsForSolarSystemFromSde implements ShouldQueue
                 'planets' => $planets,
                 'moons' => $planetData->flatMap(fn ($planet) => data_get($planet, 'moons', [])),
                 'asteroid_belts' => $planetData->flatMap(fn ($planet) => data_get($planet, 'asteroidBelts', [])),
+
+                // This is not the full list of stations from here due to how npc stations are listed in the SDE
+                // 'stations' => $planetData->map(fn ($planet) => array_keys(data_get($planet, 'npcStations', []))),
             ])->toArray();
         }
 

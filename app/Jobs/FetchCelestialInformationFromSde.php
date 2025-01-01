@@ -13,6 +13,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\RequestException;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Number;
 use Illuminate\Support\Str;
@@ -136,6 +137,13 @@ class FetchCelestialInformationFromSde implements ShouldQueue
                 ])->filter(fn ($value) => $value !== null && $value !== '0.0');
                 $celestial->setManyMeta($meta->toArray());
             });
+
+            // If the celestial data has npc stations listed, create a job to create them
+            if ($data->has('npcStations') && Arr::get($this->batch()?->options, 'fetch_npc_stations', false)) {
+                $stationJobs = $data->collect('npcStations')->keys()->mapInto(FetchNpcStationInformationFromSde::class);
+
+                $this->batch()?->add($stationJobs);
+            }
         }
 
         // HTTP related errors... handle particular errors
