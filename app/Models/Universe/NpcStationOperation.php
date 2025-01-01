@@ -32,6 +32,6 @@ class NpcStationOperation extends Model
             NpcStationOperationServices::class,
             foreignPivotKey: 'operation_id',
             relatedPivotKey: 'service_id',
-        );
+        )->withTimestamps();
     }
 }

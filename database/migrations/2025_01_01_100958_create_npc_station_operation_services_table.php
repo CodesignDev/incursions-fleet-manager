@@ -15,6 +15,7 @@ return new class extends Migration
             $table->uuidId();
             $table->foreignId('operation_id');
             $table->foreignId('service_id');
+            $table->timestamps();
         });
     }
 
