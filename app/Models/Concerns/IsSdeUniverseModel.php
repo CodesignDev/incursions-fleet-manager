@@ -7,6 +7,8 @@ use Parental\HasParent;
 
 trait IsSdeUniverseModel
 {
+    use HasSdeUniverseTable;
+
     /**
      * Initialize the trait.
      *
@@ -14,22 +16,9 @@ trait IsSdeUniverseModel
      */
     protected function initializeIsSdeUniverseModel(): void
     {
-        // Class name
-        $class = class_basename($this);
-
-        // Compatibility with Parental
-        if (in_array(HasParent::class, class_uses_recursive($this), false) && method_exists($this, 'getParentClass')) {
-            $class = class_basename($this->getParentClass() ?? get_class($this));
-        }
-
-        // Set the table name
-        if (! isset($this->table)) {
-            $this->table = Str::snake('Universe'.Str::pluralStudly($class));
-        }
-
         // Set primary key
         if ($this->getKeyName() === 'id') {
-            $this->primaryKey = Str::afterLast(Str::snake($class), '_').'_id';
+            $this->primaryKey = Str::afterLast(Str::snake(class_basename($this)), '_').'_id';
         }
     }
 

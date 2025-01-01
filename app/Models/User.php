@@ -13,8 +13,8 @@ use Spatie\Permission\Traits\HasRoles;
 class User extends Authenticatable
 {
     use HasFactory, HasRoles, Notifiable, SoftDeletes {
-        HasRoles::roles as spatieRoles;
-        HasRoles::permissions as spatiePermissions;
+        HasRoles::roles as private spatieRoles;
+        HasRoles::permissions as private spatiePermissions;
     }
 
     /**

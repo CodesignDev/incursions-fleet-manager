@@ -6,6 +6,7 @@ use App\Enums\EveIdRange;
 use App\Enums\SolarSystemCelestialType;
 use App\Exceptions\InvalidEveIdRange;
 use App\Facades\Esi;
+use Illuminate\Bus\Batchable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Http\Client\ConnectionException;
@@ -18,7 +19,7 @@ use Illuminate\Support\Str;
 
 class FetchCelestialsForSolarSystemFromSde implements ShouldQueue
 {
-    use Queueable;
+    use Batchable, Queueable;
 
     /**
      * The solar system which the celestial info is to be fetched for from the SDE.

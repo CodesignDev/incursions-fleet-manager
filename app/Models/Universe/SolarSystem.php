@@ -8,12 +8,14 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Staudenmeir\EloquentHasManyDeep\HasManyDeep;
+use Staudenmeir\EloquentHasManyDeep\HasRelationships;
 use Znck\Eloquent\Relations\BelongsToThrough as BelongsToThroughRelation;
 use Znck\Eloquent\Traits\BelongsToThrough;
 
 class SolarSystem extends Model
 {
-    use BelongsToThrough, HasPositionalData, IsSdeUniverseModel;
+    use BelongsToThrough, HasPositionalData, HasRelationships, IsSdeUniverseModel;
 
     /**
      * The attributes that are mass assignable.
@@ -60,6 +62,27 @@ class SolarSystem extends Model
                 Region::class => 'region_id',
                 Constellation::class => 'constellation_id',
             ]
+        );
+    }
+
+    /**
+     * The stargates that are in this solar system.
+     */
+    public function stargates(): HasMany
+    {
+        return $this->hasMany(Stargate::class, 'system_id');
+    }
+
+    /**
+     * The system connections that are connected to this solar system through stargates.
+     */
+    public function connections(): HasManyDeep
+    {
+        return $this->hasManyDeep(
+            self::class,
+            [Stargate::class.' as source_stargate', StargateConnection::class, Stargate::class.' as destination_stargate'],
+            ['system_id', 'source_stargate_id', 'stargate_id', 'system_id'],
+            ['system_id', 'stargate_id', 'destination_stargate_id', 'system_id']
         );
     }
 

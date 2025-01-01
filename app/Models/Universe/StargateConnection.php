@@ -5,9 +5,9 @@ namespace App\Models\Universe;
 use App\Models\Concerns\HasSdeUniverseTable;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class PositionData extends Model
+class StargateConnection extends Model
 {
     use HasUuids, HasSdeUniverseTable;
 
@@ -19,10 +19,18 @@ class PositionData extends Model
     protected $guarded = [];
 
     /**
-     * The entity that this position data belongs to.
+     * The source stargate.
      */
-    public function positional(): MorphTo
+    public function source(): BelongsTo
     {
-        return $this->morphTo();
+        return $this->belongsTo(Stargate::class);
+    }
+
+    /**
+     * The destination stargate.
+     */
+    public function destination(): BelongsTo
+    {
+        return $this->belongsTo(Stargate::class);
     }
 }
