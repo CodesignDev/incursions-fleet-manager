@@ -8,12 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasOneThrough;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Znck\Eloquent\Traits\HasTableAlias;
 
 class Stargate extends Model
 {
-    use HasPositionalData, HasTableAlias, IsSdeUniverseModel, SoftDeletes;
+    use HasPositionalData, HasTableAlias, IsSdeUniverseModel;
 
     /**
      * The attributes that are mass assignable.
