@@ -2,33 +2,12 @@
 
 namespace App\Models\Concerns;
 
-use Illuminate\Support\Str;
-use Parental\HasParent;
-
 trait IsSdeUniverseModel
 {
-    use HasSdeUniverseTable;
+    use IsSdeModel;
 
     /**
-     * Initialize the trait.
-     *
-     * @return void
+     * The prefix to add to the model's table.
      */
-    protected function initializeIsSdeUniverseModel(): void
-    {
-        // Set primary key
-        if ($this->getKeyName() === 'id') {
-            $this->primaryKey = Str::afterLast(Str::snake(class_basename($this)), '_').'_id';
-        }
-    }
-
-    /**
-     * Get the value indicating whether the IDs are incrementing.
-     *
-     * @return bool
-     */
-    public function getIncrementing(): bool
-    {
-        return false;
-    }
+    protected string $tablePrefix = 'universe';
 }

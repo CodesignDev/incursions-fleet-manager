@@ -2,14 +2,14 @@
 
 namespace App\Models\Universe;
 
-use App\Models\Concerns\HasSdeUniverseTable;
+use App\Models\Concerns\IsSdeUniverseModel;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class StargateConnection extends Model
 {
-    use HasUuids, HasSdeUniverseTable;
+    use HasUuids, IsSdeUniverseModel;
 
     /**
      * The attributes that aren't mass assignable.

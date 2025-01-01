@@ -5,14 +5,19 @@ namespace App\Models\Concerns;
 use Illuminate\Support\Str;
 use Parental\HasParent;
 
-trait HasSdeUniverseTable
+trait HasPrefixedTable
 {
+    /**
+     * The prefix to add to the model's table.
+     */
+    protected string $tablePrefix;
+
     /**
      * Initialize the trait.
      *
      * @return void
      */
-    protected function initializeHasSdeUniverseTable(): void
+    protected function initializeHasPrefixedTable(): void
     {
         // Class name
         $class = class_basename($this);
@@ -23,8 +28,8 @@ trait HasSdeUniverseTable
         }
 
         // Set the table name
-        if (! isset($this->table)) {
-            $this->table = Str::snake('Universe'.Str::pluralStudly($class));
+        if (! isset($this->table) && isset($this->tablePrefix) && Str::trim($this->tablePrefix) !== '') {
+            $this->table = Str::snake($this->tablePrefix.'_'.Str::pluralStudly($class));
         }
     }
 }

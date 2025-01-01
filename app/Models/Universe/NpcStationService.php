@@ -2,6 +2,7 @@
 
 namespace App\Models\Universe;
 
+use App\Models\Concerns\HasPrefixedKey;
 use App\Models\Concerns\IsSdeUniverseModel;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -10,7 +11,7 @@ use Staudenmeir\EloquentHasManyDeep\HasRelationships;
 
 class NpcStationService extends Model
 {
-    use HasRelationships, IsSdeUniverseModel;
+    use HasPrefixedKey, HasRelationships, IsSdeUniverseModel;
 
     /**
      * The attributes that are mass assignable.

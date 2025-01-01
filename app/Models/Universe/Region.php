@@ -2,6 +2,7 @@
 
 namespace App\Models\Universe;
 
+use App\Models\Concerns\HasPrefixedKey;
 use App\Models\Concerns\IsSdeUniverseModel;
 use App\Models\Universe\Concerns\HasPositionalData;
 use Illuminate\Database\Eloquent\Model;
@@ -10,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 class Region extends Model
 {
-    use HasPositionalData, IsSdeUniverseModel;
+    use HasPositionalData, HasPrefixedKey, IsSdeUniverseModel;
 
     /**
      * The attributes that are mass assignable.

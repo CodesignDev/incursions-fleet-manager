@@ -2,6 +2,7 @@
 
 namespace App\Models\Universe;
 
+use App\Models\Concerns\HasPrefixedKey;
 use App\Models\Concerns\IsSdeUniverseModel;
 use App\Models\Corporation;
 use App\Models\Universe\Concerns\HasPositionalData;
@@ -13,7 +14,7 @@ use Staudenmeir\EloquentHasManyDeep\HasRelationships;
 
 class NpcStation extends Model
 {
-    use HasPositionalData, HasRelationships, IsSdeUniverseModel, Metable;
+    use HasPositionalData, HasPrefixedKey, HasRelationships, IsSdeUniverseModel, Metable;
 
     /**
      * The attributes that are mass assignable.

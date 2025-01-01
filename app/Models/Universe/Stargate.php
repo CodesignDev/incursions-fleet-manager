@@ -2,6 +2,7 @@
 
 namespace App\Models\Universe;
 
+use App\Models\Concerns\HasPrefixedKey;
 use App\Models\Concerns\IsSdeUniverseModel;
 use App\Models\Universe\Concerns\HasPositionalData;
 use Illuminate\Database\Eloquent\Model;
@@ -12,7 +13,7 @@ use Znck\Eloquent\Traits\HasTableAlias;
 
 class Stargate extends Model
 {
-    use HasPositionalData, HasTableAlias, IsSdeUniverseModel;
+    use HasPositionalData, HasPrefixedKey, HasTableAlias, IsSdeUniverseModel;
 
     /**
      * The attributes that are mass assignable.
