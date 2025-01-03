@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Models\SDE\Inventory\InventoryCategory;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\LazyCollection;
 use League\Csv\Reader as CsvReader;
@@ -15,11 +16,16 @@ class ImportSdeInventoryCategories implements ShouldQueue
     use Queueable;
 
     /**
+     * The list of category ids to import.
+     */
+    protected array $categoryIds;
+
+    /**
      * Create a new job instance.
      */
-    public function __construct()
+    public function __construct(array|int $categoryIds = [])
     {
-        //
+        $this->categoryIds = Arr::wrap($categoryIds);
     }
 
     /**
@@ -39,12 +45,15 @@ class ImportSdeInventoryCategories implements ShouldQueue
             return;
         }
 
+        $categories = collect($this->categoryIds);
+
         // Read the CSV file and create / update entries for each of the categories
-        $reader = CsvReader::createFromPath($categoriesCsv)
-            ->setHeaderOffset(0);
+        $reader = CsvReader::createFromPath($categoriesCsv)->setHeaderOffset(0);
 
         // Iterate over the entries
         LazyCollection::make(static fn () => yield from $reader->getRecords())
+            ->when($categories->isNotEmpty())
+            ->filter(fn ($record) => $categories->contains($record['categoryID']))
             ->each(function ($record) {
                 InventoryCategory::updateOrCreate([
                     'category_id' => $record['categoryID'],
