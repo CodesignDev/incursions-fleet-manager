@@ -29,7 +29,7 @@ trait HasPublishedFlag
     }
 
     /**
-     * Get the fully qualified "deleted at" column.
+     * Get the fully qualified "published" column.
      *
      * @return string
      */

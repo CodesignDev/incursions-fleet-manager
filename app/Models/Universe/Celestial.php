@@ -2,6 +2,7 @@
 
 namespace App\Models\Universe;
 
+use App\Models\Concerns\HasInventoryType;
 use App\Models\Concerns\HasPrefixedKey;
 use App\Models\Concerns\IsSdeUniverseModel;
 use App\Models\Universe\Concerns\HasPositionalData;
@@ -13,7 +14,7 @@ use Plank\Metable\Metable;
 
 class Celestial extends Model
 {
-    use HasChildren, HasPositionalData, HasPrefixedKey, IsSdeUniverseModel, Metable;
+    use HasChildren, HasInventoryType, HasPositionalData, HasPrefixedKey, IsSdeUniverseModel, Metable;
 
     /**
      * The attributes that are mass assignable.
