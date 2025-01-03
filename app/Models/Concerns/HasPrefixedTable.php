@@ -29,7 +29,7 @@ trait HasPrefixedTable
 
         // Set the table name
         if (! isset($this->table) && isset($this->tablePrefix) && Str::trim($this->tablePrefix) !== '') {
-            $this->table = Str::snake($this->tablePrefix.'_'.Str::pluralStudly($class));
+            $this->table = Str::snake($this->tablePrefix.Str::pluralStudly($class));
         }
     }
 }

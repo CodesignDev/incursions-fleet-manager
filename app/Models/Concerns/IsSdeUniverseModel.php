@@ -7,7 +7,10 @@ trait IsSdeUniverseModel
     use IsSdeModel;
 
     /**
-     * The prefix to add to the model's table.
+     * Initialize the trait.
      */
-    protected string $tablePrefix = 'universe';
+    protected function initializeIsSdeUniverseModel(): void
+    {
+        $this->tablePrefix = 'universe';
+    }
 }
