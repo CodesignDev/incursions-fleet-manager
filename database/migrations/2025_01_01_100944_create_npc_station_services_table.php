@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('universe_npc_station_services', function (Blueprint $table) {
             $table->staticId('service_id');
             $table->string('name');
-            $table->string('description')->nullable();
+            $table->longText('description')->nullable();
             $table->timestamps();
         });
     }
