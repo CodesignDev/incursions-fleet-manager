@@ -8,11 +8,10 @@ use App\Models\SDE\Concerns\HasPublishedFlag;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Plank\Metable\Metable;
 
 class InventoryGroup extends Model
 {
-    use HasPrefixedKey, HasPublishedFlag, IsSdeModel, Metable;
+    use HasPrefixedKey, HasPublishedFlag, IsSdeModel;
 
     /**
      * The attributes that are mass assignable.
@@ -24,22 +23,6 @@ class InventoryGroup extends Model
         'category_id',
         'name',
     ];
-
-    /**
-     * Get the meta attributes that should be cast.
-     *
-     * @return array<string, string>
-     * @noinspection PhpUnused
-     */
-    protected function metaCasts(): array
-    {
-        return [
-            'use_base_price' => 'boolean',
-            'anchored' => 'boolean',
-            'anchorable' => 'boolean',
-            'fittable_non_singleton' => 'boolean',
-        ];
-    }
 
     /**
      * The types that are in this group.

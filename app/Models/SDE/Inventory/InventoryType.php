@@ -49,22 +49,6 @@ class InventoryType extends Model
     }
 
     /**
-     * Get the meta attributes that should be cast.
-     *
-     * @return array<string, string>
-     * @noinspection PhpUnused
-     */
-    protected function metaCasts(): array
-    {
-        return [
-            'use_base_price' => 'boolean',
-            'anchored' => 'boolean',
-            'anchorable' => 'boolean',
-            'fittable_non_singleton' => 'boolean',
-        ];
-    }
-
-    /**
      * The group this type belongs to.
      */
     public function group(): BelongsTo
