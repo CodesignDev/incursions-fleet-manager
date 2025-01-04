@@ -11,8 +11,14 @@ trait IsSdeModel
      */
     protected function initializeIsSdeModel(): void
     {
+        // Set the table prefix for all tables that have this trait
         if (! isset($this->tablePrefix)) {
             $this->tablePrefix = 'sde';
+        }
+
+        // Disable guarding on all SDE models
+        if ($this->getGuarded() === ['*']) {
+            $this->guard([]);
         }
 
         // Set the IDs to be non-incremental since all SDE related data is static.
