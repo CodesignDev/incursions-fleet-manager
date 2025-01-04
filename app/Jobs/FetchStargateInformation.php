@@ -13,7 +13,7 @@ use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Http;
 
-class FetchStargateInformationFromSde implements ShouldQueue
+class FetchStargateInformation implements ShouldQueue
 {
     use Batchable, FetchesNamesFromSde, Queueable;
 

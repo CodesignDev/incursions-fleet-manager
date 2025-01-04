@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Number;
 use Illuminate\Support\Str;
 
-class FetchCelestialInformationFromSde implements ShouldQueue
+class FetchCelestialInformation implements ShouldQueue
 {
     use Batchable, FetchesNamesFromSde, Queueable;
 
@@ -140,7 +140,7 @@ class FetchCelestialInformationFromSde implements ShouldQueue
 
             // If the celestial data has npc stations listed, create a job to create them
             if ($data->has('npcStations') && Arr::get($this->batch()?->options, 'fetch_npc_stations', false)) {
-                $stationJobs = $data->collect('npcStations')->keys()->mapInto(FetchNpcStationInformationFromSde::class);
+                $stationJobs = $data->collect('npcStations')->keys()->mapInto(FetchNpcStationInformation::class);
 
                 $this->batch()?->add($stationJobs);
             }

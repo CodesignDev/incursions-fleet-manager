@@ -9,7 +9,7 @@ use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Http;
 
-class FetchStargatesForSolarSystemFromSde implements ShouldQueue
+class FetchStargatesForSolarSystem implements ShouldQueue
 {
     use Queueable;
 
@@ -50,7 +50,7 @@ class FetchStargatesForSolarSystemFromSde implements ShouldQueue
 
         // Build a list of celestials to fetch and create jobs for them
         Bus::batch(
-            $stargates->mapInto(FetchStargateInformationFromSde::class)
+            $stargates->mapInto(FetchStargateInformation::class)
         )->dispatch();
     }
 }

@@ -17,7 +17,7 @@ use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
 
-class FetchNpcStationInformationFromSde implements ShouldQueue, ShouldBeUnique
+class FetchNpcStationInformation implements ShouldQueue, ShouldBeUnique
 {
     use Batchable, Queueable;
 
@@ -113,7 +113,7 @@ class FetchNpcStationInformationFromSde implements ShouldQueue, ShouldBeUnique
                     ->tap(function (Collection $services) {
                         $stationServiceFetchJobs = $services
                             ->filter(fn (NpcStationService $service) => $service->wasRecentlyCreated)
-                            ->map(fn (NpcStationService $service) => new FetchNpcStationServiceInformationFromSde($service->id));
+                            ->map(fn (NpcStationService $service) => new FetchNpcStationServiceInformation($service->id));
 
                         if ($this->batching()) {
                             $this->batch()?->add($stationServiceFetchJobs);

@@ -2,8 +2,8 @@
 
 namespace App\Observers;
 
-use App\Jobs\FetchCelestialsForSolarSystemFromSde;
-use App\Jobs\FetchStargatesForSolarSystemFromSde;
+use App\Jobs\FetchCelestialsForSolarSystem;
+use App\Jobs\FetchStargatesForSolarSystem;
 use App\Models\Universe\SolarSystem;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Bus;
@@ -17,8 +17,8 @@ class SolarSystemInfoObserver implements ShouldQueue
     {
         // Create the job that would fetch the relevant information for solar system objects
         Bus::batch([
-            new FetchCelestialsForSolarSystemFromSde($solarSystem->system_id),
-            new FetchStargatesForSolarSystemFromSde($solarSystem->system_id),
+            new FetchCelestialsForSolarSystem($solarSystem->system_id),
+            new FetchStargatesForSolarSystem($solarSystem->system_id),
         ])->dispatch();
     }
 }

@@ -38,7 +38,7 @@ class LoadMissingSystems implements ShouldQueue
 
         // Dispatch the jobs to fetch the system data from the SDE / ESI
         Bus::batch(
-            $missingSystems->mapInto(FetchSolarSystemInformationFromSDE::class)
+            $missingSystems->mapInto(FetchSolarSystemInformation::class)
         )->dispatch();
     }
 }

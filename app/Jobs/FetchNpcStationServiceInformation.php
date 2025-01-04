@@ -9,7 +9,7 @@ use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Fluent;
 
-class FetchNpcStationServiceInformationFromSde implements ShouldQueue
+class FetchNpcStationServiceInformation implements ShouldQueue
 {
     use Batchable, Queueable;
 

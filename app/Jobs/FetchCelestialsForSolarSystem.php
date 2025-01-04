@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Fluent;
 use Illuminate\Support\Str;
 
-class FetchCelestialsForSolarSystemFromSde implements ShouldQueue
+class FetchCelestialsForSolarSystem implements ShouldQueue
 {
     use Batchable, Queueable;
 
@@ -71,7 +71,7 @@ class FetchCelestialsForSolarSystemFromSde implements ShouldQueue
                     fn ($value) => ['celestial' => $value, 'type' => Str::singular($key)]
                 ))
                 ->filter(fn ($item) => Arr::has($item, ['celestial', 'type']) && Arr::where($item, 'filled'))
-                ->map(fn ($item) => new FetchCelestialInformationFromSde(
+                ->map(fn ($item) => new FetchCelestialInformation(
                     $item['celestial'],
                     SolarSystemCelestialType::from(Str::studly($item['type'])),
                     $this->solarSystemId,
@@ -83,7 +83,7 @@ class FetchCelestialsForSolarSystemFromSde implements ShouldQueue
         $stationJobBatch = collect($celestials)
             ->only('stations')
             ->flatten()
-            ->mapInto(FetchNpcStationInformationFromSde::class);
+            ->mapInto(FetchNpcStationInformation::class);
 
         // Dispatch the relevant jobs
         Bus::batch([

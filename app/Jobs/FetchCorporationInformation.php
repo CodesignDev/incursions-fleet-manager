@@ -58,7 +58,7 @@ class FetchCorporationInformation implements ShouldQueue
 
             // If there is a home station, queue up the job to fetch that info
             $corporationData->whenHas('home_station_id', function ($homeStation) {
-                dispatch(new FetchNpcStationInformationFromSde($homeStation));
+                dispatch(new FetchNpcStationInformation($homeStation));
             });
         }
     }
