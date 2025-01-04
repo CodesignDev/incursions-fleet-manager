@@ -156,7 +156,7 @@ class FetchCelestialsForSolarSystem implements ShouldQueue
             ])->toArray();
         }
 
-            // Catch connection
+        // Catch connection issues
         catch (ConnectionException | RequestException) {
             return [];
         }

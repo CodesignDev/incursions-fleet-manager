@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Enums\EveIdRange;
 use App\Exceptions\InvalidEveIdRange;
+use App\Jobs\Middleware\HandleSdeErrors;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Bus;
@@ -52,5 +53,13 @@ class FetchStargatesForSolarSystem implements ShouldQueue
         Bus::batch(
             $stargates->mapInto(FetchStargateInformation::class)
         )->dispatch();
+    }
+
+    /**
+     * Get the middleware the job should pass through.
+     */
+    public function middleware(): array
+    {
+        return [new HandleSdeErrors];
     }
 }

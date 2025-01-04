@@ -5,14 +5,13 @@ namespace App\Jobs;
 use App\Enums\EveIdRange;
 use App\Enums\SolarSystemCelestialType;
 use App\Exceptions\InvalidEveIdRange;
+use App\Jobs\Middleware\HandleSdeErrors;
 use App\Models\Universe\Celestial;
 use App\Models\Universe\SolarSystem;
 use App\Traits\FetchesNamesFromSde;
 use Illuminate\Bus\Batchable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
-use Illuminate\Http\Client\ConnectionException;
-use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Number;
@@ -83,91 +82,73 @@ class FetchCelestialInformation implements ShouldQueue
             SolarSystemCelestialType::AsteroidBelt => 'AsteroidBelt',
         };
 
-        try {
+        // Query the entity from the SDE
+        $data = Http::sde()
+            ->withUrlParameters(['celestial_group' => Str::camel(Str::pluralStudly($entityType)), 'celestial_id' => $this->celestialId])
+            ->get('/universe/{celestial_group}/{celestial_id}')
+            ->throw()
+            ->fluent();
 
-            // Query the entity from the SDE
-            $data = Http::sde()
-                ->withUrlParameters(['celestial_group' => Str::camel(Str::pluralStudly($entityType)), 'celestial_id' => $this->celestialId])
-                ->get('/universe/{celestial_group}/{celestial_id}')
-                ->throw()
-                ->fluent();
+        // Assert that the system id returned matches what we are querying
+        throw_if($data->has('solarSystemID') && $data->value('solarSystemID') !== $this->solarSystemId);
 
-            // Assert that the system id returned matches what we are querying
-            throw_if($data->has('solarSystemID') && $data->value('solarSystemID') !== $this->solarSystemId);
+        // Get the name of the entity
+        $name = $this->fetchNameFromSde($this->celestialId, function () use ($data, $entityType) {
+            $systemName = $this->getSystemName();
 
-            // Get the name of the entity
-            $name = $this->fetchNameFromSde($this->celestialId, function () use ($data, $entityType) {
-                $systemName = $this->getSystemName();
-
-                if ($this->celestialType === SolarSystemCelestialType::Star) {
-                    return "$systemName - Star";
-                }
-
-                $planetName = $this->getPlanetName($data->integer('planetID'));
-                if ($this->celestialType === SolarSystemCelestialType::Planet) {
-                    return $planetName;
-                }
-
-                return sprintf('%s - Unknown %s', $planetName, Str::headline($entityType));
-            });
-
-            // Create or update the actual celestial entity
-            tap(Celestial::updateOrCreate(
-                [
-                    'id' => $this->celestialId,
-                    'celestial_type' => Str::snake($entityType),
-                    'system_id' => $this->solarSystemId,
-                ],
-                [
-                    'name' => $name,
-                    'type_id' => $data->value('typeID'),
-                ]
-            ), function (Celestial $celestial) use ($data) {
-
-                // Set position for everything except stars
-                if ($this->celestialType !== SolarSystemCelestialType::Star) {
-                    $celestial->setPosition(...$data->value('position', []));
-                }
-
-                // Set some metadata for the celestial
-                $meta = collect([
-                    'spectral_class' => $data->get('statistics.spectralClass'),
-                    'radius'         => $data->get('statistics.radius'),
-                    'orbit_radius'   => $data->get('statistics.orbitRadius'),
-                ])->filter(fn ($value) => $value !== null && $value !== '0.0');
-                $celestial->setManyMeta($meta->toArray());
-            });
-
-            // If the celestial data has npc stations listed, create a job to create them
-            if ($data->has('npcStations') && Arr::get($this->batch()?->options, 'fetch_npc_stations', false)) {
-                $stationJobs = $data->collect('npcStations')->keys()->mapInto(FetchNpcStationInformation::class);
-
-                $this->batch()?->add($stationJobs);
-            }
-        }
-
-        // HTTP related errors... handle particular errors
-        catch (RequestException $e) {
-
-            // Requeue if we encounter any server errors
-            if ($e->response->serverError()) {
-                $this->release();
+            if ($this->celestialType === SolarSystemCelestialType::Star) {
+                return "$systemName - Star";
             }
 
-            // If the item is not found (which shouldn't happen), just exit but report the exception
-            if ($e->response->notFound()) {
-                report($e);
-                return;
+            $planetName = $this->getPlanetName($data->integer('planetID'));
+            if ($this->celestialType === SolarSystemCelestialType::Planet) {
+                return $planetName;
             }
 
-            // Otherwise throw the exception up
-            throw $e;
-        }
+            return sprintf('%s - Unknown %s', $planetName, Str::headline($entityType));
+        });
 
-        // Connection errors... just requeue the job
-        catch (ConnectionException) {
-            $this->release();
+        // Create or update the actual celestial entity
+        tap(Celestial::updateOrCreate(
+            [
+                'id' => $this->celestialId,
+                'celestial_type' => Str::snake($entityType),
+                'system_id' => $this->solarSystemId,
+            ],
+            [
+                'name' => $name,
+                'type_id' => $data->value('typeID'),
+            ]
+        ), function (Celestial $celestial) use ($data) {
+
+            // Set position for everything except stars
+            if ($this->celestialType !== SolarSystemCelestialType::Star) {
+                $celestial->setPosition(...$data->value('position', []));
+            }
+
+            // Set some metadata for the celestial
+            $meta = collect([
+                'spectral_class' => $data->get('statistics.spectralClass'),
+                'radius'         => $data->get('statistics.radius'),
+                'orbit_radius'   => $data->get('statistics.orbitRadius'),
+            ])->filter(fn ($value) => $value !== null && $value !== '0.0');
+            $celestial->setManyMeta($meta->toArray());
+        });
+
+        // If the celestial data has npc stations listed, create a job to create them
+        if ($data->has('npcStations') && Arr::get($this->batch()?->options, 'fetch_npc_stations', false)) {
+            $stationJobs = $data->collect('npcStations')->keys()->mapInto(FetchNpcStationInformation::class);
+
+            $this->batch()?->add($stationJobs);
         }
+    }
+
+    /**
+     * Get the middleware the job should pass through.
+     */
+    public function middleware(): array
+    {
+        return [new HandleSdeErrors];
     }
 
     /**
