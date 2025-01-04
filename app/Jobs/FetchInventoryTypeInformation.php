@@ -115,7 +115,7 @@ class FetchInventoryTypeInformation implements ShouldQueue
                 ->throw()
                 ->fluent();
 
-            InventoryGroup::updateOrCreate([
+            InventoryCategory::updateOrCreate([
                 'id' => $categoryInfo['categoryID'],
             ], [
                 'name' => $categoryInfo['name.en'],
