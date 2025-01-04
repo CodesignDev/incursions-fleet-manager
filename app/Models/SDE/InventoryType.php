@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\SDE\Inventory;
+namespace App\Models\SDE;
 
 use App\Models\Concerns\HasPrefixedKey;
 use App\Models\Concerns\IsSdeModel;

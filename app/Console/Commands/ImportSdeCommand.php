@@ -5,9 +5,8 @@ namespace App\Console\Commands;
 use App\Jobs\ImportSdeInventoryCategories;
 use App\Jobs\ImportSdeInventoryGroups;
 use App\Jobs\ImportSdeInventoryTypes;
-use App\Models\SDE\Inventory\InventoryCategory;
+use App\Models\SDE\InventoryCategory;
 use Illuminate\Console\Command;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
@@ -92,7 +91,6 @@ class ImportSdeCommand extends Command
 
 
             // Process Types
-
 
             // Collect the list of types for these groups
             $this->output->write(sprintf('Fetching Types for the %s category...', $category));

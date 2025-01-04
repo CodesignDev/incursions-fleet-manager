@@ -2,7 +2,7 @@
 
 namespace App\Models\Concerns;
 
-use App\Models\SDE\Inventory\InventoryType;
+use App\Models\SDE\InventoryType;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 trait HasInventoryType

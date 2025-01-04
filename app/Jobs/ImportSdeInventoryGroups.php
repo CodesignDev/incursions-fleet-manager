@@ -2,7 +2,7 @@
 
 namespace App\Jobs;
 
-use App\Models\SDE\Inventory\InventoryGroup;
+use App\Models\SDE\InventoryGroup;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Arr;
