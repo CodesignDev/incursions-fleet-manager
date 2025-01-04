@@ -56,6 +56,14 @@ class InventoryType extends Model
     }
 
     /**
+     * The meta group this type belongs in.
+     */
+    public function metaGroup(): BelongsTo
+    {
+        return $this->belongsTo(MetaGroup::class, 'meta_group_id');
+    }
+
+    /**
      * The category of this type.
      */
     public function category(): BelongsToThroughRelation
