@@ -157,7 +157,7 @@ class FetchCelestialInformation implements ShouldQueue
     private function getSystemName(): string
     {
         return $this->solarSystemName ??= transform(
-           SolarSystem::whereSystemId($this->solarSystemId)->firstOr('name', function () {
+           SolarSystem::whereId($this->solarSystemId)->firstOr('name', function () {
                return $this->fetchNameFromSde($this->solarSystemId, sprintf('Unknown System #%d', $this->solarSystemId));
            }),
            fn ($value) => match (true) {

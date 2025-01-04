@@ -40,7 +40,7 @@ class FetchSolarSystemInformation implements ShouldQueue
     public function handle(): void
     {
         // If the system already exists, skip
-        if (blank($this->solarSystemId) || SolarSystem::whereSystemId($this->solarSystemId)->exists()) {
+        if (blank($this->solarSystemId) || SolarSystem::whereId($this->solarSystemId)->exists()) {
             return;
         }
 
@@ -80,7 +80,7 @@ class FetchSolarSystemInformation implements ShouldQueue
         });
 
         // Fetch and create the constellation info if the information doesn't exist in the database
-        if (filled($constellationId) && Constellation::whereConstellationId($constellationId)->doesntExist()) {
+        if (filled($constellationId) && Constellation::whereId($constellationId)->doesntExist()) {
 
             // Doesn't exist, so make the request to the SDE
             $constellationInfo = Http::sde()
@@ -109,7 +109,7 @@ class FetchSolarSystemInformation implements ShouldQueue
         }
 
         // Create the region info if it doesn't exist in the database
-        if (filled($regionId) && Region::whereRegionId($regionId)->doesntExist()) {
+        if (filled($regionId) && Region::whereId($regionId)->doesntExist()) {
 
             // Doesn't exist, so make the request to the SDE
             $regionInfo = Http::sde()

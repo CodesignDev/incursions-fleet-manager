@@ -73,7 +73,7 @@ class BuildOrbitalMapForSolarSystem implements ShouldQueue
             $columnSearchKeys = ['orbital_id', 'celestial_index', 'orbital_index'];
 
             Celestial::query()
-                ->whereCelestialId($starId)
+                ->whereId($starId)
                 ->where(fn (Builder $query) => $query->whereNotNull($columnSearchKeys, boolean: 'or'))
                 ->update(array_fill_keys($columnSearchKeys, null));
 
@@ -90,7 +90,7 @@ class BuildOrbitalMapForSolarSystem implements ShouldQueue
 
                 // Update the planet to set the orbital id to the star and also set the celestial index
                 Celestial::query()
-                    ->whereCelestialId($planet)
+                    ->whereId($planet)
                     ->where(fn (Builder $query) => $query
                         ->where(fn (Builder $query) => $query
                             ->whereNot($planetData)
@@ -125,7 +125,7 @@ class BuildOrbitalMapForSolarSystem implements ShouldQueue
 
                 // Update the celestial with the relevant data
                 Celestial::query()
-                    ->whereCelestialId($celestial)
+                    ->whereId($celestial)
                     ->where(fn (Builder $query) => $query
                         ->whereNot($celestialData)
                         ->orWhereNull(array_keys($celestialData))
