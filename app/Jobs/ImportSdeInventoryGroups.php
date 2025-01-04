@@ -56,7 +56,7 @@ class ImportSdeInventoryGroups implements ShouldQueue
             ->filter(fn ($record) => $groups->contains($record['groupID']))
             ->each(function ($record) {
                 InventoryGroup::updateOrCreate([
-                    'group_id' => $record['groupID'],
+                    'id' => $record['groupID'],
                 ], [
                     'category_id' => $record['categoryID'],
                     'name' => $record['groupName'],

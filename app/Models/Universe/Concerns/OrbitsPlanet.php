@@ -12,6 +12,6 @@ trait OrbitsPlanet
      */
     public function planet(): BelongsTo
     {
-        return $this->belongsTo(Planet::class, 'orbital_id', 'celestial_id');
+        return $this->belongsTo(Planet::class, 'orbital_id', 'id');
     }
 }

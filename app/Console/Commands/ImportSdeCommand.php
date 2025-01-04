@@ -53,13 +53,13 @@ class ImportSdeCommand extends Command
 
                 // Return the category id if the value is a number
                 if (is_numeric($value)) {
-                    return transform(InventoryCategory::firstWhere('category_id', $value), fn ($category) => [$value => $category]);
+                    return transform(InventoryCategory::firstWhere('id', $value), fn ($category) => [$value => $category]);
                 }
 
                 // Otherwise search for the category
                 return InventoryCategory::query()
                     ->whereLike('name', Str::lower($value), caseSensitive: false)
-                    ->pluck('name', 'category_id')
+                    ->pluck('name', 'id')
                     ->toArray();
             })
             ->filter(fn ($value) => filled($value) && Collection::wrap($value)->filter()->isNotEmpty())

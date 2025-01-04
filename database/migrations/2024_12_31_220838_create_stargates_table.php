@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('universe_stargates', function (Blueprint $table) {
-            $table->staticId('stargate_id');
+            $table->staticId();
             $table->foreignId('system_id');
             $table->foreignId('type_id');
             $table->string('name');

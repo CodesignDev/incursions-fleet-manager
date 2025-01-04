@@ -69,7 +69,7 @@ class FetchSolarSystemInformationFromSDE implements ShouldQueue
 
             // Create the solar system entry for the requested system
             tap(SolarSystem::create([
-                'system_id' => $systemInfo->value('solarSystemID', $this->solarSystemId),
+                'id' => $systemInfo->value('solarSystemID', $this->solarSystemId),
                 'constellation_id' => $constellationId,
                 'name' => $systemName,
                 'security' => $systemInfo->value('security', 0),
@@ -98,7 +98,7 @@ class FetchSolarSystemInformationFromSDE implements ShouldQueue
 
                 // Create the constellation
                 tap (Constellation::create([
-                    'constellation_id' => $constellationInfo->value('constellationID', $constellationId),
+                    'id' => $constellationInfo->value('constellationID', $constellationId),
                     'region_id' => $constellationInfo->value('regionID', $regionId),
                     'name' => $constellationName,
                     'radius' => $constellationInfo->value('radius'),
@@ -127,7 +127,7 @@ class FetchSolarSystemInformationFromSDE implements ShouldQueue
 
                 // Create the region
                 tap(Region::create([
-                    'region_id' => $regionInfo->value('regionID', $regionId),
+                    'id' => $regionInfo->value('regionID', $regionId),
                     'name' => $regionName,
                 ]), function (Region $region) use ($regionInfo) {
 

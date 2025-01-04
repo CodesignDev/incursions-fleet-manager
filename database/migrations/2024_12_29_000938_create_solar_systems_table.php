@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('universe_solar_systems', function (Blueprint $table) {
-            $table->staticId('system_id');
+            $table->staticId();
             $table->unsignedBigInteger('constellation_id');
             $table->string('name');
             $table->float('security');

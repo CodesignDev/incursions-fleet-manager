@@ -56,7 +56,7 @@ class ImportSdeInventoryCategories implements ShouldQueue
             ->filter(fn ($record) => $categories->contains($record['categoryID']))
             ->each(function ($record) {
                 InventoryCategory::updateOrCreate([
-                    'category_id' => $record['categoryID'],
+                    'id' => $record['categoryID'],
                 ], [
                     'name' => $record['categoryName'],
                     'published' => $record['published'],

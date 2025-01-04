@@ -2,7 +2,6 @@
 
 namespace App\Models\Universe;
 
-use App\Models\Concerns\HasPrefixedKey;
 use App\Models\Concerns\IsSdeUniverseModel;
 use App\Models\Universe\Concerns\HasPositionalData;
 use Illuminate\Database\Eloquent\Model;
@@ -11,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Constellation extends Model
 {
-    use HasPositionalData, HasPrefixedKey, IsSdeUniverseModel;
+    use HasPositionalData, IsSdeUniverseModel;
 
     /**
      * The attributes that are mass assignable.
@@ -19,7 +18,7 @@ class Constellation extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'constellation_id',
+        'id',
         'region_id',
         'name',
         'radius',
@@ -42,7 +41,7 @@ class Constellation extends Model
      */
     public function region(): BelongsTo
     {
-        return $this->belongsTo(Region::class, 'region_id');
+        return $this->belongsTo(Region::class);
     }
 
     /**
@@ -50,6 +49,6 @@ class Constellation extends Model
      */
     public function systems(): HasMany
     {
-        return $this->hasMany(SolarSystem::class, 'constellation_id');
+        return $this->hasMany(SolarSystem::class);
     }
 }

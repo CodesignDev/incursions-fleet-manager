@@ -2,7 +2,6 @@
 
 namespace App\Models\SDE;
 
-use App\Models\Concerns\HasPrefixedKey;
 use App\Models\Concerns\IsSdeModel;
 use App\Models\SDE\Concerns\HasPublishedFlag;
 use Illuminate\Database\Eloquent\Model;
@@ -11,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class InventoryGroup extends Model
 {
-    use HasPrefixedKey, HasPublishedFlag, IsSdeModel;
+    use HasPublishedFlag, IsSdeModel;
 
     /**
      * The attributes that are mass assignable.

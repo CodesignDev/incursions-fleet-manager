@@ -114,7 +114,7 @@ class FetchCelestialInformationFromSde implements ShouldQueue
             // Create or update the actual celestial entity
             tap(Celestial::updateOrCreate(
                 [
-                    'celestial_id' => $this->celestialId,
+                    'id' => $this->celestialId,
                     'celestial_type' => Str::snake($entityType),
                     'system_id' => $this->solarSystemId,
                 ],

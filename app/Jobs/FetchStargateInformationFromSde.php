@@ -66,7 +66,7 @@ class FetchStargateInformationFromSde implements ShouldQueue
 
             // Create the entry for the stargate
             tap(Stargate::create([
-                'stargate_id' => $stargateInfo->value('stargateID', $this->stargateId),
+                'id' => $stargateInfo->value('stargateID', $this->stargateId),
                 'system_id' => $stargateInfo->value('solarSystemID'),
                 'type_id' => $stargateInfo->value('typeID'),
                 'name' => $stargateName,

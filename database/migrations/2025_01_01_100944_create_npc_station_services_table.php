@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('universe_npc_station_services', function (Blueprint $table) {
-            $table->staticId('service_id');
+            $table->staticId();
             $table->string('name');
             $table->longText('description')->nullable();
             $table->timestamps();

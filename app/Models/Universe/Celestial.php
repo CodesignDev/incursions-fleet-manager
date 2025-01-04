@@ -3,7 +3,6 @@
 namespace App\Models\Universe;
 
 use App\Models\Concerns\HasInventoryType;
-use App\Models\Concerns\HasPrefixedKey;
 use App\Models\Concerns\IsSdeUniverseModel;
 use App\Models\Universe\Concerns\HasPositionalData;
 use Illuminate\Database\Eloquent\Builder;
@@ -14,7 +13,7 @@ use Plank\Metable\Metable;
 
 class Celestial extends Model
 {
-    use HasChildren, HasInventoryType, HasPositionalData, HasPrefixedKey, IsSdeUniverseModel, Metable;
+    use HasChildren, HasInventoryType, HasPositionalData, IsSdeUniverseModel, Metable;
 
     /**
      * The attributes that are mass assignable.
@@ -22,7 +21,7 @@ class Celestial extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'celestial_id',
+        'id',
         'system_id',
         'orbital_id',
         'type_id',
@@ -91,7 +90,7 @@ class Celestial extends Model
      */
     public function system(): BelongsTo
     {
-        return $this->belongsTo(SolarSystem::class, 'system_id');
+        return $this->belongsTo(SolarSystem::class);
     }
 
     /**

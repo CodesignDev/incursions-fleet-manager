@@ -40,7 +40,7 @@ class FetchNpcStationServiceInformationFromSde implements ShouldQueue
 
         // Update or create the station service entry in the database
         NpcStationService::updateOrCreate(
-            ['service_id' => $this->stationServiceId],
+            ['id' => $this->stationServiceId],
             [
                 'name' => $data->get('serviceNameID.en'),
                 'description' => $data->get('descriptionID.en'),

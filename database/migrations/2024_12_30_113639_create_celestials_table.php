@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('universe_celestials', function (Blueprint $table) {
-            $table->staticId('celestial_id');
+            $table->staticId();
             $table->foreignId('system_id');
             $table->foreignId('orbital_id')->nullable();
             $table->foreignId('type_id');

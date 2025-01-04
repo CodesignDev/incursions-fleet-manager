@@ -3,7 +3,6 @@
 namespace App\Models\Universe;
 
 use App\Models\Concerns\HasInventoryType;
-use App\Models\Concerns\HasPrefixedKey;
 use App\Models\Concerns\IsSdeUniverseModel;
 use App\Models\Universe\Concerns\HasPositionalData;
 use Illuminate\Database\Eloquent\Model;
@@ -14,7 +13,7 @@ use Znck\Eloquent\Traits\HasTableAlias;
 
 class Stargate extends Model
 {
-    use HasInventoryType, HasPositionalData, HasPrefixedKey, HasTableAlias, IsSdeUniverseModel;
+    use HasInventoryType, HasPositionalData, HasTableAlias, IsSdeUniverseModel;
 
     /**
      * The attributes that are mass assignable.
@@ -22,7 +21,7 @@ class Stargate extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'stargate_id',
+        'id',
         'system_id',
         'type_id',
         'name',
@@ -33,7 +32,7 @@ class Stargate extends Model
      */
     public function system(): BelongsTo
     {
-        return $this->belongsTo(SolarSystem::class, 'system_id');
+        return $this->belongsTo(SolarSystem::class);
     }
 
     /**
@@ -45,8 +44,8 @@ class Stargate extends Model
             self::class,
             StargateConnection::class,
             firstKey: 'source_stargate_id',
-            secondKey: 'stargate_id',
-            localKey: 'stargate_id',
+            secondKey: 'id',
+            localKey: 'id',
             secondLocalKey: 'destination_stargate_id'
         );
     }

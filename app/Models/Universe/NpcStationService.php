@@ -2,7 +2,6 @@
 
 namespace App\Models\Universe;
 
-use App\Models\Concerns\HasPrefixedKey;
 use App\Models\Concerns\IsSdeUniverseModel;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -11,7 +10,7 @@ use Staudenmeir\EloquentHasManyDeep\HasRelationships;
 
 class NpcStationService extends Model
 {
-    use HasPrefixedKey, HasRelationships, IsSdeUniverseModel;
+    use HasRelationships, IsSdeUniverseModel;
 
     /**
      * The attributes that are mass assignable.
@@ -19,7 +18,7 @@ class NpcStationService extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'service_id',
+        'id',
         'name',
         'description',
     ];
@@ -32,8 +31,8 @@ class NpcStationService extends Model
         return $this->hasManyDeep(
             NpcStation::class,
             [NpcStationOperationServices::class, NpcStationOperation::class],
-            ['service_id', 'operation_id', 'operation_id'],
-            ['service_id', 'operation_id', 'operation_id']
+            ['service_id', 'id', 'operation_id'],
+            [null, 'operation_id', null]
         );
     }
 

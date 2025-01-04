@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('sde_inventory_types', function (Blueprint $table) {
-            $table->staticId('type_id');
+            $table->staticId();
             $table->foreignId('group_id');
             $table->foreignId('meta_group_id')->nullable();
             $table->foreignId('market_group_id')->nullable();

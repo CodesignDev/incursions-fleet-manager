@@ -57,7 +57,7 @@ class ImportSdeInventoryTypes implements ShouldQueue
             ->map(fn ($record) => Arr::map($record, fn ($value) => $value !== 'None' ? $value : null))
             ->each(function ($record) {
                 InventoryType::updateOrCreate([
-                    'type_id' => $record['typeID'],
+                    'id' => $record['typeID'],
                 ], [
                     'group_id' => $record['groupID'],
                     'market_group_id' => $record['marketGroupID'],

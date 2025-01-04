@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('sde_inventory_categories', function (Blueprint $table) {
-            $table->staticId('category_id');
+            $table->staticId();
             $table->string('name');
             $table->boolean('published');
             $table->timestamps();

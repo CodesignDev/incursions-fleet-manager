@@ -69,7 +69,7 @@ class FetchNpcStationInformationFromSde implements ShouldQueue, ShouldBeUnique
             // Create the npc station entry
             tap(NpcStation::updateOrCreate(
                 [
-                    'station_id' => $stationData->value('stationID', $this->stationId),
+                    'id' => $stationData->value('stationID', $this->stationId),
                     'system_id' => $stationData->value('solarSystemID'),
                 ],
                 [
@@ -93,7 +93,7 @@ class FetchNpcStationInformationFromSde implements ShouldQueue, ShouldBeUnique
             // Create the station operation entry
             tap(NpcStationOperation::updateOrCreate(
                 [
-                    'operation_id' => $operationData->value('stationOperationID'),
+                    'id' => $operationData->value('stationOperationID'),
                 ],
                 [
                     'name' => $operationData->get('operationNameID.en'),
@@ -105,7 +105,7 @@ class FetchNpcStationInformationFromSde implements ShouldQueue, ShouldBeUnique
                 // Create any missing services
                 $services
                     ->map(fn ($service) => NpcStationService::firstOrCreate(
-                        ['service_id' => $service],
+                        ['id' => $service],
                         ['name' => 'Unknown Station Service '.$service]
                     ))
 
@@ -113,7 +113,7 @@ class FetchNpcStationInformationFromSde implements ShouldQueue, ShouldBeUnique
                     ->tap(function (Collection $services) {
                         $stationServiceFetchJobs = $services
                             ->filter(fn (NpcStationService $service) => $service->wasRecentlyCreated)
-                            ->map(fn (NpcStationService $service) => new FetchNpcStationServiceInformationFromSde($service->service_id));
+                            ->map(fn (NpcStationService $service) => new FetchNpcStationServiceInformationFromSde($service->id));
 
                         if ($this->batching()) {
                             $this->batch()?->add($stationServiceFetchJobs);

@@ -47,7 +47,7 @@ class SolarSystem extends Model
      */
     public function constellation(): BelongsTo
     {
-        return $this->belongsTo(Constellation::class, 'constellation_id');
+        return $this->belongsTo(Constellation::class);
     }
 
     /**
@@ -81,8 +81,8 @@ class SolarSystem extends Model
         return $this->hasManyDeep(
             self::class,
             [Stargate::class.' as source_stargate', StargateConnection::class, Stargate::class.' as destination_stargate'],
-            ['system_id', 'source_stargate_id', 'stargate_id', 'system_id'],
-            ['system_id', 'stargate_id', 'destination_stargate_id', 'system_id']
+            ['system_id', 'source_stargate_id', 'id', 'id'],
+            ['id', 'id', 'destination_stargate_id', 'system_id']
         );
     }
 

@@ -2,7 +2,6 @@
 
 namespace App\Models\Universe;
 
-use App\Models\Concerns\HasPrefixedKey;
 use App\Models\Concerns\IsSdeUniverseModel;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -10,7 +9,7 @@ use Plank\Metable\Metable;
 
 class NpcStationOperation extends Model
 {
-    use HasPrefixedKey, IsSdeUniverseModel, Metable;
+    use IsSdeUniverseModel, Metable;
 
     /**
      * The attributes that are mass assignable.
@@ -18,7 +17,7 @@ class NpcStationOperation extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'operation_id',
+        'id',
         'name',
         'description',
     ];

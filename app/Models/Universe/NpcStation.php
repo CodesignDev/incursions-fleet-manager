@@ -3,7 +3,6 @@
 namespace App\Models\Universe;
 
 use App\Models\Concerns\HasInventoryType;
-use App\Models\Concerns\HasPrefixedKey;
 use App\Models\Concerns\IsSdeUniverseModel;
 use App\Models\Corporation;
 use App\Models\Universe\Concerns\HasPositionalData;
@@ -15,7 +14,7 @@ use Staudenmeir\EloquentHasManyDeep\HasRelationships;
 
 class NpcStation extends Model
 {
-    use HasInventoryType, HasPositionalData, HasPrefixedKey, HasRelationships, IsSdeUniverseModel, Metable;
+    use HasInventoryType, HasPositionalData, HasRelationships, IsSdeUniverseModel, Metable;
 
     /**
      * The attributes that are mass assignable.
@@ -23,7 +22,7 @@ class NpcStation extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'station_id',
+        'id',
         'system_id',
         'type_id',
         'operation_id',
@@ -65,7 +64,7 @@ class NpcStation extends Model
      */
     public function operation(): BelongsTo
     {
-        return $this->belongsTo(NpcStationOperation::class, 'operation_id');
+        return $this->belongsTo(NpcStationOperation::class);
     }
 
     /**

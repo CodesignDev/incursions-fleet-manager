@@ -2,7 +2,6 @@
 
 namespace App\Models\SDE;
 
-use App\Models\Concerns\HasPrefixedKey;
 use App\Models\Concerns\IsSdeModel;
 use App\Models\SDE\Concerns\HasPublishedFlag;
 use Illuminate\Database\Eloquent\Model;
@@ -12,7 +11,7 @@ use Znck\Eloquent\Traits\BelongsToThrough;
 
 class InventoryType extends Model
 {
-    use BelongsToThrough, HasPrefixedKey, HasPublishedFlag, IsSdeModel;
+    use BelongsToThrough, HasPublishedFlag, IsSdeModel;
 
     /**
      * The attributes that are mass assignable.
