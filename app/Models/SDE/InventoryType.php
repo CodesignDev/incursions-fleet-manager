@@ -64,6 +64,14 @@ class InventoryType extends Model
     }
 
     /**
+     * The market group that this type is listed in.
+     */
+    public function marketGroup(): BelongsTo
+    {
+        return $this->belongsTo(MarketGroup::class, 'market_group_id');
+    }
+
+    /**
      * The category of this type.
      */
     public function category(): BelongsToThroughRelation
