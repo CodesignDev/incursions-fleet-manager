@@ -61,7 +61,8 @@ class FetchInventoryTypeInformation implements ShouldQueue
         $race = $typeInfo->get('raceID');
 
         // Create the entry for the stargate
-        tap(InventoryType::updateOrCreate(
+        /** @var \App\Models\SDE\InventoryType $inventoryType */
+        $inventoryType = tap(InventoryType::updateOrCreate(
             [
                 'id' => $typeInfo->get('typeID', $this->typeId),
             ],
@@ -125,7 +126,7 @@ class FetchInventoryTypeInformation implements ShouldQueue
 
         // Dispatch some jobs based on the info from the type
         $jobs = collect()
-            ->when($metaGroup)->push(null)
+            ->when($metaGroup && $inventoryType->metaGroup()->doesntExist())->push(new FetchMetaGroupInformation($metaGroup))
             ->when($marketGroup)->push(null)
             ->when($faction)->push(null)
             ->when($race)->push(null)
