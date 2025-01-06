@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('universe_npc_station_operation_services', function (Blueprint $table) {
+        Schema::create('universe_npc_station_operation_service', function (Blueprint $table) {
             $table->uuidId();
             $table->foreignId('operation_id');
             $table->foreignId('service_id');
@@ -24,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('universe_npc_station_operation_services');
+        Schema::dropIfExists('universe_npc_station_operation_service');
     }
 };

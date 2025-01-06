@@ -75,8 +75,8 @@ class NpcStation extends Model
         return $this->hasManyDeep(
             NpcStationService::class,
             [NpcStationOperation::class, NpcStationOperationServices::class],
-            ['operation_id', 'operation_id', 'service_id'],
-            ['operation_id', 'operation_id', 'service_id']
+            ['id', 'operation_id', 'id'],
+            ['operation_id', 'id', 'service_id']
         );
     }
 }
