@@ -127,10 +127,22 @@ class FetchInventoryTypeInformation implements ShouldQueue
 
         // Dispatch some jobs based on the info from the type
         $jobs = collect()
-            ->when($metaGroup && $inventoryType->metaGroup()->doesntExist())->push(new FetchMetaGroupInformation($metaGroup))
-            ->when($marketGroup && $inventoryType->marketGroup()->doesntExist())->push(new FetchMarketGroupInformation($marketGroup))
-            ->when($faction)->push(null)
-            ->when($race)->push(null)
+            ->when(
+                $metaGroup && $inventoryType->metaGroup()->doesntExist(),
+                fn ($jobs) => $jobs->push(new FetchMetaGroupInformation($metaGroup))
+            )
+            ->when(
+                $marketGroup && $inventoryType->marketGroup()->doesntExist(),
+                fn ($jobs) => $jobs->push(new FetchMarketGroupInformation($marketGroup))
+            )
+            ->when(
+                $faction,
+                fn ($jobs) => $jobs->push(null)
+            )
+            ->when(
+                $race,
+                fn ($jobs) => $jobs->push(null)
+            )
             ->push()
             ->filter();
 
