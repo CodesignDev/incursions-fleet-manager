@@ -6,6 +6,7 @@ use App\Jobs\Middleware\HandleSdeErrors;
 use App\Models\SDE\InventoryCategory;
 use App\Models\SDE\InventoryGroup;
 use App\Models\SDE\InventoryType;
+use Illuminate\Bus\Batchable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Bus;
@@ -13,7 +14,7 @@ use Illuminate\Support\Facades\Http;
 
 class FetchInventoryTypeInformation implements ShouldQueue
 {
-    use Queueable;
+    use Batchable, Queueable;
 
     /**
      * The id of the type to fetch information for.

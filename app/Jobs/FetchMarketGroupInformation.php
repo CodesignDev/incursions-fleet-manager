@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Jobs\Middleware\HandleSdeErrors;
 use App\Models\SDE\MarketGroup;
+use Illuminate\Bus\Batchable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Collection;
@@ -12,7 +13,7 @@ use Illuminate\Support\Fluent;
 
 class FetchMarketGroupInformation implements ShouldQueue
 {
-    use Queueable;
+    use Batchable, Queueable;
 
     /**
      * The id of the market group to fetch from the SDE.

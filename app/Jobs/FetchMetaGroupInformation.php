@@ -4,13 +4,14 @@ namespace App\Jobs;
 
 use App\Jobs\Middleware\HandleSdeErrors;
 use App\Models\SDE\MetaGroup;
+use Illuminate\Bus\Batchable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Http;
 
 class FetchMetaGroupInformation implements ShouldQueue
 {
-    use Queueable;
+    use Batchable, Queueable;
 
     /**
      * The id of the meta group to fetch from the SDE.
