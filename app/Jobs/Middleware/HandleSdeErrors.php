@@ -38,14 +38,14 @@ class HandleSdeErrors
                 $job->release(30);
                 return;
             }
+
+            // Requeue the failed job after a minute
+            $job->release(60);
         }
 
         // Connection errors... just requeue the job
         catch (ConnectionException) {
-            //
+            $job->release(15);
         }
-
-        // Requeue the job after a minute
-        $job->release(60);
     }
 }
