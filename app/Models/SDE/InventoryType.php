@@ -56,6 +56,21 @@ class InventoryType extends Model
     }
 
     /**
+     * The category of this type.
+     */
+    public function category(): BelongsToThroughRelation
+    {
+        return $this->belongsToThrough(
+            InventoryCategory::class,
+            InventoryGroup::class,
+            foreignKeyLookup: [
+                InventoryCategory::class => 'category_id',
+                InventoryGroup::class => 'group_id',
+            ]
+        );
+    }
+
+    /**
      * The meta group this type belongs in.
      */
     public function metaGroup(): BelongsTo
@@ -72,17 +87,18 @@ class InventoryType extends Model
     }
 
     /**
-     * The category of this type.
+     * The faction that this type is a part of.
      */
-    public function category(): BelongsToThroughRelation
+    public function faction(): BelongsTo
     {
-        return $this->belongsToThrough(
-            InventoryCategory::class,
-            InventoryGroup::class,
-            foreignKeyLookup: [
-                InventoryCategory::class => 'category_id',
-                InventoryGroup::class => 'group_id',
-            ]
-        );
+        return $this->belongsTo(Faction::class, 'faction_id');
+    }
+
+    /**
+     * The race that this type is a prt of.
+     */
+    public function race(): BelongsTo
+    {
+        return $this->belongsTo(Race::class, 'race_id');
     }
 }

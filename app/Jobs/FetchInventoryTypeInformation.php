@@ -91,7 +91,7 @@ class FetchInventoryTypeInformation implements ShouldQueue
             // Fetch the information fom the SDE for the group
             $groupInfo = Http::sde()
                 ->withUrlParameters(['group_id' => $group])
-                ->get('/universe/groups/{group_id')
+                ->get('/universe/groups/{group_id}')
                 ->throw()
                 ->fluent();
 
@@ -99,11 +99,11 @@ class FetchInventoryTypeInformation implements ShouldQueue
             $category = $groupInfo->get('categoryID');
 
             InventoryGroup::updateOrCreate([
-                'id' => $groupInfo['groupID'],
+                'id' => $groupInfo->get('groupID'),
             ], [
                 'category_id' => $category,
-                'name' => $groupInfo['name.en'],
-                'published' => $groupInfo['published'],
+                'name' => $groupInfo->get('name.en'),
+                'published' => $groupInfo->get('published'),
             ]);
         }
 
@@ -113,15 +113,15 @@ class FetchInventoryTypeInformation implements ShouldQueue
             // Fetch the information fom the SDE for the category
             $categoryInfo = Http::sde()
                 ->withUrlParameters(['category_id' => $category])
-                ->get('/universe/categories/{category_id')
+                ->get('/universe/categories/{category_id}')
                 ->throw()
                 ->fluent();
 
             InventoryCategory::updateOrCreate([
-                'id' => $categoryInfo['categoryID'],
+                'id' => $categoryInfo->get('categoryID'),
             ], [
-                'name' => $categoryInfo['name.en'],
-                'published' => $categoryInfo['published'],
+                'name' => $categoryInfo->get('name.en'),
+                'published' => $categoryInfo->get('published'),
             ]);
         }
 
@@ -136,12 +136,12 @@ class FetchInventoryTypeInformation implements ShouldQueue
                 fn ($jobs) => $jobs->push(new FetchMarketGroupInformation($marketGroup))
             )
             ->when(
-                $faction,
-                fn ($jobs) => $jobs->push(null)
+                $faction && $inventoryType->faction()->doesntExist(),
+                fn ($jobs) => $jobs->push(new FetchFactionInformation($faction))
             )
             ->when(
-                $race,
-                fn ($jobs) => $jobs->push(null)
+                $race && $inventoryType->race()->doesntExist(),
+                fn ($jobs) => $jobs->push(new FetchRaceInformation($race))
             )
             ->push()
             ->filter();
