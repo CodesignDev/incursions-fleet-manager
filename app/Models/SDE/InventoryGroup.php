@@ -18,7 +18,7 @@ class InventoryGroup extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'group_id',
+        'id',
         'category_id',
         'name',
     ];

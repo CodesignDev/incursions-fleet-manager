@@ -19,7 +19,7 @@ class InventoryType extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'type_id',
+        'id',
         'group_id',
         'meta_group_id',
         'market_group_id',
