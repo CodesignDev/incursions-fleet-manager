@@ -70,8 +70,13 @@ class FetchFactionInformation implements ShouldQueue
 
         });
 
-        // Fetch the information on the corporations of this faction
-        $knownCorporations = Arr::pluck($faction->load(['corporation', 'militia'])->getRelations(), 'id');
+        // Get the list of known corporations
+        $corporationRelations = ['corporation', 'militia'];
+        $knownCorporations = collect($faction->load($corporationRelations)->getRelations())
+            ->only($corporationRelations)
+            ->pluck('id');
+
+        // Fetch the information on the corporations of this faction that are unknown
         $corporations = collect([$corporation, $militiaCorporation])->filter()->diff($knownCorporations);
         if ($corporations->isNotEmpty()) {
             dispatch(new FetchCorporationInformation($corporations->toArray()));
