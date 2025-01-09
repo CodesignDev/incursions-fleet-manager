@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasOneThrough;
-use Znck\Eloquent\Traits\HasTableAlias;
+use Staudenmeir\EloquentHasManyDeep\HasTableAlias;
 
 class Stargate extends Model
 {

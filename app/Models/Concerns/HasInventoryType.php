@@ -10,7 +10,7 @@ trait HasInventoryType
     /**
      * Initialize the trait.
      */
-    public function initializeHasPublishedFlag(): void
+    public function initializeHasInventoryType(): void
     {
         $this->mergeFillable([
             $this->getTypeIdColumn(),
