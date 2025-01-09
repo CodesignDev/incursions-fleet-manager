@@ -6,7 +6,7 @@
         "prepare": "node .husky/install-husky.mjs",
         "dev": "vite",
         "build": "tsc && vite build && vite build --ssr",
-        "lint": "eslint --ext .js,.jsx,.ts,.tsx resources/js/",
+        "lint": "eslint --ext .js,.jsx,.ts,.tsx resources/js/ --ignore-path .gitignore",
         "lint:all": "concurrently \"npm:lint\" \"npm:lint:tooling\"",
         "lint:fix": "npm run lint -- --fix",
         "lint:tooling": "eslint --ext .js,.jsx,.ts,.tsx ./*.config.js ./*.cjs",
