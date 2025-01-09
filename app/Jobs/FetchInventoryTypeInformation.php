@@ -39,7 +39,7 @@ class FetchInventoryTypeInformation implements ShouldQueue
             return;
         }
 
-        // Fetch the stargate information and name from the SDE
+        // Fetch the type information and name from the SDE
         $typeInfo = Http::sde()
             ->withUrlParameters(['type_id' => $this->typeId])
             ->get('/universe/types/{type_id}')
@@ -143,7 +143,9 @@ class FetchInventoryTypeInformation implements ShouldQueue
                 $race && $inventoryType->race()->doesntExist(),
                 fn ($jobs) => $jobs->push(new FetchRaceInformation($race))
             )
-            ->push()
+            ->push([
+                new FetchInventoryTypeVariationInformation($this->typeId),
+            ])
             ->filter();
 
         // Dispatch the jobs to the queue
